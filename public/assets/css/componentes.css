@@ -366,3 +366,12 @@ h1, .page-head h1, .auth-box h1, .auth-hero h2, .brand strong, .kpi .valor, .not
 .medidor { height: 6px; border-radius: 6px; background: var(--border); overflow: hidden; width: 90px; }
 .medidor i { display: block; height: 100%; border-radius: 6px; background: var(--warn); }
 .medidor i.cero { background: var(--danger); }
+
+/* La tarjeta centrada no debe ensancharse con su contenido en celulares */
+.auth-centro { grid-template-columns: minmax(0, 1fr); justify-items: center; }
+.auth-tarjeta { min-width: 0; }
+
+/* En celulares las columnas no deben crecer con su contenido (tablas anchas hacen scroll dentro de su tarjeta) */
+.split > *, .roles-layout > *, .grid-2 > *, .grid-3 > *, .stats > *, .stack > * { min-width: 0; }
+.stat { overflow: hidden; }
+.card-head { flex-wrap: wrap; gap: 6px 12px; }

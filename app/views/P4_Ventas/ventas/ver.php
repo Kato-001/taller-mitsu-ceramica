@@ -39,7 +39,7 @@ $cambio = $v['monto_recibido'] !== null ? (float) $v['monto_recibido'] - (float)
         <div class="kv"><span>CI / NIT</span><strong class="mono"><?= e($v['ci_nit'] ?: 'S/N') ?></strong></div>
         <div class="kv"><span>Atendido por</span><strong><?= e($v['vendedor']) ?></strong></div>
     </div>
-    <table class="table">
+    <div class="table-wrap"><table class="table">
         <thead><tr><th>Cant.</th><th>Descripción</th><th style="text-align:right">P. unit.</th><th style="text-align:right">Subtotal</th></tr></thead>
         <tbody>
         <?php foreach ($detalle as $d): ?>
@@ -48,7 +48,7 @@ $cambio = $v['monto_recibido'] !== null ? (float) $v['monto_recibido'] - (float)
         <?php endforeach; ?>
         <tr class="total-row"><td colspan="3" style="text-align:right"><strong>TOTAL</strong></td><td style="text-align:right" class="mono"><strong style="font-size:17px"><?= bs($v['total']) ?></strong></td></tr>
         </tbody>
-    </table>
+    </table></div>
     <div class="kv-list mt">
         <div class="kv"><span>Método de pago</span><strong><?= e($v['metodo']) ?></strong></div>
         <?php if ($v['monto_recibido'] !== null): ?>

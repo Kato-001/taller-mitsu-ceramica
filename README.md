@@ -9,7 +9,8 @@ Sistema web para un taller de cerámica de Santa Cruz (Bolivia) que **dicta clas
 | **Docente** | M.Sc. Ing. Angélica Garzón Cuéllar |
 | **Integrantes** | Aquise Huanca Camila · Baqueros Hurtado Marco Antonio Junior · Estaca Paco Sergio · Miranda Soria Mauricio · Santeyana Durán Sarah Nicol |
 | **Metodología** | Proceso Unificado (PUDS) en 4 ciclos · UML |
-| **Sistema en línea** | _(se completa con la URL de Vercel)_ |
+| **Sistema en línea** | https://taller-mitsu-ceramica.vercel.app |
+| **Repositorio** | https://github.com/Kato-001/taller-mitsu-ceramica |
 
 ---
 
