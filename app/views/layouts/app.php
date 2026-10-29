@@ -13,6 +13,8 @@ $menu = [
         ['/portal', 'Inicio', 'inicio', 'portal.alumno'],
         ['/portal/reservar', 'Reservar clase', 'calendario-mas', 'portal.alumno'],
         ['/portal/perfil', 'Mi perfil', 'cuenta', 'portal.alumno'],
+        ['/tienda', 'Tienda', 'tienda', 'portal.alumno'],
+        ['/mis-pedidos', 'Mis compras', 'carrito', 'portal.alumno'],
     ],
     'General' => [
         ['/panel', 'Panel', 'panel', 'panel.ver'],
@@ -28,6 +30,7 @@ $menu = [
     'Ventas' => [
         ['/ventas/nueva', 'Vender', 'carrito', 'ventas.registrar'],
         ['/ventas', 'Ventas', 'recibo', 'ventas.registrar', 'ventas.anular'],
+        ['/pedidos', 'Pedidos web', 'paquete', 'pedidos.gestionar'],
         ['/caja', 'Caja', 'caja', 'caja.gestionar'],
         ['/piezas', 'Piezas de cerámica', 'vasija', 'piezas.gestionar'],
         ['/clientes', 'Clientes', 'usuarios', 'clientes.gestionar'],
@@ -44,7 +47,7 @@ $menu = [
         ['/bitacora', 'Bitácora', 'bitacora', 'bitacora.ver'],
     ],
 ];
-$exactas = ['/portal', '/ventas', '/clases', '/piezas', '/compras', '/materiales', '/alumnos'];
+$exactas = ['/pedidos', '/tienda', '/portal', '/ventas', '/clases', '/piezas', '/compras', '/materiales', '/alumnos'];
 $activo = function (string $destino) use ($ruta, $exactas): bool {
     if (in_array($destino, $exactas, true)) {
         return $ruta === $destino || (str_starts_with($ruta, $destino . '/') && !in_array($ruta, ['/ventas/nueva', '/portal/reservar', '/portal/perfil', '/compras/nueva'], true));

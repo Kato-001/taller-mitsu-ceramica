@@ -7,7 +7,7 @@ declare(strict_types=1);
 
 final class Rol
 {
-    public const DEL_SISTEMA = ['ADMINISTRADOR', 'ADMINISTRATIVO', 'MAESTRA', 'ALUMNO'];
+    public const DEL_SISTEMA = ['ADMINISTRADOR', 'ADMINISTRATIVO', 'MAESTRA', 'ALUMNO', 'CLIENTE'];
 
     /** Permisos que el ADMINISTRADOR nunca pierde (evita quedarse sin acceso). */
     public const PERMISOS_ADMIN_FIJOS = ['usuarios.gestionar', 'roles.gestionar'];

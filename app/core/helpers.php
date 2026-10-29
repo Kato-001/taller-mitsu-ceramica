@@ -41,6 +41,19 @@ function volver(string $porDefecto = '/'): never
     redirect($ruta . ($query ? "?$query" : ''));
 }
 
+/** Vuelve a la página anterior solo si es de este mismo sitio. */
+function volverSeguro(string $porDefecto): string
+{
+    $ref = $_SERVER['HTTP_REFERER'] ?? '';
+    $host = parse_url($ref, PHP_URL_HOST);
+    if ($host && $host !== ($_SERVER['HTTP_HOST'] ?? '') && $host !== parse_url('//' . ($_SERVER['HTTP_HOST'] ?? ''), PHP_URL_HOST)) {
+        return $porDefecto;
+    }
+    $ruta = parse_url($ref, PHP_URL_PATH) ?: $porDefecto;
+    $q = parse_url($ref, PHP_URL_QUERY);
+    return $ruta . ($q ? "?$q" : '');
+}
+
 function json_response(array $datos, int $codigo = 200): never
 {
     http_response_code($codigo);
@@ -233,6 +246,9 @@ const ESTADOS = [
     'ANULADA'    => ['Anulada', 'badge-danger'],
     'ABIERTA'    => ['Abierta', 'badge-ok'],
     'CERRADA'    => ['Cerrada', 'badge-off'],
+    'PENDIENTE'  => ['Pendiente', 'badge-warn'],
+    'APROBADO'   => ['Aprobado', 'badge-ok'],
+    'RECHAZADO'  => ['Rechazado', 'badge-danger'],
 ];
 
 function badge_estado_op(string $codigo): string
@@ -241,7 +257,7 @@ function badge_estado_op(string $codigo): string
     return badge($nombre, $clase);
 }
 
-const NOMBRES_ROL = ['ADMINISTRADOR' => 'Administrador', 'ADMINISTRATIVO' => 'Administrativo', 'MAESTRA' => 'Maestra', 'ALUMNO' => 'Alumno'];
+const NOMBRES_ROL = ['ADMINISTRADOR' => 'Administrador', 'ADMINISTRATIVO' => 'Administrativo', 'MAESTRA' => 'Maestra', 'ALUMNO' => 'Alumno', 'CLIENTE' => 'Cliente'];
 
 function nombre_rol(?string $rol): string
 {
@@ -250,7 +266,7 @@ function nombre_rol(?string $rol): string
 
 function badge_rol(?string $rol): string
 {
-    $clase = ['ADMINISTRADOR' => 'badge-accent', 'ADMINISTRATIVO' => 'badge-warn', 'MAESTRA' => 'badge-primary', 'ALUMNO' => 'badge-info'][$rol] ?? 'badge-off';
+    $clase = ['ADMINISTRADOR' => 'badge-accent', 'ADMINISTRATIVO' => 'badge-warn', 'MAESTRA' => 'badge-primary', 'ALUMNO' => 'badge-info', 'CLIENTE' => 'badge-ok'][$rol] ?? 'badge-off';
     return badge(nombre_rol($rol), $clase, false);
 }
 

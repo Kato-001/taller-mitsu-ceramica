@@ -7,7 +7,8 @@ $p = $pieza;
 $titulo = $p['nombre'];
 $foto = Pieza::foto($p);
 $tipos = ['PRODUCCION' => ['Producción', 'badge-ok'], 'VENTA' => ['Venta', 'badge-info'], 'ANULACION' => ['Venta anulada', 'badge-accent'],
-          'AJUSTE_MAS' => ['Ajuste +', 'badge-accent'], 'AJUSTE_MENOS' => ['Ajuste −', 'badge-warn']];
+          'AJUSTE_MAS' => ['Ajuste +', 'badge-accent'], 'AJUSTE_MENOS' => ['Ajuste −', 'badge-warn'],
+          'VENTA_WEB' => ['Venta en línea', 'badge-info'], 'DEVOLUCION_WEB' => ['Pedido web cancelado', 'badge-accent']];
 ?>
 <div class="page-head">
     <div>
@@ -26,13 +27,13 @@ $tipos = ['PRODUCCION' => ['Producción', 'badge-ok'], 'VENTA' => ['Venta', 'bad
                 <table class="table">
                     <thead><tr><th>Fecha</th><th>Tipo</th><th style="text-align:right">Cant.</th><th style="text-align:right">Saldo</th><th>Motivo</th></tr></thead>
                     <tbody>
-                    <?php foreach ($movimientos as $mv): $entra = in_array($mv['tipo'], ['PRODUCCION', 'ANULACION', 'AJUSTE_MAS'], true); ?>
+                    <?php foreach ($movimientos as $mv): $entra = in_array($mv['tipo'], ['PRODUCCION', 'ANULACION', 'AJUSTE_MAS', 'DEVOLUCION_WEB'], true); ?>
                         <tr>
                             <td class="mono" style="white-space:nowrap"><?= e(date('d/m/Y H:i', strtotime($mv['fecha']))) ?></td>
                             <td><?= badge($tipos[$mv['tipo']][0], $tipos[$mv['tipo']][1], false) ?></td>
                             <td style="text-align:right;color:<?= $entra ? 'var(--ok)' : 'var(--danger)' ?>" class="mono"><?= $entra ? '+' : '−' ?><?= (int) $mv['cantidad'] ?></td>
                             <td style="text-align:right" class="mono"><strong><?= (int) $mv['stock_resultante'] ?></strong></td>
-                            <td><?= $mv['venta_id'] ? '<a href="' . e(url('/ventas/ver', ['id' => $mv['venta_id']])) . '">' . e($mv['motivo']) . '</a>' : e($mv['motivo']) ?><div class="faint" style="font-size:12px"><?= e($mv['usuario']) ?></div></td>
+                            <td><?= $mv['venta_id'] ? '<a href="' . e(url('/ventas/ver', ['id' => $mv['venta_id']])) . '">' . e($mv['motivo']) . '</a>' : ($mv['pedido_id'] ? '<a href="' . e(url('/pedidos/ver', ['id' => $mv['pedido_id']])) . '">' . e($mv['motivo']) . '</a>' : e($mv['motivo'])) ?><div class="faint" style="font-size:12px"><?= e($mv['usuario']) ?></div></td>
                         </tr>
                     <?php endforeach; ?>
                     </tbody>

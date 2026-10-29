@@ -26,6 +26,7 @@ final class AppException extends RuntimeException
             '23503' => 'No se puede completar: el registro está relacionado con otros datos.',
             '23514' => 'Algún dato no cumple las reglas permitidas. Revise el formulario.',
             '22P02', '22007', '22008', '22003' => 'Algún dato tiene un formato inválido.',
+            '22001' => 'Algún dato es demasiado largo.',
             default => null,
         };
 

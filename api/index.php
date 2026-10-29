@@ -13,7 +13,7 @@ require __DIR__ . '/../app/bootstrap.php';
 $r = new Router();
 
 // --- Ciclo I · P1 Seguridad y configuración ---------------------------
-$r->get('/', [AuthController::class, 'inicio'])
+$r->get('/', [TiendaController::class, 'inicio'])
   ->get('/login', [AuthController::class, 'formulario'])                       // CU01
   ->post('/login', [AuthController::class, 'ingresar'])
   ->post('/salir', [AuthController::class, 'salir'])
@@ -107,6 +107,33 @@ $r->get('/materiales', [InventarioController::class, 'materiales'])            /
   ->get('/caja', [VentaController::class, 'caja'])                             // CU19
   ->post('/caja/abrir', [VentaController::class, 'abrirCaja'])
   ->post('/caja/cerrar', [VentaController::class, 'cerrarCaja']);
+
+// --- Ciclo III (ampliación) · P4 Tienda en línea y pasarela de pago -----
+$r->get('/tienda', [TiendaController::class, 'catalogo'])                     // CU20
+  ->get('/tienda/pieza', [TiendaController::class, 'pieza'])
+  ->get('/tienda/carrito', [TiendaController::class, 'verCarrito'])
+  ->post('/tienda/carrito/agregar', [TiendaController::class, 'agregar'])
+  ->post('/tienda/carrito/actualizar', [TiendaController::class, 'actualizar'])
+  ->get('/tienda/checkout', [TiendaController::class, 'checkout'])
+  ->post('/tienda/checkout', [TiendaController::class, 'confirmar'])
+  ->get('/tienda/ingresar', [AuthController::class, 'ingresarTienda'])
+  ->get('/tienda/registro', [TiendaController::class, 'registro'])
+  ->post('/tienda/registro', [TiendaController::class, 'registrar'])
+  ->get('/auth/google', [GoogleController::class, 'iniciar'])
+  ->get('/auth/google/callback', [GoogleController::class, 'callback'])
+  ->get('/mis-pedidos', [TiendaController::class, 'misPedidos'])
+  ->get('/mis-pedidos/ver', [TiendaController::class, 'verPedido'])
+  ->post('/mis-pedidos/cancelar', [TiendaController::class, 'cancelarPedido'])
+  ->get('/pago', [PagoController::class, 'pasarela'])                          // CU21
+  ->post('/pago/tarjeta', [PagoController::class, 'tarjeta'])
+  ->post('/pago/qr', [PagoController::class, 'qr'])
+  ->get('/pago/paypal', [PagoController::class, 'paypal'])
+  ->post('/pago/paypal', [PagoController::class, 'confirmarPaypal'])
+  ->get('/pedidos', [PedidoController::class, 'index'])                        // CU22
+  ->get('/pedidos/ver', [PedidoController::class, 'ver'])
+  ->post('/pedidos/verificar-qr', [PedidoController::class, 'verificarQr'])
+  ->post('/pedidos/entregar', [PedidoController::class, 'entregar'])
+  ->post('/pedidos/cancelar', [PedidoController::class, 'cancelar']);
 
 // Cabeceras de seguridad básicas
 header('X-Content-Type-Options: nosniff');

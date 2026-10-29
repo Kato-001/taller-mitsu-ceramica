@@ -23,9 +23,12 @@ Contraseñas **inventadas solo para la demostración** (no son de personas reale
 | Administrador | `admin@mitsu.test` | `Admin2026!` | Todo: usuarios, roles, bitácora, configuración, talleres, maestras, inventario, ventas y anulaciones |
 | Administrativo | `ventas@mitsu.test` | `Ventas2026!` | Reservas, alumnos, asistencia, materiales, compras, piezas, ventas y caja |
 | Maestra | `maestra@mitsu.test` | `Maestra2026!` | Sus clases y la asistencia de sus alumnos |
-| Alumno | `alumno@mitsu.test` | `Alumno2026!` | Portal: reservar y cancelar clases, ver su historial |
+| Alumno | `alumno@mitsu.test` | `Alumno2026!` | Portal: reservar y cancelar clases, ver su historial, comprar en la tienda |
+| Cliente | `cliente@mitsu.test` | `Cliente2026!` | Tienda en línea: carrito, pago con QR, tarjeta o PayPal, sus pedidos y comprobantes |
 
-Cualquier persona puede crear su cuenta de alumno en **/registro**.
+La página principal (`/`) es la **tienda pública**: cualquier visitante ve las piezas y las clases sin iniciar sesión. Para pagar se ingresa con correo y contraseña (o con Google cuando se configure) y el comprobante llega al correo. Las cuentas de alumno se crean en **/registro** y las de cliente en **/tienda/registro**.
+
+**Pasarela de pago (modo demostración, sin cobro real):** QR bancario del taller (el taller confirma el depósito), tarjeta (`4242 4242 4242 4242` aprobada · `4000 0000 0000 0002` rechazada, cualquier fecha futura y CVV) y PayPal (sandbox simulado). De la tarjeta solo se guardan la marca y los 4 últimos dígitos.
 
 ---
 
@@ -35,8 +38,8 @@ Cualquier persona puede crear su cuenta de alumno en **/registro**.
 |---|---|---|---|
 | **I** | P1 Seguridad y configuración | CU01 Iniciar/cerrar sesión · CU02 Recuperar contraseña · CU03 Gestionar usuarios · CU04 Roles y permisos · CU05 Bitácora · CU06 Configuración y catálogos | ✅ |
 | **II** | P2 Clases y reservas | CU07 Maestras · CU08 Talleres · CU09 Horarios y calendario · CU10 Reservar clase · CU11 Asistencia · CU12 Alumnos y portal | ✅ |
-| **III** | P3 Inventario y compras · P4 Ventas y caja | CU13 Materiales · CU14 Proveedores · CU15 Compras · CU16 Consumo, merma y alertas · CU17 Piezas · CU18 Venta en caja · CU19 Caja y arqueo | ✅ |
-| **IV** | P5 Cafetería · P6 Cobros · P7 Reportes | CU20 Menú · CU21 Comandas · CU22 Mensualidades y morosidad · CU23 Pedidos personalizados · CU24 Notificaciones · CU25 Reportes | Pendiente |
+| **III** | P3 Inventario y compras · P4 Ventas, caja y tienda | CU13 Materiales · CU14 Proveedores · CU15 Compras · CU16 Consumo, merma y alertas · CU17 Piezas · CU18 Venta en caja · CU19 Caja y arqueo · CU20 Comprar en la tienda en línea · CU21 Pagar en línea (QR, tarjeta, PayPal) · CU22 Gestionar pedidos web | ✅ |
+| **IV** | P5 Cafetería · P6 Cobros · P7 Reportes | CU23 Menú · CU24 Comandas · CU25 Mensualidades y morosidad · CU26 Pedidos personalizados · CU27 Notificaciones · CU28 Reportes | Pendiente |
 
 ```mermaid
 flowchart LR
@@ -113,7 +116,7 @@ cp .env.example .env            # en Windows: copy .env.example .env
 # Complete DATABASE_URL (usuario mitsu_app) y DB_OWNER_URL (dueño del esquema)
 
 # Instalar la base de datos (en este orden)
-php Bakend/database/ejecutar.php 01_esquema.sql 02_reglas_negocio.sql 03_datos_iniciales.sql 06_procedimientos_triggers.sql 04_usuario_app.sql
+php Bakend/database/ejecutar.php 01_esquema.sql 02_reglas_negocio.sql 03_datos_iniciales.sql 06_procedimientos_triggers.sql 04_usuario_app.sql 07_tienda_pasarela.sql
 
 # Levantar el sistema
 php -S localhost:8000 router.php
@@ -128,6 +131,7 @@ Con el servidor local levantado:
 ```bash
 php Docs/pruebas/probar_rutas.php   # todas las pantallas con cada rol + accesos prohibidos (403)
 php Docs/pruebas/probar_flujos.php  # ventas, anulación, compras, reservas, asistencia y validaciones
+php Docs/pruebas/probar_tienda.php  # tienda pública, carrito, pasarela (QR, tarjeta, PayPal) y pedidos web
 ```
 
 ### Variables de entorno en Vercel
@@ -135,7 +139,8 @@ php Docs/pruebas/probar_flujos.php  # ventas, anulación, compras, reservas, asi
 | Variable | Valor |
 |---|---|
 | `DATABASE_URL` | `postgresql://mitsu_app.<ref>:<clave>@aws-1-sa-east-1.pooler.supabase.com:6543/postgres?sslmode=require` |
-| `SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`, `SMTP_PASS`, `SMTP_FROM_NAME` | Gmail del taller con **contraseña de aplicación** (para recuperar contraseña) |
+| `SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`, `SMTP_PASS`, `SMTP_FROM_NAME` | Gmail del taller con **contraseña de aplicación** (recuperar contraseña y enviar comprobantes) |
+| `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET` | Credenciales OAuth de Google Cloud para "Continuar con Google" (URI de redirección: `https://<dominio>/auth/google/callback`) |
 
 > Las claves reales **nunca** se suben a GitHub: van en `.env` (ignorado por Git) y en el panel de Vercel.
 

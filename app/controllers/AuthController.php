@@ -7,9 +7,13 @@ declare(strict_types=1);
 
 final class AuthController extends Controlador
 {
-    public function inicio(): void
+    /** Ingreso desde la tienda (mismo formulario, con la opción de Google). */
+    public function ingresarTienda(): void
     {
-        redirect(Auth::usuario() ? Auth::inicio() : '/login');
+        if (Auth::usuario()) {
+            redirect(TiendaController::destino(Auth::inicio()));
+        }
+        $this->vista('Tienda/ingresar', ['google' => GoogleController::configurado()], 'tienda');
     }
 
     public function formulario(): void
@@ -28,16 +32,16 @@ final class AuthController extends Controlador
         $v = new Validator(['correo' => $correo, 'password' => $password]);
         $v->requerido('correo', 'El correo')->email('correo')->max('correo', 120)
           ->requerido('password', 'La contraseña')->max('password', 100);
-        $this->validar($v, '/login', ['correo' => $correo]);
+        $this->validar($v, entrada('origen') === 'tienda' ? '/tienda/ingresar' : '/login', ['correo' => $correo]);
 
         try {
             Auth::intentar($correo, (string) $password);
         } catch (AppException $e) {
             con_errores([], ['correo' => $correo]);
             flash('error', $e->getMessage());
-            redirect('/login');
+            redirect(entrada('origen') === 'tienda' ? '/tienda/ingresar' : '/login');
         }
-        redirect(Auth::inicio());
+        redirect(TiendaController::destino(Auth::inicio()));
     }
 
     public function salir(): void

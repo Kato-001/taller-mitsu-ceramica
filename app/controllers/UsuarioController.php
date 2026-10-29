@@ -106,6 +106,6 @@ final class UsuarioController extends Controlador
     /** Roles que se crean desde este módulo (maestras y alumnos tienen su propio formulario). */
     private static function rolesAsignables(): array
     {
-        return array_values(array_filter(Rol::todos(true), fn($r) => !in_array($r['nombre'], ['MAESTRA', 'ALUMNO'], true)));
+        return array_values(array_filter(Rol::todos(true), fn($r) => !in_array($r['nombre'], ['MAESTRA', 'ALUMNO', 'CLIENTE'], true)));
     }
 }

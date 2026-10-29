@@ -58,6 +58,16 @@ final class Auth
         return self::usuario();
     }
 
+    /** Inicia la sesión de una cuenta ya verificada por otro medio (ingreso con Google). */
+    public static function iniciarPorId(int $id, string $detalle): void
+    {
+        session_regenerate_id(true);
+        $_SESSION['usuario_id'] = $id;
+        Database::query('update usuario set ultimo_acceso = now() where id = :id', ['id' => $id]);
+        self::$cargado = false;
+        Bitacora::registrar('INICIAR_SESION', 'SEGURIDAD', 'usuario', $id, $detalle);
+    }
+
     /** Usuario de la sesión con su rol, permisos y vínculos (maestra / alumno). */
     public static function usuario(): ?array
     {
@@ -129,7 +139,11 @@ final class Auth
     /** Página de inicio según el rol. */
     public static function inicio(): string
     {
-        return self::puede('portal.alumno') && !self::puede('panel.ver') ? '/portal' : '/panel';
+        return match (true) {
+            self::puede('panel.ver')     => '/panel',
+            self::puede('portal.alumno') => '/portal',
+            default                      => '/tienda',
+        };
     }
 
     /**
@@ -146,7 +160,8 @@ final class Auth
 
     public static function cerrarSesion(): void
     {
-        $_SESSION = [];
+        $carrito = $_SESSION['carrito'] ?? null;   // el carrito de la tienda se conserva
+        $_SESSION = $carrito ? ['carrito' => $carrito] : [];
         if (session_status() === PHP_SESSION_ACTIVE) {
             session_regenerate_id(true);
         }
