@@ -1,0 +1,1155 @@
+{
+ "casos": [
+  {
+   "id": "CU01",
+   "nombre": "Iniciar y cerrar sesión",
+   "ciclo": "I",
+   "paquete": "P1",
+   "actores": [
+    "usr"
+   ],
+   "prioridad": "Alta",
+   "riesgo": "Alto",
+   "proposito": "Permitir que cada usuario entre al sistema con su correo y contraseña, y vea solo las opciones de su rol.",
+   "pre": "El usuario está registrado y activo.",
+   "flujo": [
+    "El usuario abre la página de ingreso.",
+    "Escribe su correo y su contraseña y presiona “Ingresar”.",
+    "El sistema verifica el token CSRF y que la IP no esté bloqueada por intentos fallidos.",
+    "El sistema busca el usuario por correo y compara la contraseña con su hash bcrypt.",
+    "El sistema crea la sesión (guardada en la tabla sesion), registra LOGIN en la bitácora y lo lleva a su inicio: panel, portal del alumno o tienda.",
+    "Para salir, el usuario presiona “Cerrar sesión”; el sistema destruye la sesión y registra LOGOUT."
+   ],
+   "alternos": [
+    "4a. Correo o contraseña incorrectos: se registra LOGIN_FALLIDO y se muestra un mensaje genérico.",
+    "3a. Cinco intentos fallidos desde la misma IP en 10 minutos: se bloquea el ingreso temporalmente.",
+    "4b. Usuario inactivo: no puede ingresar."
+   ],
+   "post": "El usuario queda autenticado con los permisos de su rol, o el intento queda registrado.",
+   "ruta": "/login · /salir",
+   "mensajes": 12,
+   "participantes": [
+    {
+     "tipo": "actor",
+     "nombre": "Usuario"
+    },
+    {
+     "tipo": "frm",
+     "nombre": "FrmLogin"
+    },
+    {
+     "tipo": "ctrl",
+     "nombre": "AuthController"
+    },
+    {
+     "tipo": "ent",
+     "nombre": "Usuario"
+    },
+    {
+     "tipo": "ent",
+     "nombre": "Bitacora"
+    }
+   ]
+  },
+  {
+   "id": "CU02",
+   "nombre": "Recuperar contraseña",
+   "ciclo": "I",
+   "paquete": "P1",
+   "actores": [
+    "usr"
+   ],
+   "prioridad": "Media",
+   "riesgo": "Medio",
+   "proposito": "Permitir que un usuario que olvidó su contraseña la cambie con un código de un solo uso.",
+   "pre": "El usuario tiene un correo registrado.",
+   "flujo": [
+    "El usuario elige “¿Olvidaste tu contraseña?” y escribe su correo.",
+    "El sistema genera un código de 6 dígitos con vencimiento de 15 minutos y guarda solo su hash.",
+    "El sistema envía el código por correo (en modo demostración lo muestra en pantalla).",
+    "El usuario escribe el código y la nueva contraseña dos veces.",
+    "El sistema valida el código y la fortaleza de la contraseña, la actualiza y anula el código."
+   ],
+   "alternos": [
+    "1a. El correo no existe: se muestra el mismo mensaje para no revelar qué correos están registrados.",
+    "4a. Código incorrecto: se suma un intento; al quinto el código se anula.",
+    "2a. Demasiadas solicitudes desde la misma IP: se pide esperar."
+   ],
+   "post": "La contraseña queda cambiada y el código no puede volver a usarse.",
+   "ruta": "/recuperar · /recuperar/codigo",
+   "mensajes": 16,
+   "participantes": [
+    {
+     "tipo": "actor",
+     "nombre": "Usuario"
+    },
+    {
+     "tipo": "frm",
+     "nombre": "FrmRecuperar"
+    },
+    {
+     "tipo": "ctrl",
+     "nombre": "RecuperacionController"
+    },
+    {
+     "tipo": "ent",
+     "nombre": "Recuperacion"
+    },
+    {
+     "tipo": "ent",
+     "nombre": "Usuario"
+    },
+    {
+     "tipo": "ent",
+     "nombre": "Bitacora"
+    }
+   ]
+  },
+  {
+   "id": "CU03",
+   "nombre": "Gestionar usuarios",
+   "ciclo": "I",
+   "paquete": "P1",
+   "actores": [
+    "adm"
+   ],
+   "prioridad": "Alta",
+   "riesgo": "Medio",
+   "proposito": "Registrar, editar, activar y desactivar las cuentas del personal y asignarles un rol.",
+   "pre": "El administrador inició sesión y tiene el permiso usuarios.gestionar.",
+   "flujo": [
+    "El administrador abre “Usuarios” y ve la lista con búsqueda, filtros y paginación.",
+    "Presiona “Nuevo usuario” y llena nombre, apellido, correo, teléfono, rol y contraseña.",
+    "El sistema valida los datos (formato, correo único sin importar mayúsculas o tildes, contraseña segura).",
+    "El sistema guarda el usuario con la contraseña cifrada y lo registra en la bitácora.",
+    "Para dar de baja, el administrador cambia el estado a INACTIVO (no se borra)."
+   ],
+   "alternos": [
+    "3a. Correo repetido: se muestra “Ese correo ya está registrado”.",
+    "5a. Intento de desactivar al último administrador activo: lo impide un trigger de la base de datos.",
+    "5b. Intento de desactivarse a sí mismo: el sistema lo impide."
+   ],
+   "post": "El usuario queda registrado o actualizado y la acción queda en la bitácora.",
+   "ruta": "/usuarios",
+   "mensajes": 14,
+   "participantes": [
+    {
+     "tipo": "actor",
+     "nombre": "Administrador"
+    },
+    {
+     "tipo": "frm",
+     "nombre": "FrmUsuario"
+    },
+    {
+     "tipo": "ctrl",
+     "nombre": "UsuarioController"
+    },
+    {
+     "tipo": "ent",
+     "nombre": "Usuario"
+    },
+    {
+     "tipo": "ent",
+     "nombre": "Rol"
+    },
+    {
+     "tipo": "ent",
+     "nombre": "Bitacora"
+    }
+   ]
+  },
+  {
+   "id": "CU04",
+   "nombre": "Gestionar roles y permisos",
+   "ciclo": "I",
+   "paquete": "P1",
+   "actores": [
+    "adm"
+   ],
+   "prioridad": "Alta",
+   "riesgo": "Alto",
+   "proposito": "Crear roles y marcar qué permisos tiene cada uno, para controlar lo que puede hacer cada persona.",
+   "pre": "El administrador tiene el permiso roles.gestionar.",
+   "flujo": [
+    "El administrador abre “Roles y permisos”.",
+    "Elige un rol y ve la matriz de permisos agrupada por paquete.",
+    "Marca o desmarca permisos y presiona “Guardar permisos”.",
+    "El sistema reemplaza los permisos del rol en una transacción y registra el cambio.",
+    "También puede crear un rol nuevo o desactivarlo."
+   ],
+   "alternos": [
+    "3a. Se intenta quitar a ADMINISTRADOR un permiso de seguridad: el sistema lo impide.",
+    "5a. Se intenta desactivar un rol del sistema: el sistema lo impide."
+   ],
+   "post": "El rol queda con los permisos elegidos; los usuarios de ese rol los obtienen en su siguiente petición.",
+   "ruta": "/roles",
+   "mensajes": 11,
+   "participantes": [
+    {
+     "tipo": "actor",
+     "nombre": "Administrador"
+    },
+    {
+     "tipo": "frm",
+     "nombre": "FrmRoles"
+    },
+    {
+     "tipo": "ctrl",
+     "nombre": "RolController"
+    },
+    {
+     "tipo": "ent",
+     "nombre": "Rol"
+    },
+    {
+     "tipo": "ent",
+     "nombre": "Bitacora"
+    }
+   ]
+  },
+  {
+   "id": "CU05",
+   "nombre": "Consultar bitácora",
+   "ciclo": "I",
+   "paquete": "P1",
+   "actores": [
+    "adm"
+   ],
+   "prioridad": "Media",
+   "riesgo": "Bajo",
+   "proposito": "Revisar quién hizo cada acción importante, cuándo y desde qué IP.",
+   "pre": "El administrador tiene el permiso bitacora.ver.",
+   "flujo": [
+    "El administrador abre “Bitácora”.",
+    "Filtra por usuario, módulo, acción y rango de fechas.",
+    "El sistema muestra los registros paginados, del más reciente al más antiguo."
+   ],
+   "alternos": [
+    "2a. No hay registros con esos filtros: se muestra un mensaje vacío."
+   ],
+   "post": "Ninguna: la bitácora es de solo lectura (no se edita ni se borra).",
+   "ruta": "/bitacora",
+   "mensajes": 8,
+   "participantes": [
+    {
+     "tipo": "actor",
+     "nombre": "Administrador"
+    },
+    {
+     "tipo": "frm",
+     "nombre": "FrmBitacora"
+    },
+    {
+     "tipo": "ctrl",
+     "nombre": "SistemaController"
+    },
+    {
+     "tipo": "ent",
+     "nombre": "Bitacora"
+    }
+   ]
+  },
+  {
+   "id": "CU06",
+   "nombre": "Gestionar configuración y catálogos",
+   "ciclo": "I",
+   "paquete": "P1",
+   "actores": [
+    "adm"
+   ],
+   "prioridad": "Media",
+   "riesgo": "Bajo",
+   "proposito": "Mantener los datos del taller y los catálogos base: categorías, unidades de medida y métodos de pago.",
+   "pre": "El administrador tiene el permiso configuracion.gestionar.",
+   "flujo": [
+    "El administrador abre “Configuración”.",
+    "Edita los datos del taller (nombre, ciudad, horas de cancelación, etc.) y guarda.",
+    "En la pestaña de catálogos agrega o edita una categoría, unidad o método de pago.",
+    "El sistema valida que el nombre no se repita y guarda el cambio en la bitácora."
+   ],
+   "alternos": [
+    "4a. Nombre repetido (sin importar mayúsculas o tildes): se avisa.",
+    "4b. Desactivar un elemento usado: queda inactivo y deja de ofrecerse, sin borrar el historial."
+   ],
+   "post": "Los valores quedan disponibles para el resto del sistema.",
+   "ruta": "/configuracion",
+   "mensajes": 10,
+   "participantes": [
+    {
+     "tipo": "actor",
+     "nombre": "Administrador"
+    },
+    {
+     "tipo": "frm",
+     "nombre": "FrmConfiguracion"
+    },
+    {
+     "tipo": "ctrl",
+     "nombre": "SistemaController"
+    },
+    {
+     "tipo": "ent",
+     "nombre": "Configuracion"
+    },
+    {
+     "tipo": "ent",
+     "nombre": "Bitacora"
+    }
+   ]
+  },
+  {
+   "id": "CU07",
+   "nombre": "Gestionar maestras",
+   "ciclo": "II",
+   "paquete": "P2",
+   "actores": [
+    "adm"
+   ],
+   "prioridad": "Alta",
+   "riesgo": "Medio",
+   "proposito": "Registrar a las maestras del taller con su cuenta de acceso y su especialidad.",
+   "pre": "El administrador tiene el permiso maestras.gestionar.",
+   "flujo": [
+    "El administrador abre “Maestras” y presiona “Nueva maestra”.",
+    "Llena los datos personales, el correo de acceso, la especialidad y una breve reseña.",
+    "El sistema crea en una sola transacción el usuario con rol MAESTRA y su ficha de maestra.",
+    "La maestra ya puede ingresar y ver sus clases."
+   ],
+   "alternos": [
+    "3a. Correo repetido: no se guarda nada (la transacción se revierte).",
+    "4a. Desactivar una maestra con horarios activos: el sistema avisa que primero se reasignen."
+   ],
+   "post": "La maestra queda registrada con su cuenta.",
+   "ruta": "/maestras",
+   "mensajes": 9,
+   "participantes": [
+    {
+     "tipo": "actor",
+     "nombre": "Administrador"
+    },
+    {
+     "tipo": "frm",
+     "nombre": "FrmMaestra"
+    },
+    {
+     "tipo": "ctrl",
+     "nombre": "MaestraController"
+    },
+    {
+     "tipo": "ent",
+     "nombre": "Maestra"
+    },
+    {
+     "tipo": "ent",
+     "nombre": "Usuario"
+    },
+    {
+     "tipo": "ent",
+     "nombre": "Bitacora"
+    }
+   ]
+  },
+  {
+   "id": "CU08",
+   "nombre": "Gestionar talleres",
+   "ciclo": "II",
+   "paquete": "P2",
+   "actores": [
+    "adm"
+   ],
+   "prioridad": "Alta",
+   "riesgo": "Medio",
+   "proposito": "Registrar los talleres que ofrece Mitsü con su nivel, público, duración, cupo y precios.",
+   "pre": "El administrador tiene el permiso talleres.gestionar.",
+   "flujo": [
+    "El administrador abre “Talleres”.",
+    "Llena nombre, nivel, público (niños, jóvenes, adultos), cupo, precio por clase y mensual.",
+    "El sistema valida rangos (cupo de 1 a 30, precios positivos) y guarda."
+   ],
+   "alternos": [
+    "3a. Nombre repetido: se avisa.",
+    "3b. Cupo o precio fuera de rango: se marca el campo."
+   ],
+   "post": "El taller queda disponible para crear horarios.",
+   "ruta": "/talleres",
+   "mensajes": 8,
+   "participantes": [
+    {
+     "tipo": "actor",
+     "nombre": "Administrador"
+    },
+    {
+     "tipo": "frm",
+     "nombre": "FrmTaller"
+    },
+    {
+     "tipo": "ctrl",
+     "nombre": "TallerController"
+    },
+    {
+     "tipo": "ent",
+     "nombre": "Taller"
+    },
+    {
+     "tipo": "ent",
+     "nombre": "Bitacora"
+    }
+   ]
+  },
+  {
+   "id": "CU09",
+   "nombre": "Gestionar horarios y calendario",
+   "ciclo": "II",
+   "paquete": "P2",
+   "actores": [
+    "adm",
+    "admv"
+   ],
+   "prioridad": "Alta",
+   "riesgo": "Alto",
+   "proposito": "Definir los horarios semanales de cada taller y generar las clases concretas del calendario.",
+   "pre": "Existen talleres y maestras activos.",
+   "flujo": [
+    "El administrador crea un horario: taller, maestra, día, hora de inicio y fin, cupo.",
+    "La base de datos impide que la misma maestra tenga dos horarios que se crucen (restricción EXCLUDE).",
+    "El administrativo abre el calendario y presiona “Generar clases” para un rango de fechas.",
+    "El sistema crea una sesión de clase por cada horario y fecha que coincida, sin duplicar.",
+    "Puede cancelar una clase (se cancelan sus reservas) o cambiar la maestra de una clase."
+   ],
+   "alternos": [
+    "2a. Horario cruzado: “La maestra ya tiene otro horario que se cruza ese día”.",
+    "4a. Las clases ya existían: no se duplican y se informa cuántas se crearon."
+   ],
+   "post": "El calendario muestra las clases con su cupo disponible.",
+   "ruta": "/horarios · /clases",
+   "mensajes": 9,
+   "participantes": [
+    {
+     "tipo": "actor",
+     "nombre": "Administrativo"
+    },
+    {
+     "tipo": "frm",
+     "nombre": "FrmCalendario"
+    },
+    {
+     "tipo": "ctrl",
+     "nombre": "ClaseController"
+    },
+    {
+     "tipo": "ent",
+     "nombre": "Sesion"
+    },
+    {
+     "tipo": "ent",
+     "nombre": "Horario"
+    },
+    {
+     "tipo": "ent",
+     "nombre": "Bitacora"
+    }
+   ]
+  },
+  {
+   "id": "CU10",
+   "nombre": "Reservar clase",
+   "ciclo": "II",
+   "paquete": "P2",
+   "actores": [
+    "alu",
+    "admv"
+   ],
+   "prioridad": "Alta",
+   "riesgo": "Alto",
+   "proposito": "Que el alumno (desde su portal) o el administrativo (en recepción) reserve un lugar en una clase.",
+   "pre": "Hay una clase programada con cupo y el alumno está activo.",
+   "flujo": [
+    "El alumno abre “Reservar” y ve las clases próximas con los lugares libres.",
+    "Elige una clase y confirma.",
+    "El sistema bloquea la clase (FOR UPDATE), verifica cupo, fecha y que no esté repetida.",
+    "El sistema guarda la reserva y muestra el mensaje de confirmación.",
+    "El alumno puede cancelar su reserva hasta 12 horas antes."
+   ],
+   "alternos": [
+    "3a. Sin cupo: “La clase ya no tiene lugares”.",
+    "3b. Ya reservada: se avisa.",
+    "5a. Fuera del plazo de cancelación: solo el administrativo puede cancelarla."
+   ],
+   "post": "La reserva queda registrada y el cupo disponible baja en uno.",
+   "ruta": "/portal/reservar · /clases/reservar",
+   "mensajes": 15,
+   "participantes": [
+    {
+     "tipo": "actor",
+     "nombre": "Alumno"
+    },
+    {
+     "tipo": "frm",
+     "nombre": "FrmReservar"
+    },
+    {
+     "tipo": "ctrl",
+     "nombre": "PortalController"
+    },
+    {
+     "tipo": "ent",
+     "nombre": "Sesion"
+    },
+    {
+     "tipo": "ent",
+     "nombre": "Reserva"
+    }
+   ]
+  },
+  {
+   "id": "CU11",
+   "nombre": "Registrar asistencia",
+   "ciclo": "II",
+   "paquete": "P2",
+   "actores": [
+    "mae",
+    "admv"
+   ],
+   "prioridad": "Media",
+   "riesgo": "Medio",
+   "proposito": "Que la maestra marque quién asistió y quién faltó en su clase.",
+   "pre": "La clase es del día o anterior y la maestra es la asignada (o es personal con permiso).",
+   "flujo": [
+    "La maestra abre su panel y elige una clase.",
+    "Ve la lista de alumnos con reserva.",
+    "Marca “Asistió” o “Faltó” en cada uno y guarda.",
+    "El sistema guarda todo en una transacción y marca la clase como realizada."
+   ],
+   "alternos": [
+    "1a. Intenta abrir la clase de otra maestra: el sistema responde 403 (prohibido).",
+    "3a. Clase futura: no se permite registrar asistencia."
+   ],
+   "post": "La asistencia queda registrada y alimenta el porcentaje de asistencia del alumno.",
+   "ruta": "/clases/ver · /clases/asistencia",
+   "mensajes": 12,
+   "participantes": [
+    {
+     "tipo": "actor",
+     "nombre": "Maestra"
+    },
+    {
+     "tipo": "frm",
+     "nombre": "FrmClase"
+    },
+    {
+     "tipo": "ctrl",
+     "nombre": "ClaseController"
+    },
+    {
+     "tipo": "ent",
+     "nombre": "Sesion"
+    },
+    {
+     "tipo": "ent",
+     "nombre": "Reserva"
+    }
+   ]
+  },
+  {
+   "id": "CU12",
+   "nombre": "Gestionar alumnos y portal",
+   "ciclo": "II",
+   "paquete": "P2",
+   "actores": [
+    "admv",
+    "alu"
+   ],
+   "prioridad": "Alta",
+   "riesgo": "Medio",
+   "proposito": "Registrar alumnos (en recepción o por autorregistro) y darles un portal con sus reservas e historial.",
+   "pre": "Ninguna para el autorregistro; permiso alumnos.gestionar para el personal.",
+   "flujo": [
+    "La persona abre “Crear cuenta” y llena sus datos, CI, fecha de nacimiento y contraseña.",
+    "Si es menor de edad, el sistema exige nombre y teléfono del tutor.",
+    "El sistema crea el usuario con rol ALUMNO y su ficha en una transacción.",
+    "El alumno entra a su portal: próximas clases, historial de asistencia y su perfil."
+   ],
+   "alternos": [
+    "2a. Menor sin tutor: se marca el campo.",
+    "3a. CI o correo repetido: se avisa."
+   ],
+   "post": "El alumno queda registrado y puede reservar clases.",
+   "ruta": "/registro · /alumnos · /portal",
+   "mensajes": 12,
+   "participantes": [
+    {
+     "tipo": "actor",
+     "nombre": "Alumno"
+    },
+    {
+     "tipo": "frm",
+     "nombre": "FrmRegistro"
+    },
+    {
+     "tipo": "ctrl",
+     "nombre": "AuthController"
+    },
+    {
+     "tipo": "ent",
+     "nombre": "Alumno"
+    },
+    {
+     "tipo": "ent",
+     "nombre": "Usuario"
+    },
+    {
+     "tipo": "ent",
+     "nombre": "Bitacora"
+    }
+   ]
+  },
+  {
+   "id": "CU13",
+   "nombre": "Gestionar materiales",
+   "ciclo": "III",
+   "paquete": "P3",
+   "actores": [
+    "admv"
+   ],
+   "prioridad": "Alta",
+   "riesgo": "Medio",
+   "proposito": "Registrar los insumos del taller (arcillas, esmaltes, herramientas) con su unidad, stock mínimo y costo.",
+   "pre": "Permiso materiales.gestionar.",
+   "flujo": [
+    "El administrativo abre “Materiales” y ve el stock con alertas de color.",
+    "Registra un material: nombre, categoría, unidad y stock mínimo.",
+    "El sistema guarda el material con stock 0; el stock solo cambia por compras o movimientos (kardex)."
+   ],
+   "alternos": [
+    "2a. Nombre repetido: se avisa.",
+    "3a. Se intenta modificar el stock directamente: lo impide un trigger."
+   ],
+   "post": "El material queda disponible para compras y consumos.",
+   "ruta": "/materiales",
+   "mensajes": 7,
+   "participantes": [
+    {
+     "tipo": "actor",
+     "nombre": "Administrativo"
+    },
+    {
+     "tipo": "frm",
+     "nombre": "FrmMaterial"
+    },
+    {
+     "tipo": "ctrl",
+     "nombre": "InventarioController"
+    },
+    {
+     "tipo": "ent",
+     "nombre": "Material"
+    },
+    {
+     "tipo": "ent",
+     "nombre": "Bitacora"
+    }
+   ]
+  },
+  {
+   "id": "CU14",
+   "nombre": "Gestionar proveedores",
+   "ciclo": "III",
+   "paquete": "P3",
+   "actores": [
+    "admv"
+   ],
+   "prioridad": "Media",
+   "riesgo": "Bajo",
+   "proposito": "Mantener la lista de proveedores con NIT, contacto, teléfono y ciudad.",
+   "pre": "Permiso proveedores.gestionar.",
+   "flujo": [
+    "El administrativo abre “Proveedores”.",
+    "Registra o edita nombre, NIT, contacto, teléfono y ciudad.",
+    "El sistema valida que el nombre y el NIT no se repitan y guarda."
+   ],
+   "alternos": [
+    "3a. NIT repetido: se avisa.",
+    "3b. Desactivar un proveedor con compras: queda inactivo, sus compras se conservan."
+   ],
+   "post": "El proveedor queda disponible para registrar compras.",
+   "ruta": "/proveedores",
+   "mensajes": 8,
+   "participantes": [
+    {
+     "tipo": "actor",
+     "nombre": "Administrativo"
+    },
+    {
+     "tipo": "frm",
+     "nombre": "FrmProveedor"
+    },
+    {
+     "tipo": "ctrl",
+     "nombre": "InventarioController"
+    },
+    {
+     "tipo": "ent",
+     "nombre": "Proveedor"
+    },
+    {
+     "tipo": "ent",
+     "nombre": "Bitacora"
+    }
+   ]
+  },
+  {
+   "id": "CU15",
+   "nombre": "Registrar compras",
+   "ciclo": "III",
+   "paquete": "P3",
+   "actores": [
+    "admv"
+   ],
+   "prioridad": "Alta",
+   "riesgo": "Alto",
+   "proposito": "Registrar la compra de materiales a un proveedor y que el stock y el costo promedio se actualicen solos.",
+   "pre": "Hay proveedores y materiales activos.",
+   "flujo": [
+    "El administrativo abre “Nueva compra” y elige proveedor y fecha.",
+    "Agrega líneas: material, cantidad y costo unitario.",
+    "Presiona “Registrar compra”.",
+    "El sistema llama a fn_registrar_compra: guarda la compra, el detalle y un movimiento de entrada por línea.",
+    "Los triggers suben el stock y recalculan el costo promedio de cada material.",
+    "Si hubo un error, puede anular la compra con motivo; el stock vuelve atrás."
+   ],
+   "alternos": [
+    "2a. Material repetido en el detalle: se avisa.",
+    "6a. Anular dejaría stock negativo: la base de datos lo impide."
+   ],
+   "post": "La compra queda registrada, el kardex tiene los movimientos y el stock está actualizado.",
+   "ruta": "/compras/nueva · /compras/anular",
+   "mensajes": 10,
+   "participantes": [
+    {
+     "tipo": "actor",
+     "nombre": "Administrativo"
+    },
+    {
+     "tipo": "frm",
+     "nombre": "FrmCompra"
+    },
+    {
+     "tipo": "ctrl",
+     "nombre": "CompraController"
+    },
+    {
+     "tipo": "ent",
+     "nombre": "Compra"
+    },
+    {
+     "tipo": "bd",
+     "nombre": "fn_registrar_compra"
+    },
+    {
+     "tipo": "ent",
+     "nombre": "Material"
+    },
+    {
+     "tipo": "ent",
+     "nombre": "Bitacora"
+    }
+   ]
+  },
+  {
+   "id": "CU16",
+   "nombre": "Registrar consumo, merma y alertas de stock",
+   "ciclo": "III",
+   "paquete": "P3",
+   "actores": [
+    "admv"
+   ],
+   "prioridad": "Media",
+   "riesgo": "Medio",
+   "proposito": "Registrar la salida de material por uso en clases, merma o ajuste, y avisar cuando el stock está bajo.",
+   "pre": "El material existe y está activo.",
+   "flujo": [
+    "El administrativo abre el kardex de un material.",
+    "Elige el tipo (consumo, merma, ajuste + o ajuste −), cantidad y motivo.",
+    "El sistema registra el movimiento; el trigger actualiza el stock y guarda el saldo resultante.",
+    "Si el stock queda en o bajo el mínimo, el material aparece en alertas del panel."
+   ],
+   "alternos": [
+    "3a. La salida dejaría stock negativo: “Stock insuficiente”."
+   ],
+   "post": "El kardex refleja el movimiento con usuario, fecha y saldo.",
+   "ruta": "/materiales/kardex · /materiales/movimiento",
+   "mensajes": 13,
+   "participantes": [
+    {
+     "tipo": "actor",
+     "nombre": "Administrativo"
+    },
+    {
+     "tipo": "frm",
+     "nombre": "FrmKardex"
+    },
+    {
+     "tipo": "ctrl",
+     "nombre": "InventarioController"
+    },
+    {
+     "tipo": "ent",
+     "nombre": "Material"
+    },
+    {
+     "tipo": "ent",
+     "nombre": "MovimientoMaterial"
+    }
+   ]
+  },
+  {
+   "id": "CU17",
+   "nombre": "Gestionar piezas de cerámica",
+   "ciclo": "III",
+   "paquete": "P4",
+   "actores": [
+    "admv"
+   ],
+   "prioridad": "Alta",
+   "riesgo": "Medio",
+   "proposito": "Registrar las piezas que se venden con foto, precio y stock, y llevar su producción e historial de precios.",
+   "pre": "Permiso piezas.gestionar.",
+   "flujo": [
+    "El administrativo abre “Piezas” y presiona “Nueva pieza”.",
+    "Llena nombre, categoría, precio, stock mínimo y sube una foto (JPG/PNG/WebP hasta 2 MB).",
+    "El sistema valida que el archivo sea realmente una imagen y guarda la pieza con un código automático.",
+    "Registra la producción (horneada) desde el kardex; el stock sube.",
+    "Si cambia el precio, un trigger lo guarda en el historial de precios."
+   ],
+   "alternos": [
+    "2a. Archivo que no es imagen o es muy grande: se rechaza.",
+    "2b. Precio menor o igual a cero: se marca el campo."
+   ],
+   "post": "La pieza queda en el catálogo y aparece en la tienda en línea si tiene stock.",
+   "ruta": "/piezas",
+   "mensajes": 9,
+   "participantes": [
+    {
+     "tipo": "actor",
+     "nombre": "Administrativo"
+    },
+    {
+     "tipo": "frm",
+     "nombre": "FrmPieza"
+    },
+    {
+     "tipo": "ctrl",
+     "nombre": "PiezaController"
+    },
+    {
+     "tipo": "ent",
+     "nombre": "Pieza"
+    },
+    {
+     "tipo": "ent",
+     "nombre": "HistorialPrecio"
+    },
+    {
+     "tipo": "ent",
+     "nombre": "Bitacora"
+    }
+   ]
+  },
+  {
+   "id": "CU18",
+   "nombre": "Registrar venta en caja",
+   "ciclo": "III",
+   "paquete": "P4",
+   "actores": [
+    "admv",
+    "adm"
+   ],
+   "prioridad": "Alta",
+   "riesgo": "Alto",
+   "proposito": "Vender piezas en el local, emitir la nota de venta y, si hace falta, anularla con motivo.",
+   "pre": "Hay una caja abierta y piezas con stock.",
+   "flujo": [
+    "El administrativo abre “Nueva venta” (punto de venta).",
+    "Busca piezas, las agrega al carrito y elige cliente y método de pago.",
+    "Escribe el monto recibido; el sistema calcula el cambio.",
+    "Presiona “Cobrar”: fn_registrar_venta guarda la venta, copia el precio vigente y descuenta el stock.",
+    "El sistema muestra la nota de venta lista para imprimir.",
+    "El administrador puede anular una venta con motivo; el stock se devuelve."
+   ],
+   "alternos": [
+    "4a. No hay caja abierta: “Abra la caja antes de vender”.",
+    "4b. Stock insuficiente: se indica la pieza.",
+    "3a. Monto recibido menor al total en efectivo: se avisa.",
+    "6a. Una venta anulada no se puede modificar (trigger)."
+   ],
+   "post": "La venta queda registrada, el stock descontado y la nota disponible.",
+   "ruta": "/ventas/nueva · /ventas/anular",
+   "mensajes": 12,
+   "participantes": [
+    {
+     "tipo": "actor",
+     "nombre": "Administrativo"
+    },
+    {
+     "tipo": "frm",
+     "nombre": "FrmPuntoVenta"
+    },
+    {
+     "tipo": "ctrl",
+     "nombre": "VentaController"
+    },
+    {
+     "tipo": "ent",
+     "nombre": "Venta"
+    },
+    {
+     "tipo": "bd",
+     "nombre": "fn_registrar_venta"
+    },
+    {
+     "tipo": "ent",
+     "nombre": "Pieza"
+    },
+    {
+     "tipo": "ent",
+     "nombre": "Bitacora"
+    }
+   ]
+  },
+  {
+   "id": "CU19",
+   "nombre": "Abrir y cerrar caja (arqueo)",
+   "ciclo": "III",
+   "paquete": "P4",
+   "actores": [
+    "admv"
+   ],
+   "prioridad": "Alta",
+   "riesgo": "Medio",
+   "proposito": "Controlar el efectivo del día: abrir caja con un monto inicial y cerrarla comparando lo contado con lo esperado.",
+   "pre": "Permiso caja.gestionar.",
+   "flujo": [
+    "El administrativo abre la caja con el monto inicial.",
+    "Durante el día, cada venta queda ligada a esa caja.",
+    "Al cierre, cuenta el efectivo y escribe el monto declarado.",
+    "El procedimiento sp_cerrar_caja calcula efectivo esperado, otros métodos y la diferencia.",
+    "La caja queda CERRADA y no admite más ventas."
+   ],
+   "alternos": [
+    "1a. Ya hay una caja abierta: el índice único lo impide.",
+    "4a. Diferencia distinta de cero: se registra con observación."
+   ],
+   "post": "La caja queda cerrada con su arqueo.",
+   "ruta": "/caja",
+   "mensajes": 13,
+   "participantes": [
+    {
+     "tipo": "actor",
+     "nombre": "Administrativo"
+    },
+    {
+     "tipo": "frm",
+     "nombre": "FrmCaja"
+    },
+    {
+     "tipo": "ctrl",
+     "nombre": "VentaController"
+    },
+    {
+     "tipo": "ent",
+     "nombre": "Venta"
+    },
+    {
+     "tipo": "bd",
+     "nombre": "sp_cerrar_caja"
+    },
+    {
+     "tipo": "ent",
+     "nombre": "Bitacora"
+    }
+   ]
+  },
+  {
+   "id": "CU20",
+   "nombre": "Comprar en la tienda en línea",
+   "ciclo": "III",
+   "paquete": "P4",
+   "actores": [
+    "vis",
+    "cli",
+    "alu"
+   ],
+   "prioridad": "Alta",
+   "riesgo": "Alto",
+   "proposito": "Que cualquier visitante vea las piezas y arme su carrito, y que al pagar ingrese con su cuenta para recibir el comprobante.",
+   "pre": "Ninguna para ver la tienda; para confirmar el pedido, tener cuenta de cliente o alumno.",
+   "flujo": [
+    "El visitante entra a la página principal: ve las piezas disponibles y las clases.",
+    "Abre una pieza y la agrega al carrito (se guarda en la sesión).",
+    "Presiona “Pagar”: si no ingresó, el sistema le pide ingresar o crear su cuenta y luego lo devuelve al carrito.",
+    "Elige retiro en el taller o envío, su teléfono y una nota.",
+    "El sistema llama a fn_crear_pedido: guarda el pedido y reserva el stock por 30 minutos.",
+    "El sistema lo lleva a la pasarela de pago (CU21).",
+    "El cliente puede ver “Mis pedidos” y cancelar un pedido impago."
+   ],
+   "alternos": [
+    "3a. No tiene cuenta: se registra en /tienda/registro y vuelve al checkout.",
+    "5a. Stock insuficiente: se avisa qué pieza.",
+    "7a. Pedido no pagado en 30 minutos: se cancela solo y el stock vuelve (fn_vencer_pedidos)."
+   ],
+   "post": "El pedido queda PENDIENTE_PAGO con el stock reservado.",
+   "ruta": "/ · /tienda · /tienda/carrito · /tienda/checkout",
+   "mensajes": 17,
+   "participantes": [
+    {
+     "tipo": "actor",
+     "nombre": "Cliente"
+    },
+    {
+     "tipo": "frm",
+     "nombre": "FrmTienda"
+    },
+    {
+     "tipo": "ctrl",
+     "nombre": "TiendaController"
+    },
+    {
+     "tipo": "ent",
+     "nombre": "Pieza"
+    },
+    {
+     "tipo": "ent",
+     "nombre": "Pedido"
+    },
+    {
+     "tipo": "bd",
+     "nombre": "fn_crear_pedido"
+    }
+   ]
+  },
+  {
+   "id": "CU21",
+   "nombre": "Pagar en línea (QR, tarjeta o PayPal)",
+   "ciclo": "III",
+   "paquete": "P4",
+   "actores": [
+    "cli"
+   ],
+   "prioridad": "Alta",
+   "riesgo": "Alto",
+   "proposito": "Pagar el pedido con el QR del taller, con tarjeta o con PayPal y recibir el comprobante.",
+   "pre": "El pedido está PENDIENTE_PAGO y es del cliente que ingresó. (Modo demostración: no hay cobro real).",
+   "flujo": [
+    "El cliente ve la pasarela con el total y elige el método.",
+    "Tarjeta: escribe número, titular, vencimiento y CVV; el sistema valida con el algoritmo de Luhn y la fecha.",
+    "El sistema simula el cobro; si se aprueba, fn_registrar_pago guarda el pago (solo marca y 4 últimos dígitos) y el pedido pasa a PAGADO.",
+    "QR: el cliente escanea el QR del taller, paga y escribe el número de comprobante; el pedido pasa a EN_VERIFICACION.",
+    "PayPal: el cliente aprueba el pago en la ventana de PayPal (sandbox) y el pedido pasa a PAGADO.",
+    "El sistema muestra el comprobante y lo envía por correo cuando el correo está configurado."
+   ],
+   "alternos": [
+    "2a. Número inválido o tarjeta vencida: se avisa sin guardar nada.",
+    "3a. Pago rechazado (fondos insuficientes): se registra el intento RECHAZADO.",
+    "1a. El pedido ya fue pagado: “El pedido no está esperando pago”."
+   ],
+   "post": "El pago queda registrado y el pedido PAGADO o EN_VERIFICACION.",
+   "ruta": "/pago · /pago/tarjeta · /pago/qr · /pago/paypal",
+   "mensajes": 14,
+   "participantes": [
+    {
+     "tipo": "actor",
+     "nombre": "Cliente"
+    },
+    {
+     "tipo": "frm",
+     "nombre": "FrmPasarela"
+    },
+    {
+     "tipo": "ctrl",
+     "nombre": "PagoController"
+    },
+    {
+     "tipo": "ent",
+     "nombre": "Pasarela"
+    },
+    {
+     "tipo": "ent",
+     "nombre": "Pedido"
+    },
+    {
+     "tipo": "bd",
+     "nombre": "fn_registrar_pago"
+    }
+   ]
+  },
+  {
+   "id": "CU22",
+   "nombre": "Gestionar pedidos web",
+   "ciclo": "III",
+   "paquete": "P4",
+   "actores": [
+    "admv"
+   ],
+   "prioridad": "Alta",
+   "riesgo": "Medio",
+   "proposito": "Que el taller confirme los pagos por QR, entregue los pedidos y cancele los que corresponda.",
+   "pre": "Permiso pedidos.gestionar.",
+   "flujo": [
+    "El administrativo abre “Pedidos web” y filtra por estado.",
+    "Abre un pedido EN_VERIFICACION y revisa el número de comprobante del QR.",
+    "Confirma o rechaza el depósito; fn_verificar_pago_qr deja el pedido PAGADO o lo devuelve a PENDIENTE_PAGO.",
+    "Cuando el cliente retira o recibe el pedido, lo marca como ENTREGADO.",
+    "Puede cancelar un pedido no entregado con motivo; fn_cancelar_pedido devuelve el stock."
+   ],
+   "alternos": [
+    "3a. El pago ya fue verificado: se avisa.",
+    "5a. Un pedido entregado no se puede cancelar (trigger de transiciones)."
+   ],
+   "post": "El pedido avanza de estado y el kardex de piezas lo refleja.",
+   "ruta": "/pedidos",
+   "mensajes": 14,
+   "participantes": [
+    {
+     "tipo": "actor",
+     "nombre": "Administrativo"
+    },
+    {
+     "tipo": "frm",
+     "nombre": "FrmPedido"
+    },
+    {
+     "tipo": "ctrl",
+     "nombre": "PedidoController"
+    },
+    {
+     "tipo": "ent",
+     "nombre": "Pedido"
+    },
+    {
+     "tipo": "bd",
+     "nombre": "fn_verificar_pago_qr"
+    },
+    {
+     "tipo": "ent",
+     "nombre": "Bitacora"
+    }
+   ]
+  }
+ ],
+ "actores": {
+  "adm": "Administrador",
+  "admv": "Administrativo",
+  "mae": "Maestra",
+  "alu": "Alumno",
+  "cli": "Cliente",
+  "vis": "Visitante",
+  "usr": "Usuario"
+ },
+ "paquetes": {
+  "P1": "P1 Seguridad y configuración",
+  "P2": "P2 Clases y reservas",
+  "P3": "P3 Inventario y compras",
+  "P4": "P4 Ventas, caja y tienda en línea"
+ }
+}

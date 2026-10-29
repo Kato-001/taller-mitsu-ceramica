@@ -1,0 +1,413 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Guion de presentación Mitsü</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --fondo: #f7f2ea; --papel: #fffdf9; --tinta: #2a211b; --suave: #6f6157; --linea: #e6dacb;
+    --arcilla: #a3542f; --arcilla-2: #f3e3d4; --ok: #2f7a4f; --ok-2: #e2f1e7; --alerta: #9a6b00; --alerta-2: #fbf0d3;
+    --mal: #a8322a; --mal-2: #f8e1de; --codigo: #f1ebe2;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --fondo: #17120f; --papel: #211a16; --tinta: #f1e8df; --suave: #b3a395; --linea: #3a2f28;
+      --arcilla: #e08a5c; --arcilla-2: #3a2519; --ok: #7cc79a; --ok-2: #1d3226; --alerta: #e5bd5a; --alerta-2: #3a2f14;
+      --mal: #f08a80; --mal-2: #3d1f1c; --codigo: #2b231e;
+    }
+  }
+  :root[data-theme="dark"] {
+    --fondo: #17120f; --papel: #211a16; --tinta: #f1e8df; --suave: #b3a395; --linea: #3a2f28;
+    --arcilla: #e08a5c; --arcilla-2: #3a2519; --ok: #7cc79a; --ok-2: #1d3226; --alerta: #e5bd5a; --alerta-2: #3a2f14;
+    --mal: #f08a80; --mal-2: #3d1f1c; --codigo: #2b231e;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--fondo); color: var(--tinta); font: 15.5px/1.6 Inter, system-ui, sans-serif; }
+  a { color: var(--arcilla); }
+  code, .mono { font-family: ui-monospace, Consolas, monospace; font-size: .92em; background: var(--codigo); padding: 1px 6px; border-radius: 5px; }
+  h1, h2, h3 { font-family: Fraunces, Georgia, serif; font-weight: 600; line-height: 1.2; }
+  h1 { font-size: clamp(28px, 5vw, 42px); margin: 0 0 6px; }
+  h2 { font-size: 26px; margin: 0 0 4px; }
+  h3 { font-size: 18.5px; margin: 0; }
+  .barra { position: sticky; top: 0; z-index: 5; background: color-mix(in srgb, var(--fondo) 92%, transparent); backdrop-filter: blur(8px); border-bottom: 1px solid var(--linea); }
+  .barra .in { max-width: 1080px; margin: 0 auto; padding: 10px 16px; display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+  .barra nav { display: flex; gap: 4px; flex-wrap: wrap; flex: 1; }
+  .barra nav a { text-decoration: none; color: var(--tinta); padding: 5px 10px; border-radius: 999px; font-size: 13.5px; }
+  .barra nav a:hover { background: var(--arcilla-2); }
+  button { font: inherit; cursor: pointer; border: 1px solid var(--linea); background: var(--papel); color: var(--tinta); padding: 6px 12px; border-radius: 8px; }
+  button:hover { border-color: var(--arcilla); }
+  main { max-width: 1080px; margin: 0 auto; padding: 28px 16px 80px; }
+  section { margin-top: 44px; scroll-margin-top: 70px; }
+  .lead { color: var(--suave); font-size: 17px; max-width: 760px; }
+  .tarjeta { background: var(--papel); border: 1px solid var(--linea); border-radius: 14px; padding: 18px 20px; }
+  .rejilla { display: grid; gap: 14px; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); }
+  .rejilla > * { min-width: 0; }
+  .eti { display: inline-block; font-size: 12px; font-weight: 600; letter-spacing: .03em; padding: 2px 9px; border-radius: 999px; background: var(--arcilla-2); color: var(--arcilla); }
+  .eti.ok { background: var(--ok-2); color: var(--ok); } .eti.al { background: var(--alerta-2); color: var(--alerta); } .eti.mal { background: var(--mal-2); color: var(--mal); }
+  table { width: 100%; border-collapse: collapse; font-size: 14.5px; }
+  th, td { text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--linea); vertical-align: top; }
+  th { font-weight: 600; color: var(--suave); font-size: 13px; }
+  .tabla { overflow-x: auto; }
+  .caso { margin-top: 14px; }
+  .caso summary { list-style: none; cursor: pointer; display: flex; gap: 12px; align-items: baseline; flex-wrap: wrap; }
+  .caso summary::-webkit-details-marker { display: none; }
+  .caso summary::before { content: '▸'; color: var(--arcilla); transition: transform .15s; }
+  .caso[open] summary::before { transform: rotate(90deg); }
+  .caso .cuerpo { margin-top: 12px; display: grid; gap: 14px; grid-template-columns: 1.4fr 1fr; }
+  .caso .cuerpo > * { min-width: 0; }
+  @media (max-width: 760px) { .caso .cuerpo { grid-template-columns: 1fr; } }
+  ol.pasos { margin: 0; padding: 0; list-style: none; counter-reset: p; }
+  ol.pasos li { counter-increment: p; display: flex; gap: 10px; padding: 6px 0; border-bottom: 1px dashed var(--linea); }
+  ol.pasos li:last-child { border-bottom: 0; }
+  ol.pasos input { margin-top: 5px; accent-color: var(--arcilla); flex: none; }
+  ol.pasos li.hecho span { color: var(--suave); text-decoration: line-through; }
+  .decir { background: var(--arcilla-2); border-radius: 10px; padding: 12px 14px; font-size: 14.5px; }
+  .decir b { color: var(--arcilla); display: block; font-size: 12.5px; letter-spacing: .04em; text-transform: uppercase; margin-bottom: 4px; }
+  .quien { font-size: 13.5px; color: var(--suave); }
+  .progreso { height: 6px; background: var(--linea); border-radius: 9px; overflow: hidden; margin-top: 10px; }
+  .progreso div { height: 100%; width: 0; background: var(--arcilla); transition: width .3s; }
+  .faq details { border-bottom: 1px solid var(--linea); padding: 10px 0; }
+  .faq summary { cursor: pointer; font-weight: 600; }
+  .faq p { margin: 8px 0 0; color: var(--tinta); }
+  .reloj { font-family: ui-monospace, Consolas, monospace; font-size: 15px; padding: 5px 10px; border-radius: 8px; background: var(--papel); border: 1px solid var(--linea); }
+  @media print {
+    .barra, button { display: none !important; }
+    body { background: #fff; color: #000; }
+    .caso { break-inside: avoid; } details { display: block; } details > * { display: block !important; }
+    .tarjeta { border-color: #bbb; }
+  }
+</style>
+</head>
+<body>
+<div class="barra"><div class="in">
+  <strong style="font-family:Fraunces,serif">Mitsü</strong>
+  <nav>
+    <a href="#antes">Antes</a><a href="#orden">Orden</a><a href="#c1">Ciclo I</a><a href="#c2">Ciclo II</a><a href="#c3">Ciclo III</a>
+    <a href="#datos">Datos de prueba</a><a href="#preguntas">Preguntas</a><a href="#fallas">Si algo falla</a>
+  </nav>
+  <span class="reloj" id="reloj" title="Cronómetro de la presentación">00:00</span>
+  <button id="cron" type="button">Iniciar</button>
+  <button id="reiniciar" type="button" title="Desmarcar todos los pasos">Reiniciar</button>
+  <button id="tema" type="button" title="Cambiar tema">◐</button>
+</div></div>
+
+<main>
+  <header>
+    <span class="eti">Ingeniería en Requisitos y Modelado · Ciclos I, II y III</span>
+    <h1>Guion de presentación del Sistema Mitsü</h1>
+    <p class="lead">Qué mostrar, en qué orden, con qué cuenta y qué decir en cada caso de uso. Marque cada paso al terminarlo: el avance queda guardado en este navegador.</p>
+    <div class="tarjeta" style="margin-top:14px">
+      <div class="rejilla">
+        <div><div class="quien">Sistema en línea</div><a href="https://taller-mitsu-ceramica.vercel.app" target="_blank" rel="noopener">taller-mitsu-ceramica.vercel.app</a></div>
+        <div><div class="quien">Repositorio</div><a href="https://github.com/Kato-001/taller-mitsu-ceramica" target="_blank" rel="noopener">github.com/Kato-001/taller-mitsu-ceramica</a></div>
+        <div><div class="quien">Duración sugerida</div>20 minutos + 5 de preguntas</div>
+      </div>
+      <div class="progreso" aria-label="Avance"><div id="barra"></div></div>
+      <div class="quien" id="avance" style="margin-top:6px">0 de 0 pasos</div>
+    </div>
+  </header>
+
+  <section id="antes">
+    <h2>Antes de presentar (el día anterior y 15 minutos antes)</h2>
+    <div class="tarjeta">
+      <ol class="pasos" data-grupo="antes">
+        <li><input type="checkbox"><span><strong>Despertar la base de datos:</strong> el plan gratuito de Supabase se pausa tras 7 días sin uso. Abra el sistema el día anterior e ingrese con cualquier cuenta. Si dice “No se pudo conectar”, entre a supabase.com → proyecto → <em>Restore project</em> y espere 2 a 3 minutos.</span></li>
+        <li><input type="checkbox"><span>Probar en el sistema publicado las 5 cuentas del cuadro “Datos de prueba”.</span></li>
+        <li><input type="checkbox"><span>Abrir el informe en PDF en la página del índice y, en otra pestaña, el repositorio de GitHub.</span></li>
+        <li><input type="checkbox"><span>Abrir 3 ventanas del navegador: una normal (administrador), una privada (alumno o cliente) y otra de otro navegador (maestra). Así no hay que cerrar sesión a cada rato.</span></li>
+        <li><input type="checkbox"><span>Verificar que hay una <strong>caja abierta</strong> (Caja → Abrir caja con Bs 200) para poder vender en el ciclo III.</span></li>
+        <li><input type="checkbox"><span>Tener el celular con el sistema abierto para mostrar que es adaptable y escanear el QR.</span></li>
+      </ol>
+    </div>
+  </section>
+
+  <section id="orden">
+    <h2>Orden y reparto sugerido</h2>
+    <p class="lead">Ajusten los nombres según quién domina cada parte. Cada integrante presenta un bloque y responde preguntas de ese bloque.</p>
+    <div class="tarjeta tabla">
+      <table>
+        <thead><tr><th>Tiempo</th><th>Bloque</th><th>Qué se muestra</th><th>Integrante</th></tr></thead>
+        <tbody>
+          <tr><td>2 min</td><td>Introducción</td><td>Problema del taller (Ishikawa), PUDS en 4 ciclos, arquitectura (despliegue y capas).</td><td>Integrante 1</td></tr>
+          <tr><td>5 min</td><td>Ciclo I</td><td>CU01 a CU06: ingreso, roles y permisos, bitácora.</td><td>Integrante 2</td></tr>
+          <tr><td>5 min</td><td>Ciclo II</td><td>CU07 a CU12: talleres, horarios, calendario, reserva y asistencia.</td><td>Integrante 3</td></tr>
+          <tr><td>6 min</td><td>Ciclo III</td><td>CU13 a CU22: compras y kardex, venta en caja, tienda en línea y pago.</td><td>Integrantes 4 y 5</td></tr>
+          <tr><td>2 min</td><td>Base de datos y cierre</td><td>Triggers que bloquean errores, consultas, conclusiones y ciclo IV.</td><td>Integrante 1</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="decir" style="margin-top:14px"><b>Para abrir</b>“El Taller de Cerámica Mitsü organiza sus clases en Excel y anota sus ventas a mano. Con el método de Ishikawa encontramos que la causa principal es tener la información repetida en herramientas que no se comunican. Construimos un sistema web con el Proceso Unificado en cuatro ciclos; hoy presentamos los tres primeros, que ya están publicados en internet.”</div>
+  </section>
+
+  <section id="c1">
+    <span class="eti">Ciclo I</span>
+    <h2>Seguridad y configuración</h2>
+    <p class="lead">Mensaje clave: cada persona ve solo lo que su rol le permite, y el servidor lo verifica en cada acción.</p>
+
+    <details class="caso tarjeta" open><summary><h3>CU01 Iniciar y cerrar sesión</h3><span class="quien">Cuenta: admin@mitsu.test · /login</span></summary>
+      <div class="cuerpo">
+        <ol class="pasos" data-grupo="cu01">
+          <li><input type="checkbox"><span>Abrir la página principal: <strong>la tienda se ve primero</strong>, sin cuenta. Presionar “Ingresar”.</span></li>
+          <li><input type="checkbox"><span>Escribir una contraseña equivocada → mensaje genérico (no dice si el correo existe).</span></li>
+          <li><input type="checkbox"><span>Ingresar como administrador → panel con indicadores y menú completo.</span></li>
+          <li><input type="checkbox"><span>En otra ventana, ingresar como maestra → menú reducido: solo “Mis clases”.</span></li>
+        </ol>
+        <div class="decir"><b>Qué decir</b>La contraseña se guarda cifrada con bcrypt. Tras 5 intentos fallidos desde la misma IP el ingreso se bloquea 10 minutos. La sesión se guarda en la base de datos y cada formulario lleva un token CSRF.</div>
+      </div>
+    </details>
+
+    <details class="caso tarjeta"><summary><h3>CU02 Recuperar contraseña</h3><span class="quien">Sin sesión · /recuperar</span></summary>
+      <div class="cuerpo">
+        <ol class="pasos" data-grupo="cu02">
+          <li><input type="checkbox"><span>En el login, “¿Olvidaste tu contraseña?” → escribir <code>alumno@mitsu.test</code>.</span></li>
+          <li><input type="checkbox"><span>Mostrar que pide un código de 6 dígitos con vencimiento de 15 minutos.</span></li>
+        </ol>
+        <div class="decir"><b>Qué decir</b>Solo se guarda el hash del código; al quinto intento fallido se anula. Si el correo no existe, se muestra el mismo mensaje para no revelar qué correos están registrados. El envío real por Gmail se activa al configurar el SMTP.</div>
+      </div>
+    </details>
+
+    <details class="caso tarjeta"><summary><h3>CU03 Gestionar usuarios</h3><span class="quien">Administrador · /usuarios</span></summary>
+      <div class="cuerpo">
+        <ol class="pasos" data-grupo="cu03">
+          <li><input type="checkbox"><span>Mostrar la lista con búsqueda y filtros.</span></li>
+          <li><input type="checkbox"><span>“Nuevo usuario” con el correo <code>ADMIN@mitsu.test</code> (en mayúsculas) → “Ese correo ya está registrado”.</span></li>
+          <li><input type="checkbox"><span>Intentar desactivar al administrador → la base lo impide (único administrador activo).</span></li>
+        </ol>
+        <div class="decir"><b>Qué decir</b>No se borra a nadie: se desactiva, para conservar el historial. El correo es único sin importar mayúsculas ni tildes gracias a un índice con la función normalizar().</div>
+      </div>
+    </details>
+
+    <details class="caso tarjeta"><summary><h3>CU04 Roles y permisos · CU05 Bitácora · CU06 Configuración</h3><span class="quien">Administrador · /roles · /bitacora · /configuracion</span></summary>
+      <div class="cuerpo">
+        <ol class="pasos" data-grupo="cu04">
+          <li><input type="checkbox"><span>Roles: mostrar la matriz de permisos agrupada por paquete y quitar un permiso al rol Administrativo; guardar.</span></li>
+          <li><input type="checkbox"><span>Con la ventana del administrativo, recargar: la opción desaparece y la URL directa responde <strong>403</strong>. Volver a dar el permiso.</span></li>
+          <li><input type="checkbox"><span>Bitácora: filtrar por acción “PERMISOS” y mostrar quién lo hizo y desde qué IP.</span></li>
+          <li><input type="checkbox"><span>Configuración: horas mínimas para cancelar una reserva (12) y catálogos.</span></li>
+        </ol>
+        <div class="decir"><b>Qué decir</b>Los permisos se verifican en el servidor en cada ruta, no solo ocultando botones. La bitácora es de solo lectura: el usuario de la aplicación no puede borrarla.</div>
+      </div>
+    </details>
+  </section>
+
+  <section id="c2">
+    <span class="eti">Ciclo II</span>
+    <h2>Clases y reservas</h2>
+    <p class="lead">Mensaje clave: el cupo y los horarios los controla la base de datos, así que nunca hay doble reserva ni maestras cruzadas.</p>
+
+    <details class="caso tarjeta" open><summary><h3>CU07 Maestras · CU08 Talleres · CU09 Horarios y calendario</h3><span class="quien">Administrador · /talleres · /horarios · /clases</span></summary>
+      <div class="cuerpo">
+        <ol class="pasos" data-grupo="cu07">
+          <li><input type="checkbox"><span>Talleres: mostrar nivel, público (niños, jóvenes, adultos), cupo y precios.</span></li>
+          <li><input type="checkbox"><span>Horarios: crear para <strong>Rosario Gil</strong> un horario el martes 10:30–11:30 → “La maestra ya tiene otro horario que se cruza ese día”.</span></li>
+          <li><input type="checkbox"><span>Calendario: semana actual con colores por público y lugares libres. “Generar calendario” para el próximo mes → no duplica clases.</span></li>
+        </ol>
+        <div class="decir"><b>Qué decir</b>Los horarios son los de la entrevista con la gerente. El cruce lo impide una restricción EXCLUDE de PostgreSQL con btree_gist, aunque alguien intente insertar directo en la base.</div>
+      </div>
+    </details>
+
+    <details class="caso tarjeta"><summary><h3>CU12 Alumnos y portal · CU10 Reservar clase</h3><span class="quien">Alumno: alumno@mitsu.test · /portal/reservar</span></summary>
+      <div class="cuerpo">
+        <ol class="pasos" data-grupo="cu10">
+          <li><input type="checkbox"><span>Mostrar “Crea tu cuenta de alumno” (si es menor de edad pide tutor). No hace falta completarla.</span></li>
+          <li><input type="checkbox"><span>Ingresar como alumno → portal con próximas clases e historial de asistencia.</span></li>
+          <li><input type="checkbox"><span>“Reservar clase” → elegir una con cupo → “Reservar mi lugar”. El cupo baja en uno.</span></li>
+          <li><input type="checkbox"><span>Intentar reservar la misma clase otra vez → “El alumno ya tiene una reserva en esta clase”.</span></li>
+        </ol>
+        <div class="decir"><b>Qué decir</b>Al reservar, el trigger bloquea la fila de la clase (SELECT … FOR UPDATE), cuenta las reservas y recién guarda. Si dos alumnos piden el último lugar al mismo tiempo, solo uno lo obtiene.</div>
+      </div>
+    </details>
+
+    <details class="caso tarjeta"><summary><h3>CU11 Registrar asistencia</h3><span class="quien">Maestra: maestra@mitsu.test · /panel</span></summary>
+      <div class="cuerpo">
+        <ol class="pasos" data-grupo="cu11">
+          <li><input type="checkbox"><span>Ingresar como maestra (mejor desde el celular) → sus clases de la semana.</span></li>
+          <li><input type="checkbox"><span>Abrir la clase de hoy → marcar Presente o Falta en cada alumno → guardar.</span></li>
+          <li><input type="checkbox"><span>Cambiar en la URL el id por el de una clase de otra maestra → <strong>403 prohibido</strong>.</span></li>
+        </ol>
+        <div class="decir"><b>Qué decir</b>La maestra solo ve y modifica sus propias clases; el control está en el servidor (ClaseController::exigirAcceso).</div>
+      </div>
+    </details>
+  </section>
+
+  <section id="c3">
+    <span class="eti">Ciclo III</span>
+    <h2>Inventario, ventas y tienda en línea</h2>
+    <p class="lead">Mensaje clave: el stock nunca se escribe a mano; cambia solo con movimientos registrados (kardex), y el dinero queda cuadrado en la caja.</p>
+
+    <details class="caso tarjeta" open><summary><h3>CU13 Materiales · CU14 Proveedores · CU15 Compras · CU16 Consumo y alertas</h3><span class="quien">Administrativo: ventas@mitsu.test · /materiales · /compras</span></summary>
+      <div class="cuerpo">
+        <ol class="pasos" data-grupo="cu13">
+          <li><input type="checkbox"><span>Materiales: alertas de color para los que están bajo el mínimo.</span></li>
+          <li><input type="checkbox"><span>Compras → Nueva compra: proveedor de Cochabamba, 10 kg de <strong>Arcilla roja</strong> a Bs 7. Registrar.</span></li>
+          <li><input type="checkbox"><span>Abrir el kardex de Arcilla roja: aparece la entrada, el stock subió y el costo promedio cambió.</span></li>
+          <li><input type="checkbox"><span>Registrar un consumo de 99 999 kg → “Stock insuficiente”.</span></li>
+        </ol>
+        <div class="decir"><b>Qué decir</b>La compra la registra un procedimiento almacenado (fn_registrar_compra) en una sola transacción: compra, detalle y movimientos. Si falla una línea, no se guarda nada. Un trigger impide modificar el stock directamente.</div>
+      </div>
+    </details>
+
+    <details class="caso tarjeta"><summary><h3>CU17 Piezas · CU18 Venta en caja · CU19 Caja y arqueo</h3><span class="quien">Administrativo · /piezas · /ventas/nueva · /caja</span></summary>
+      <div class="cuerpo">
+        <ol class="pasos" data-grupo="cu18">
+          <li><input type="checkbox"><span>Piezas: fotos reales del taller, código automático y stock. Cambiar un precio → queda en el historial de precios.</span></li>
+          <li><input type="checkbox"><span>Vender: tocar 2 piezas, método Efectivo, recibido Bs 300 → muestra el cambio. “Cobrar y emitir nota”.</span></li>
+          <li><input type="checkbox"><span>Mostrar la nota de venta numerada (NV-…) lista para imprimir.</span></li>
+          <li><input type="checkbox"><span>Con el administrador, anular esa venta con motivo → el stock vuelve (kardex).</span></li>
+          <li><input type="checkbox"><span>Caja: cerrar con un monto declarado → el sistema calcula efectivo esperado y diferencia.</span></li>
+        </ol>
+        <div class="decir"><b>Qué decir</b>El precio de cada línea lo copia un trigger desde la pieza: aunque alguien manipule el formulario, se cobra el precio real. Una venta anulada no se puede modificar. El cierre lo calcula el procedimiento sp_cerrar_caja.</div>
+      </div>
+    </details>
+
+    <details class="caso tarjeta"><summary><h3>CU20 Tienda en línea · CU21 Pago (QR, tarjeta, PayPal) · CU22 Pedidos web</h3><span class="quien">Visitante → cliente@mitsu.test · luego ventas@mitsu.test</span></summary>
+      <div class="cuerpo">
+        <ol class="pasos" data-grupo="cu20">
+          <li><input type="checkbox"><span>Ventana privada: página principal → abrir una pieza → “Agregar al carrito” sin cuenta.</span></li>
+          <li><input type="checkbox"><span>“Pagar” → pide ingresar → ingresar como cliente → <strong>vuelve al carrito</strong> con la pieza.</span></li>
+          <li><input type="checkbox"><span>Confirmar con retiro en el taller → pasarela: “tus piezas están reservadas por 30:00”.</span></li>
+          <li><input type="checkbox"><span>Tarjeta <code>4000 0000 0000 0002</code> → rechazada. Luego <code>4242 4242 4242 4242</code>, 12/30, CVV 123 → aprobada y comprobante con •••• 4242.</span></li>
+          <li><input type="checkbox"><span>Otro pedido con <strong>QR</strong>: mostrar el QR del taller, escribir un n.º de comprobante → “En verificación”.</span></li>
+          <li><input type="checkbox"><span>Como administrativo, Pedidos web → abrir ese pedido → “Confirmar” el depósito → Pagado → “Entregado”.</span></li>
+        </ol>
+        <div class="decir"><b>Qué decir</b>La pasarela está en modo demostración: no cobra dinero real. El número de tarjeta se valida con el algoritmo de Luhn y solo se guardan la marca y los 4 últimos dígitos, como exige PCI DSS. El stock se reserva al crear el pedido y se libera si no se paga en 30 minutos. El comprobante se envía por correo cuando se configure el SMTP de Gmail.</div>
+      </div>
+    </details>
+
+    <details class="caso tarjeta"><summary><h3>Cierre: la base de datos protege las reglas</h3><span class="quien">Informe, capítulo 5</span></summary>
+      <div class="cuerpo">
+        <ol class="pasos" data-grupo="cierre">
+          <li><input type="checkbox"><span>Mostrar en el informe la tabla de prueba de triggers: cada intento indebido y la respuesta real de la base.</span></li>
+          <li><input type="checkbox"><span>Mencionar: 33 tablas, 30 consultas con resultados reales, 12 procedimientos almacenados.</span></li>
+          <li><input type="checkbox"><span>Cerrar con el ciclo IV: cafetería, mensualidades y reportes.</span></li>
+        </ol>
+        <div class="decir"><b>Para cerrar</b>“Los siete problemas del Ishikawa que corresponden a clases, inventario y ventas quedaron resueltos en los tres primeros ciclos, con el sistema publicado y probado. El ciclo IV agrega la cafetería, el cobro de mensualidades y los reportes.”</div>
+      </div>
+    </details>
+  </section>
+
+  <section id="datos">
+    <h2>Datos de prueba</h2>
+    <div class="rejilla">
+      <div class="tarjeta tabla">
+        <table>
+          <thead><tr><th>Rol</th><th>Correo</th><th>Contraseña</th></tr></thead>
+          <tbody>
+            <tr><td>Administrador</td><td class="mono">admin@mitsu.test</td><td class="mono">Admin2026!</td></tr>
+            <tr><td>Administrativo</td><td class="mono">ventas@mitsu.test</td><td class="mono">Ventas2026!</td></tr>
+            <tr><td>Maestra</td><td class="mono">maestra@mitsu.test</td><td class="mono">Maestra2026!</td></tr>
+            <tr><td>Alumno</td><td class="mono">alumno@mitsu.test</td><td class="mono">Alumno2026!</td></tr>
+            <tr><td>Cliente</td><td class="mono">cliente@mitsu.test</td><td class="mono">Cliente2026!</td></tr>
+          </tbody>
+        </table>
+        <p class="quien">Contraseñas inventadas para la demostración.</p>
+      </div>
+      <div class="tarjeta tabla">
+        <table>
+          <thead><tr><th>Tarjeta</th><th>Resultado</th></tr></thead>
+          <tbody>
+            <tr><td class="mono">4242 4242 4242 4242</td><td><span class="eti ok">Aprobada</span></td></tr>
+            <tr><td class="mono">4000 0000 0000 0002</td><td><span class="eti mal">Fondos insuficientes</span></td></tr>
+            <tr><td class="mono">4000 0000 0000 0069</td><td><span class="eti al">Vencida</span></td></tr>
+            <tr><td class="mono">4242 4242 4242 4241</td><td><span class="eti mal">No pasa Luhn</span></td></tr>
+          </tbody>
+        </table>
+        <p class="quien">Cualquier fecha futura (por ejemplo 12/30) y CVV de 3 dígitos. PayPal: cualquier correo y clave en la ventana de prueba.</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="preguntas">
+    <h2>Preguntas probables</h2>
+    <div class="tarjeta faq">
+      <details><summary>¿Por qué PUDS y no Scrum?</summary><p>La materia trabaja con el Proceso Unificado y UML. El PUDS es dirigido por casos de uso, centrado en la arquitectura e iterativo: cada ciclo entrega casos de uso analizados, diseñados, implementados y probados, que es exactamente cómo organizamos los ciclos I a IV.</p></details>
+      <details><summary>¿Qué diferencia hay entre el diagrama de comunicación y el de secuencia?</summary><p>Muestran la misma interacción. El de comunicación destaca qué objetos se relacionan (enlaces con mensajes numerados) y lo usamos en el análisis; el de secuencia destaca el orden en el tiempo con líneas de vida y fragmentos alt, opt y loop, y lo usamos en el diseño con los nombres reales de controladores y métodos.</p></details>
+      <details><summary>¿Qué significan «frm», «ctrl» y «entidad»?</summary><p>Son los estereotipos de las clases de análisis: «frm» es la interfaz con la que interactúa el actor (formulario o pantalla), «ctrl» coordina el caso de uso (el controlador) y «entidad» representa datos que persisten (modelos y tablas).</p></details>
+      <details><summary>¿Cómo evitan que dos alumnos tomen el último lugar?</summary><p>El trigger de reserva bloquea la fila de la clase con SELECT … FOR UPDATE antes de contar las reservas. La segunda transacción espera a que termine la primera; cuando cuenta, el cupo ya está lleno y la rechaza.</p></details>
+      <details><summary>¿Qué pasa si alguien modifica el precio en el navegador?</summary><p>Nada: el trigger tg_detalle_venta_precio copia el precio vigente de la pieza en cada línea, sin importar lo que llegue del formulario. Está probado en el informe (regla RN08).</p></details>
+      <details><summary>¿Guardan los datos de las tarjetas?</summary><p>No. Solo la marca y los 4 últimos dígitos. Nunca el número completo ni el CVV, como indica PCI DSS. Además, la pasarela está en modo demostración y no cobra dinero real.</p></details>
+      <details><summary>¿Dónde están las contraseñas de la base de datos?</summary><p>En variables de entorno de Vercel y en un archivo .env que Git ignora. El repositorio público no tiene ninguna clave real. La aplicación se conecta con un usuario de mínimo privilegio que no puede borrar tablas.</p></details>
+      <details><summary>¿Por qué PHP sin framework?</summary><p>Para mostrar y explicar cada capa del MVC: front controller con rutas y permisos, controladores, modelos con PDO, vistas y servicios. Es gratuito y corre en Vercel con vercel-php.</p></details>
+      <details><summary>¿Cómo está normalizada la base?</summary><p>Hasta tercera forma normal: cada horario es una fila por día (1FN), las tablas puente como rolpermiso solo tienen sus llaves (2FN) y el material guarda categoria_id y unidad_id en lugar de sus nombres (3FN). El precio en detalle_venta es un dato histórico, no una redundancia.</p></details>
+      <details><summary>¿Por qué la tienda se ve primero y el login después?</summary><p>Porque así compra la gente: primero mira. Solo al pagar se pide ingresar, para asociar el pedido a un correo y enviar el comprobante. El carrito se conserva al ingresar.</p></details>
+      <details><summary>¿Qué incluye el ciclo IV?</summary><p>Cafetería (menú y comandas), cobro de mensualidades con control de morosidad, pedidos personalizados, notificaciones y reportes con indicadores. Está planificado en el alcance y en el diagrama general de paquetes.</p></details>
+    </div>
+  </section>
+
+  <section id="fallas">
+    <h2>Si algo falla</h2>
+    <div class="tarjeta tabla">
+      <table>
+        <thead><tr><th>Síntoma</th><th>Qué hacer</th></tr></thead>
+        <tbody>
+          <tr><td>La página tarda o dice “No se pudo conectar”</td><td>La base de Supabase se pausó. Entrar a supabase.com → proyecto → Restore. Mientras tanto, seguir con el informe en PDF (diagramas y capturas).</td></tr>
+          <tr><td>“Abra la caja antes de vender”</td><td>Ir a Caja → Abrir caja con Bs 200 y volver a vender.</td></tr>
+          <tr><td>“La sesión expiró” (error 419)</td><td>Es la protección CSRF: la pestaña quedó abierta mucho tiempo. Recargar y repetir.</td></tr>
+          <tr><td>No hay clases con cupo para reservar</td><td>Como administrativo, Calendario → Generar calendario para el próximo mes.</td></tr>
+          <tr><td>El pedido ya no aparece para pagar</td><td>Venció a los 30 minutos (el stock volvió). Crear otro desde el carrito.</td></tr>
+          <tr><td>Se olvidó qué cuenta tiene cada ventana</td><td>El nombre y el rol aparecen abajo a la izquierda del menú.</td></tr>
+          <tr><td>Falla internet en el aula</td><td>Usar los datos del celular como punto de acceso; si no, presentar con las capturas del informe (sección 2.4).</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+</main>
+
+<script>
+(function () {
+  var CLAVE = 'mitsu-guion-pasos';
+  var guardado = {};
+  try { guardado = JSON.parse(localStorage.getItem(CLAVE) || '{}'); } catch (e) { guardado = {}; }
+  var casillas = Array.prototype.slice.call(document.querySelectorAll('ol.pasos input[type=checkbox]'));
+  casillas.forEach(function (c, i) {
+    var id = c.closest('ol').dataset.grupo + '-' + i;
+    c.dataset.id = id;
+    c.checked = !!guardado[id];
+    c.closest('li').classList.toggle('hecho', c.checked);
+    c.addEventListener('change', function () {
+      guardado[id] = c.checked;
+      c.closest('li').classList.toggle('hecho', c.checked);
+      try { localStorage.setItem(CLAVE, JSON.stringify(guardado)); } catch (e) {}
+      avance();
+    });
+  });
+  function avance() {
+    var n = casillas.filter(function (c) { return c.checked; }).length;
+    document.getElementById('barra').style.width = (100 * n / casillas.length) + '%';
+    document.getElementById('avance').textContent = n + ' de ' + casillas.length + ' pasos';
+  }
+  avance();
+  document.getElementById('reiniciar').addEventListener('click', function () {
+    guardado = {};
+    try { localStorage.removeItem(CLAVE); } catch (e) {}
+    casillas.forEach(function (c) { c.checked = false; c.closest('li').classList.remove('hecho'); });
+    avance();
+  });
+
+  var inicio = null, timer = null, boton = document.getElementById('cron'), reloj = document.getElementById('reloj');
+  boton.addEventListener('click', function () {
+    if (timer) { clearInterval(timer); timer = null; boton.textContent = 'Iniciar'; return; }
+    inicio = Date.now() - (reloj.dataset.ms ? +reloj.dataset.ms : 0);
+    boton.textContent = 'Pausar';
+    timer = setInterval(function () {
+      var ms = Date.now() - inicio, s = Math.floor(ms / 1000);
+      reloj.dataset.ms = ms;
+      reloj.textContent = String(Math.floor(s / 60)).padStart(2, '0') + ':' + String(s % 60).padStart(2, '0');
+      reloj.style.color = s > 20 * 60 ? 'var(--mal)' : '';
+    }, 500);
+  });
+
+  var raiz = document.documentElement;
+  try { var t = localStorage.getItem('mitsu-guion-tema'); if (t) raiz.dataset.theme = t; } catch (e) {}
+  document.getElementById('tema').addEventListener('click', function () {
+    var oscuro = raiz.dataset.theme ? raiz.dataset.theme === 'dark' : matchMedia('(prefers-color-scheme: dark)').matches;
+    raiz.dataset.theme = oscuro ? 'light' : 'dark';
+    try { localStorage.setItem('mitsu-guion-tema', raiz.dataset.theme); } catch (e) {}
+  });
+})();
+</script>
+</body>
+</html>

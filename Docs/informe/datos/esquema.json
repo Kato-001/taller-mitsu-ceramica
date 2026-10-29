@@ -1,0 +1,2549 @@
+{
+    "tablas": {
+        "alumno": {
+            "columnas": [
+                {
+                    "nombre": "id",
+                    "tipo": "integer",
+                    "obligatorio": true
+                },
+                {
+                    "nombre": "usuario_id",
+                    "tipo": "integer",
+                    "obligatorio": true
+                },
+                {
+                    "nombre": "ci",
+                    "tipo": "character varying(15)",
+                    "obligatorio": false
+                },
+                {
+                    "nombre": "fecha_nacimiento",
+                    "tipo": "date",
+                    "obligatorio": false
+                },
+                {
+                    "nombre": "nivel",
+                    "tipo": "character varying(12)",
+                    "obligatorio": true
+                },
+                {
+                    "nombre": "estado",
+                    "tipo": "character varying(10)",
+                    "obligatorio": true
+                }
+            ],
+            "restricciones": [
+                {
+                    "tipo": "c",
+                    "nombre": "alumno_ci_check",
+                    "columnas": "ci",
+                    "referencia": null
+                },
+                {
+                    "tipo": "c",
+                    "nombre": "alumno_estado_check",
+                    "columnas": "estado",
+                    "referencia": null
+                },
+                {
+                    "tipo": "c",
+                    "nombre": "alumno_fecha_nacimiento_check",
+                    "columnas": "fecha_nacimiento",
+                    "referencia": null
+                },
+                {
+                    "tipo": "c",
+                    "nombre": "alumno_nivel_check",
+                    "columnas": "nivel",
+                    "referencia": null
+                },
+                {
+                    "tipo": "f",
+                    "nombre": "alumno_usuario_id_fkey",
+                    "columnas": "usuario_id",
+                    "referencia": "usuario"
+                },
+                {
+                    "tipo": "p",
+                    "nombre": "alumno_pkey",
+                    "columnas": "id",
+                    "referencia": null
+                },
+                {
+                    "tipo": "u",
+                    "nombre": "alumno_usuario_id_key",
+                    "columnas": "usuario_id",
+                    "referencia": null
+                }
+            ]
+        },
+        "bitacora": {
+            "columnas": [
+                {
+                    "nombre": "id",
+                    "tipo": "bigint",
+                    "obligatorio": true
+                },
+                {
+                    "nombre": "usuario_id",
+                    "tipo": "integer",
+                    "obligatorio": false
+                },
+                {
+                    "nombre": "accion",
+                    "tipo": "character varying(40)",
+                    "obligatorio": true
+                },
+                {
+                    "nombre": "modulo",
+                    "tipo": "character varying(40)",
+                    "obligatorio": true
+                },
+                {
+                    "nombre": "tabla",
+                    "tipo": "character varying(40)",
+                    "obligatorio": false
+                },
+                {
+                    "nombre": "registro",
+                    "tipo": "bigint",
+                    "obligatorio": false
+                },
+                {
+                    "nombre": "detalle",
+                    "tipo": "character varying(500)",
+                    "obligatorio": false
+                },
+                {
+                    "nombre": "ip",
+                    "tipo": "character varying(64)",
+                    "obligatorio": false
+                },
+                {
+                    "nombre": "fecha",
+                    "tipo": "timestamp with time zone",
+                    "obligatorio": true
+                }
+            ],
+            "restricciones": [
+                {
+                    "tipo": "f",
+                    "nombre": "bitacora_usuario_id_fkey",
+                    "columnas": "usuario_id",
+                    "referencia": "usuario"
+                },
+                {
+                    "tipo": "p",
+                    "nombre": "bitacora_pkey",
+                    "columnas": "id",
+                    "referencia": null
+                }
+            ]
+        },
+        "caja": {
+            "columnas": [
+                {
+                    "nombre": "id",
+                    "tipo": "integer",
+                    "obligatorio": true
+                },
+                {
+                    "nombre": "usuario_id",
+                    "tipo": "integer",
+                    "obligatorio": true
+                },
+                {
+                    "nombre": "abierta_en",
+                    "tipo": "timestamp with time zone",
+                    "obligatorio": true
+                },
+                {
+                    "nombre": "monto_inicial",
+                    "tipo": "numeric(10,2)",
+                    "obligatorio": true
+                },
+                {
+                    "nombre": "cerrada_en",
+                    "tipo": "timestamp with time zone",
+                    "obligatorio": false
+                },
+                {
+                    "nombre": "cerrada_por",
+                    "tipo": "integer",
+                    "obligatorio": false
+                },
+                {
+                    "nombre": "total_efectivo",
+                    "tipo": "numeric(12,2)",
+                    "obligatorio": false
+                },
+                {
+                    "nombre": "total_otros",
+                    "tipo": "numeric(12,2)",
+                    "obligatorio": false
+                },
+                {
+                    "nombre": "monto_declarado",
+                    "tipo": "numeric(12,2)",
+                    "obligatorio": false
+                },
+                {
+                    "nombre": "diferencia",
+                    "tipo": "numeric(12,2)",
+                    "obligatorio": false
+                },
+                {
+                    "nombre": "estado",
+                    "tipo": "character varying(10)",
+                    "obligatorio": true
+                },
+                {
+                    "nombre": "observacion",
+                    "tipo": "character varying(300)",
+                    "obligatorio": false
+                }
+            ],
+            "restricciones": [
+                {
+                    "tipo": "c",
+                    "nombre": "caja_check",
+                    "columnas": "estado,cerrada_en,monto_declarado",
+                    "referencia": null
+                },
+                {
+                    "tipo": "c",
+                    "nombre": "caja_estado_check",
+                    "columnas": "estado",
+                    "referencia": null
+                },
+                {
+                    "tipo": "c",
+                    "nombre": "caja_monto_declarado_check",
+                    "columnas": "monto_declarado",
+                    "referencia": null
+                },
+                {
+                    "tipo": "c",
+                    "nombre": "caja_monto_inicial_check",
+                    "columnas": "monto_inicial",
+                    "referencia": null
+                },
+                {
+                    "tipo": "f",
+                    "nombre": "caja_cerrada_por_fkey",
+                    "columnas": "cerrada_por",
+                    "referencia": "usuario"
+                },
+                {
+                    "tipo": "f",
+                    "nombre": "caja_usuario_id_fkey",
+                    "columnas": "usuario_id",
+                    "referencia": "usuario"
+                },
+                {
+                    "tipo": "p",
+                    "nombre": "caja_pkey",
+                    "columnas": "id",
+                    "referencia": null
+                }
+            ]
+        },
+        "categoria": {
+            "columnas": [
+                {
+                    "nombre": "id",
+                    "tipo": "smallint",
+                    "obligatorio": true
+                },
+                {
+                    "nombre": "nombre",
+                    "tipo": "character varying(60)",
+                    "obligatorio": true
+                },
+                {
+                    "nombre": "tipo",
+                    "tipo": "character varying(10)",
+                    "obligatorio": true
+                },
+                {
+                    "nombre": "estado",
+                    "tipo": "character varying(10)",
+                    "obligatorio": true
+                }
+            ],
+            "restricciones": [
+                {
+                    "tipo": "c",
+                    "nombre": "categoria_estado_check",
+                    "columnas": "estado",
+                    "referencia": null
+                },
+                {
+                    "tipo": "c",
+                    "nombre": "categoria_tipo_check",
+                    "columnas": "tipo",
+                    "referencia": null
+                },
+                {
+                    "tipo": "p",
+                    "nombre": "categoria_pkey",
+                    "columnas": "id",
+                    "referencia": null
+                }
+            ]
+        },
+        "cliente": {
+            "columnas": [
+                {
+                    "nombre": "id",
+                    "tipo": "integer",
+                    "obligatorio": true
+                },
+                {
+                    "nombre": "nombre",
+                    "tipo": "character varying(120)",
+                    "obligatorio": true
+                },
+                {
+                    "nombre": "ci_nit",
+                    "tipo": "character varying(20)",
+                    "obligatorio": false
+                },
+                {
+                    "nombre": "telefono",
+                    "tipo": "character varying(20)",
+                    "obligatorio": false
+                },
+                {
+                    "nombre": "correo",
+                    "tipo": "character varying(120)",
+                    "obligatorio": false
+                },
+                {
+                    "nombre": "estado",
+                    "tipo": "character varying(10)",
+                    "obligatorio": true
+                },
+                {
+                    "nombre": "creado_en",
+                    "tipo": "timestamp with time zone",
+                    "obligatorio": true
+                },
+                {
+                    "nombre": "usuario_id",
+                    "tipo": "integer",
+                    "obligatorio": false
+                }
+            ],
+            "restricciones": [
+                {
+                    "tipo": "c",
+                    "nombre": "cliente_ci_nit_check",
+                    "columnas": "ci_nit",
+                    "referencia": null
+                },
+                {
+                    "tipo": "c",
+                    "nombre": "cliente_correo_check",
+                    "columnas": "correo",
+                    "referencia": null
+                },
+                {
+                    "tipo": "c",
+                    "nombre": "cliente_estado_check",
+                    "columnas": "estado",
+                    "referencia": null
+                },
+                {
+                    "tipo": "c",
+                    "nombre": "cliente_telefono_check",
+                    "columnas": "telefono",
+                    "referencia": null
+                },
+                {
+                    "tipo": "f",
+                    "nombre": "cliente_usuario_id_fkey",
+                    "columnas": "usuario_id",
+                    "referencia": "usuario"
+                },
+                {
+                    "tipo": "p",
+                    "nombre": "cliente_pkey",
+                    "columnas": "id",
+                    "referencia": null
+                },
+                {
+                    "tipo": "u",
+                    "nombre": "cliente_usuario_id_key",
+                    "columnas": "usuario_id",
+                    "referencia": null
+                }
+            ]
+        },
+        "compra": {
+            "columnas": [
+                {
+                    "nombre": "id",
+                    "tipo": "integer",
+                    "obligatorio": true
+                },
+                {
+                    "nombre": "numero",
+                    "tipo": "character varying(12)",
+                    "obligatorio": true
+                },
+                {
+                    "nombre": "proveedor_id",
+                    "tipo": "smallint",
+                    "obligatorio": true
+                },
+                {
+                    "nombre": "usuario_id",
+                    "tipo": "integer",
+                    "obligatorio": true
+                },
+                {
+                    "nombre": "fecha",
+                    "tipo": "date",
+                    "obligatorio": true
+                },
+                {
+                    "nombre": "observacion",
+                    "tipo": "character varying(300)",
+                    "obligatorio": false
+                },
+                {
+                    "nombre": "total",
+                    "tipo": "numeric(12,2)",
+                    "obligatorio": true
+                },
+                {
+                    "nombre": "estado",
+                    "tipo": "character varying(10)",
+                    "obligatorio": true
+                },
+                {
+                    "nombre": "motivo_anulacion",
+                    "tipo": "character varying(255)",
+                    "obligatorio": false
+                },
+                {
+                    "nombre": "creado_en",
+                    "tipo": "timestamp with time zone",
+                    "obligatorio": true
+                }
+            ],
+            "restricciones": [
+                {
+                    "tipo": "c",
+                    "nombre": "compra_check",
+                    "columnas": "estado,motivo_anulacion",
+                    "referencia": null
+                },
+                {
+                    "tipo": "c",
+                    "nombre": "compra_estado_check",
+                    "columnas": "estado",
+                    "referencia": null
+                },
+                {
+                    "tipo": "c",
+                    "nombre": "compra_total_check",
+                    "columnas": "total",
+                    "referencia": null
+                },
+                {
+                    "tipo": "f",
+                    "nombre": "compra_proveedor_id_fkey",
+                    "columnas": "proveedor_id",
+                    "referencia": "proveedor"
+                },
+                {
+                    "tipo": "f",
+                    "nombre": "compra_usuario_id_fkey",
+                    "columnas": "usuario_id",
+                    "referencia": "usuario"
+                },
+                {
+                    "tipo": "p",
+                    "nombre": "compra_pkey",
+                    "columnas": "id",
+                    "referencia": null
+                },
+                {
+                    "tipo": "u",
+                    "nombre": "compra_numero_key",
+                    "columnas": "numero",
+                    "referencia": null
+                }
+            ]
+        },
+        "configuracion": {
+            "columnas": [
+                {
+                    "nombre": "clave",
+                    "tipo": "character varying(40)",
+                    "obligatorio": true
+                },
+                {
+                    "nombre": "valor",
+                    "tipo": "character varying(300)",
+                    "obligatorio": true
+                },
+                {
+                    "nombre": "descripcion",
+                    "tipo": "character varying(200)",
+                    "obligatorio": true
+                }
+            ],
+            "restricciones": [
+                {
+                    "tipo": "c",
+                    "nombre": "configuracion_clave_check",
+                    "columnas": "clave",
+                    "referencia": null
+                },
+                {
+                    "tipo": "p",
+                    "nombre": "configuracion_pkey",
+                    "columnas": "clave",
+                    "referencia": null
+                }
+            ]
+        },
+        "detalle_compra": {
+            "columnas": [
+                {
+                    "nombre": "id",
+                    "tipo": "integer",
+                    "obligatorio": true
+                },
+                {
+                    "nombre": "compra_id",
+                    "tipo": "integer",
+                    "obligatorio": true
+                },
+                {
+                    "nombre": "material_id",
+                    "tipo": "integer",
+                    "obligatorio": true
+                },
+                {
+                    "nombre": "cantidad",
+                    "tipo": "numeric(12,2)",
+                    "obligatorio": true
+                },
+                {
+                    "nombre": "costo_unitario",
+                    "tipo": "numeric(12,2)",
+                    "obligatorio": true
+                },
+                {
+                    "nombre": "subtotal",
+                    "tipo": "numeric(12,2)",
+                    "obligatorio": false
+                }
+            ],
+            "restricciones": [
+                {
+                    "tipo": "c",
+                    "nombre": "detalle_compra_cantidad_check",
+                    "columnas": "cantidad",
+                    "referencia": null
+                },
+                {
+                    "tipo": "c",
+                    "nombre": "detalle_compra_costo_unitario_check",
+                    "columnas": "costo_unitario",
+                    "referencia": null
+                },
+                {
+                    "tipo": "f",
+                    "nombre": "detalle_compra_compra_id_fkey",
+                    "columnas": "compra_id",
+                    "referencia": "compra"
+                },
+                {
+                    "tipo": "f",
+                    "nombre": "detalle_compra_material_id_fkey",
+                    "columnas": "material_id",
+                    "referencia": "material"
+                },
+                {
+                    "tipo": "p",
+                    "nombre": "detalle_compra_pkey",
+                    "columnas": "id",
+                    "referencia": null
+                },
+                {
+                    "tipo": "u",
+                    "nombre": "detalle_compra_compra_id_material_id_key",
+                    "columnas": "compra_id,material_id",
+                    "referencia": null
+                }
+            ]
+        },
+        "detalle_pedido": {
+            "columnas": [
+                {
+                    "nombre": "id",
+                    "tipo": "integer",
+                    "obligatorio": true
+                },
+                {
+                    "nombre": "pedido_id",
+                    "tipo": "integer",
+                    "obligatorio": true
+                },
+                {
+                    "nombre": "pieza_id",
+                    "tipo": "integer",
+                    "obligatorio": true
+                },
+                {
+                    "nombre": "cantidad",
+                    "tipo": "integer",
+                    "obligatorio": true
+                },
+                {
+                    "nombre": "precio_unitario",
+                    "tipo": "numeric(10,2)",
+                    "obligatorio": true
+                },
+                {
+                    "nombre": "subtotal",
+                    "tipo": "numeric(12,2)",
+                    "obligatorio": false
+                }
+            ],
+            "restricciones": [
+                {
+                    "tipo": "c",
+                    "nombre": "detalle_pedido_cantidad_check",
+                    "columnas": "cantidad",
+                    "referencia": null
+                },
+                {
+                    "tipo": "c",
+                    "nombre": "detalle_pedido_precio_unitario_check",
+                    "columnas": "precio_unitario",
+                    "referencia": null
+                },
+                {
+                    "tipo": "f",
+                    "nombre": "detalle_pedido_pedido_id_fkey",
+                    "columnas": "pedido_id",
+                    "referencia": "pedido"
+                },
+                {
+                    "tipo": "f",
+                    "nombre": "detalle_pedido_pieza_id_fkey",
+                    "columnas": "pieza_id",
+                    "referencia": "pieza"
+                },
+                {
+                    "tipo": "p",
+                    "nombre": "detalle_pedido_pkey",
+                    "columnas": "id",
+                    "referencia": null
+                },
+                {
+                    "tipo": "u",
+                    "nombre": "detalle_pedido_pedido_id_pieza_id_key",
+                    "columnas": "pedido_id,pieza_id",
+                    "referencia": null
+                }
+            ]
+        },
+        "detalle_venta": {
+            "columnas": [
+                {
+                    "nombre": "id",
+                    "tipo": "integer",
+                    "obligatorio": true
+                },
+                {
+                    "nombre": "venta_id",
+                    "tipo": "integer",
+                    "obligatorio": true
+                },
+                {
+                    "nombre": "pieza_id",
+                    "tipo": "integer",
+                    "obligatorio": true
+                },
+                {
+                    "nombre": "cantidad",
+                    "tipo": "integer",
+                    "obligatorio": true
+                },
+                {
+                    "nombre": "precio_unitario",
+                    "tipo": "numeric(10,2)",
+                    "obligatorio": true
+                },
+                {
+                    "nombre": "subtotal",
+                    "tipo": "numeric(12,2)",
+                    "obligatorio": false
+                }
+            ],
+            "restricciones": [
+                {
+                    "tipo": "c",
+                    "nombre": "detalle_venta_cantidad_check",
+                    "columnas": "cantidad",
+                    "referencia": null
+                },
+                {
+                    "tipo": "c",
+                    "nombre": "detalle_venta_precio_unitario_check",
+                    "columnas": "precio_unitario",
+                    "referencia": null
+                },
+                {
+                    "tipo": "f",
+                    "nombre": "detalle_venta_pieza_id_fkey",
+                    "columnas": "pieza_id",
+                    "referencia": "pieza"
+                },
+                {
+                    "tipo": "f",
+                    "nombre": "detalle_venta_venta_id_fkey",
+                    "columnas": "venta_id",
+                    "referencia": "venta"
+                },
+                {
+                    "tipo": "p",
+                    "nombre": "detalle_venta_pkey",
+                    "columnas": "id",
+                    "referencia": null
+                },
+                {
+                    "tipo": "u",
+                    "nombre": "detalle_venta_venta_id_pieza_id_key",
+                    "columnas": "venta_id,pieza_id",
+                    "referencia": null
+                }
+            ]
+        },
+        "historial_precio": {
+            "columnas": [
+                {
+                    "nombre": "id",
+                    "tipo": "bigint",
+                    "obligatorio": true
+                },
+                {
+                    "nombre": "pieza_id",
+                    "tipo": "integer",
+                    "obligatorio": true
+                },
+                {
+                    "nombre": "precio_anterior",
+                    "tipo": "numeric(10,2)",
+                    "obligatorio": true
+                },
+                {
+                    "nombre": "precio_nuevo",
+                    "tipo": "numeric(10,2)",
+                    "obligatorio": true
+                },
+                {
+                    "nombre": "usuario_id",
+                    "tipo": "integer",
+                    "obligatorio": false
+                },
+                {
+                    "nombre": "fecha",
+                    "tipo": "timestamp with time zone",
+                    "obligatorio": true
+                }
+            ],
+            "restricciones": [
+                {
+                    "tipo": "f",
+                    "nombre": "historial_precio_pieza_id_fkey",
+                    "columnas": "pieza_id",
+                    "referencia": "pieza"
+                },
+                {
+                    "tipo": "f",
+                    "nombre": "historial_precio_usuario_id_fkey",
+                    "columnas": "usuario_id",
+                    "referencia": "usuario"
+                },
+                {
+                    "tipo": "p",
+                    "nombre": "historial_precio_pkey",
+                    "columnas": "id",
+                    "referencia": null
+                }
+            ]
+        },
+        "horario": {
+            "columnas": [
+                {
+                    "nombre": "id",
+                    "tipo": "integer",
+                    "obligatorio": true
+                },
+                {
+                    "nombre": "taller_id",
+                    "tipo": "smallint",
+                    "obligatorio": true
+                },
+                {
+                    "nombre": "maestra_id",
+                    "tipo": "integer",
+                    "obligatorio": true
+                },
+                {
+                    "nombre": "dia_semana",
+                    "tipo": "smallint",
+                    "obligatorio": true
+                },
+                {
+                    "nombre": "hora_inicio",
+                    "tipo": "time without time zone",
+                    "obligatorio": true
+                },
+                {
+                    "nombre": "hora_fin",
+                    "tipo": "time without time zone",
+                    "obligatorio": true
+                },
+                {
+                    "nombre": "cupo",
+                    "tipo": "smallint",
+                    "obligatorio": true
+                },
+                {
+                    "nombre": "estado",
+                    "tipo": "character varying(10)",
+                    "obligatorio": true
+                }
+            ],
+            "restricciones": [
+                {
+                    "tipo": "c",
+                    "nombre": "horario_check",
+                    "columnas": "hora_fin,hora_inicio",
+                    "referencia": null
+                },
+                {
+                    "tipo": "c",
+                    "nombre": "horario_cupo_check",
+                    "columnas": "cupo",
+                    "referencia": null
+                },
+                {
+                    "tipo": "c",
+                    "nombre": "horario_dia_semana_check",
+                    "columnas": "dia_semana",
+                    "referencia": null
+                },
+                {
+                    "tipo": "c",
+                    "nombre": "horario_estado_check",
+                    "columnas": "estado",
+                    "referencia": null
+                },
+                {
+                    "tipo": "f",
+                    "nombre": "horario_maestra_id_fkey",
+                    "columnas": "maestra_id",
+                    "referencia": "maestra"
+                },
+                {
+                    "tipo": "f",
+                    "nombre": "horario_taller_id_fkey",
+                    "columnas": "taller_id",
+                    "referencia": "taller"
+                },
+                {
+                    "tipo": "p",
+                    "nombre": "horario_pkey",
+                    "columnas": "id",
+                    "referencia": null
+                },
+                {
+                    "tipo": "x",
+                    "nombre": "horario_sin_cruce_maestra",
+                    "columnas": "maestra_id,dia_semana",
+                    "referencia": null
+                }
+            ]
+        },
+        "maestra": {
+            "columnas": [
+                {
+                    "nombre": "id",
+                    "tipo": "integer",
+                    "obligatorio": true
+                },
+                {
+                    "nombre": "usuario_id",
+                    "tipo": "integer",
+                    "obligatorio": true
+                },
+                {
+                    "nombre": "especialidad",
+                    "tipo": "character varying(120)",
+                    "obligatorio": true
+                },
+                {
+                    "nombre": "biografia",
+                    "tipo": "character varying(500)",
+                    "obligatorio": false
+                },
+                {
+                    "nombre": "estado",
+                    "tipo": "character varying(10)",
+                    "obligatorio": true
+                }
+            ],
+            "restricciones": [
+                {
+                    "tipo": "c",
+                    "nombre": "maestra_estado_check",
+                    "columnas": "estado",
+                    "referencia": null
+                },
+                {
+                    "tipo": "f",
+                    "nombre": "maestra_usuario_id_fkey",
+                    "columnas": "usuario_id",
+                    "referencia": "usuario"
+                },
+                {
+                    "tipo": "p",
+                    "nombre": "maestra_pkey",
+                    "columnas": "id",
+                    "referencia": null
+                },
+                {
+                    "tipo": "u",
+                    "nombre": "maestra_usuario_id_key",
+                    "columnas": "usuario_id",
+                    "referencia": null
+                }
+            ]
+        },
+        "material": {
+            "columnas": [
+                {
+                    "nombre": "id",
+                    "tipo": "integer",
+                    "obligatorio": true
+                },
+                {
+                    "nombre": "categoria_id",
+                    "tipo": "smallint",
+                    "obligatorio": true
+                },
+                {
+                    "nombre": "unidad_id",
+                    "tipo": "smallint",
+                    "obligatorio": true
+                },
+                {
+                    "nombre": "nombre",
+                    "tipo": "character varying(80)",
+                    "obligatorio": true
+                },
+                {
+                    "nombre": "descripcion",
+                    "tipo": "character varying(300)",
+                    "obligatorio": false
+                },
+                {
+                    "nombre": "stock",
+                    "tipo": "numeric(12,2)",
+                    "obligatorio": true
+                },
+                {
+                    "nombre": "stock_minimo",
+                    "tipo": "numeric(12,2)",
+                    "obligatorio": true
+                },
+                {
+                    "nombre": "costo_promedio",
+                    "tipo": "numeric(12,2)",
+                    "obligatorio": true
+                },
+                {
+                    "nombre": "estado",
+                    "tipo": "character varying(10)",
+                    "obligatorio": true
+                }
+            ],
+            "restricciones": [
+                {
+                    "tipo": "c",
+                    "nombre": "material_costo_promedio_check",
+                    "columnas": "costo_promedio",
+                    "referencia": null
+                },
+                {
+                    "tipo": "c",
+                    "nombre": "material_estado_check",
+                    "columnas": "estado",
+                    "referencia": null
+                },
+                {
+                    "tipo": "c",
+                    "nombre": "material_stock_check",
+                    "columnas": "stock",
+                    "referencia": null
+                },
+                {
+                    "tipo": "c",
+                    "nombre": "material_stock_minimo_check",
+                    "columnas": "stock_minimo",
+                    "referencia": null
+                },
+                {
+                    "tipo": "f",
+                    "nombre": "material_categoria_id_fkey",
+                    "columnas": "categoria_id",
+                    "referencia": "categoria"
+                },
+                {
+                    "tipo": "f",
+                    "nombre": "material_unidad_id_fkey",
+                    "columnas": "unidad_id",
+                    "referencia": "unidad"
+                },
+                {
+                    "tipo": "p",
+                    "nombre": "material_pkey",
+                    "columnas": "id",
+                    "referencia": null
+                }
+            ]
+        },
+        "metodo_pago": {
+            "columnas": [
+                {
+                    "nombre": "id",
+                    "tipo": "smallint",
+                    "obligatorio": true
+                },
+                {
+                    "nombre": "nombre",
+                    "tipo": "character varying(30)",
+                    "obligatorio": true
+                },
+                {
+                    "nombre": "estado",
+                    "tipo": "character varying(10)",
+                    "obligatorio": true
+                }
+            ],
+            "restricciones": [
+                {
+                    "tipo": "c",
+                    "nombre": "metodo_pago_estado_check",
+                    "columnas": "estado",
+                    "referencia": null
+                },
+                {
+                    "tipo": "p",
+                    "nombre": "metodo_pago_pkey",
+                    "columnas": "id",
+                    "referencia": null
+                }
+            ]
+        },
+        "movimiento_material": {
+            "columnas": [
+                {
+                    "nombre": "id",
+                    "tipo": "bigint",
+                    "obligatorio": true
+                },
+                {
+                    "nombre": "material_id",
+                    "tipo": "integer",
+                    "obligatorio": true
+                },
+                {
+                    "nombre": "tipo",
+                    "tipo": "character varying(16)",
+                    "obligatorio": true
+                },
+                {
+                    "nombre": "cantidad",
+                    "tipo": "numeric(12,2)",
+                    "obligatorio": true
+                },
+                {
+                    "nombre": "stock_resultante",
+                    "tipo": "numeric(12,2)",
+                    "obligatorio": true
+                },
+                {
+                    "nombre": "motivo",
+                    "tipo": "character varying(255)",
+                    "obligatorio": true
+                },
+                {
+                    "nombre": "compra_id",
+                    "tipo": "integer",
+                    "obligatorio": false
+                },
+                {
+                    "nombre": "usuario_id",
+                    "tipo": "integer",
+                    "obligatorio": true
+                },
+                {
+                    "nombre": "fecha",
+                    "tipo": "timestamp with time zone",
+                    "obligatorio": true
+                }
+            ],
+            "restricciones": [
+                {
+                    "tipo": "c",
+                    "nombre": "movimiento_material_cantidad_check",
+                    "columnas": "cantidad",
+                    "referencia": null
+                },
+                {
+                    "tipo": "c",
+                    "nombre": "movimiento_material_stock_resultante_check",
+                    "columnas": "stock_resultante",
+                    "referencia": null
+                },
+                {
+                    "tipo": "c",
+                    "nombre": "movimiento_material_tipo_check",
+                    "columnas": "tipo",
+                    "referencia": null
+                },
+                {
+                    "tipo": "f",
+                    "nombre": "movimiento_material_compra_id_fkey",
+                    "columnas": "compra_id",
+                    "referencia": "compra"
+                },
+                {
+                    "tipo": "f",
+                    "nombre": "movimiento_material_material_id_fkey",
+                    "columnas": "material_id",
+                    "referencia": "material"
+                },
+                {
+                    "tipo": "f",
+                    "nombre": "movimiento_material_usuario_id_fkey",
+                    "columnas": "usuario_id",
+                    "referencia": "usuario"
+                },
+                {
+                    "tipo": "p",
+                    "nombre": "movimiento_material_pkey",
+                    "columnas": "id",
+                    "referencia": null
+                }
+            ]
+        },
+        "movimiento_pieza": {
+            "columnas": [
+                {
+                    "nombre": "id",
+                    "tipo": "bigint",
+                    "obligatorio": true
+                },
+                {
+                    "nombre": "pieza_id",
+                    "tipo": "integer",
+                    "obligatorio": true
+                },
+                {
+                    "nombre": "tipo",
+                    "tipo": "character varying(16)",
+                    "obligatorio": true
+                },
+                {
+                    "nombre": "cantidad",
+                    "tipo": "integer",
+                    "obligatorio": true
+                },
+                {
+                    "nombre": "stock_resultante",
+                    "tipo": "integer",
+                    "obligatorio": true
+                },
+                {
+                    "nombre": "motivo",
+                    "tipo": "character varying(255)",
+                    "obligatorio": true
+                },
+                {
+                    "nombre": "venta_id",
+                    "tipo": "integer",
+                    "obligatorio": false
+                },
+                {
+                    "nombre": "usuario_id",
+                    "tipo": "integer",
+                    "obligatorio": true
+                },
+                {
+                    "nombre": "fecha",
+                    "tipo": "timestamp with time zone",
+                    "obligatorio": true
+                },
+                {
+                    "nombre": "pedido_id",
+                    "tipo": "integer",
+                    "obligatorio": false
+                }
+            ],
+            "restricciones": [
+                {
+                    "tipo": "c",
+                    "nombre": "movimiento_pieza_cantidad_check",
+                    "columnas": "cantidad",
+                    "referencia": null
+                },
+                {
+                    "tipo": "c",
+                    "nombre": "movimiento_pieza_stock_resultante_check",
+                    "columnas": "stock_resultante",
+                    "referencia": null
+                },
+                {
+                    "tipo": "c",
+                    "nombre": "movimiento_pieza_tipo_check",
+                    "columnas": "tipo",
+                    "referencia": null
+                },
+                {
+                    "tipo": "f",
+                    "nombre": "movimiento_pieza_pedido_id_fkey",
+                    "columnas": "pedido_id",
+                    "referencia": "pedido"
+                },
+                {
+                    "tipo": "f",
+                    "nombre": "movimiento_pieza_pieza_id_fkey",
+                    "columnas": "pieza_id",
+                    "referencia": "pieza"
+                },
+                {
+                    "tipo": "f",
+                    "nombre": "movimiento_pieza_usuario_id_fkey",
+                    "columnas": "usuario_id",
+                    "referencia": "usuario"
+                },
+                {
+                    "tipo": "f",
+                    "nombre": "movimiento_pieza_venta_id_fkey",
+                    "columnas": "venta_id",
+                    "referencia": "venta"
+                },
+                {
+                    "tipo": "p",
+                    "nombre": "movimiento_pieza_pkey",
+                    "columnas": "id",
+                    "referencia": null
+                }
+            ]
+        },
+        "pago": {
+            "columnas": [
+                {
+                    "nombre": "id",
+                    "tipo": "integer",
+                    "obligatorio": true
+                },
+                {
+                    "nombre": "pedido_id",
+                    "tipo": "integer",
+                    "obligatorio": true
+                },
+                {
+                    "nombre": "metodo",
+                    "tipo": "character varying(10)",
+                    "obligatorio": true
+                },
+                {
+                    "nombre": "monto",
+                    "tipo": "numeric(12,2)",
+                    "obligatorio": true
+                },
+                {
+                    "nombre": "estado",
+                    "tipo": "character varying(10)",
+                    "obligatorio": true
+                },
+                {
+                    "nombre": "referencia",
+                    "tipo": "character varying(40)",
+                    "obligatorio": true
+                },
+                {
+                    "nombre": "tarjeta_marca",
+                    "tipo": "character varying(20)",
+                    "obligatorio": false
+                },
+                {
+                    "nombre": "tarjeta_ultimos4",
+                    "tipo": "character(4)",
+                    "obligatorio": false
+                },
+                {
+                    "nombre": "titular",
+                    "tipo": "character varying(80)",
+                    "obligatorio": false
+                },
+                {
+                    "nombre": "cuenta_paypal",
+                    "tipo": "character varying(120)",
+                    "obligatorio": false
+                },
+                {
+                    "nombre": "detalle",
+                    "tipo": "character varying(200)",
+                    "obligatorio": false
+                },
+                {
+                    "nombre": "creado_en",
+                    "tipo": "timestamp with time zone",
+                    "obligatorio": true
+                },
+                {
+                    "nombre": "verificado_por",
+                    "tipo": "integer",
+                    "obligatorio": false
+                },
+                {
+                    "nombre": "verificado_en",
+                    "tipo": "timestamp with time zone",
+                    "obligatorio": false
+                }
+            ],
+            "restricciones": [
+                {
+                    "tipo": "c",
+                    "nombre": "pago_check",
+                    "columnas": "metodo,tarjeta_ultimos4",
+                    "referencia": null
+                },
+                {
+                    "tipo": "c",
+                    "nombre": "pago_estado_check",
+                    "columnas": "estado",
+                    "referencia": null
+                },
+                {
+                    "tipo": "c",
+                    "nombre": "pago_metodo_check",
+                    "columnas": "metodo",
+                    "referencia": null
+                },
+                {
+                    "tipo": "c",
+                    "nombre": "pago_monto_check",
+                    "columnas": "monto",
+                    "referencia": null
+                },
+                {
+                    "tipo": "c",
+                    "nombre": "pago_tarjeta_ultimos4_check",
+                    "columnas": "tarjeta_ultimos4",
+                    "referencia": null
+                },
+                {
+                    "tipo": "f",
+                    "nombre": "pago_pedido_id_fkey",
+                    "columnas": "pedido_id",
+                    "referencia": "pedido"
+                },
+                {
+                    "tipo": "f",
+                    "nombre": "pago_verificado_por_fkey",
+                    "columnas": "verificado_por",
+                    "referencia": "usuario"
+                },
+                {
+                    "tipo": "p",
+                    "nombre": "pago_pkey",
+                    "columnas": "id",
+                    "referencia": null
+                }
+            ]
+        },
+        "pedido": {
+            "columnas": [
+                {
+                    "nombre": "id",
+                    "tipo": "integer",
+                    "obligatorio": true
+                },
+                {
+                    "nombre": "numero",
+                    "tipo": "character varying(12)",
+                    "obligatorio": true
+                },
+                {
+                    "nombre": "cliente_id",
+                    "tipo": "integer",
+                    "obligatorio": true
+                },
+                {
+                    "nombre": "usuario_id",
+                    "tipo": "integer",
+                    "obligatorio": true
+                },
+                {
+                    "nombre": "fecha",
+                    "tipo": "timestamp with time zone",
+                    "obligatorio": true
+                },
+                {
+                    "nombre": "expira_en",
+                    "tipo": "timestamp with time zone",
+                    "obligatorio": true
+                },
+                {
+                    "nombre": "entrega",
+                    "tipo": "character varying(10)",
+                    "obligatorio": true
+                },
+                {
+                    "nombre": "direccion",
+                    "tipo": "character varying(200)",
+                    "obligatorio": false
+                },
+                {
+                    "nombre": "telefono",
+                    "tipo": "character varying(20)",
+                    "obligatorio": true
+                },
+                {
+                    "nombre": "nota",
+                    "tipo": "character varying(300)",
+                    "obligatorio": false
+                },
+                {
+                    "nombre": "total",
+                    "tipo": "numeric(12,2)",
+                    "obligatorio": true
+                },
+                {
+                    "nombre": "estado",
+                    "tipo": "character varying(16)",
+                    "obligatorio": true
+                },
+                {
+                    "nombre": "motivo_cancelacion",
+                    "tipo": "character varying(255)",
+                    "obligatorio": false
+                },
+                {
+                    "nombre": "pagado_en",
+                    "tipo": "timestamp with time zone",
+                    "obligatorio": false
+                },
+                {
+                    "nombre": "entregado_en",
+                    "tipo": "timestamp with time zone",
+                    "obligatorio": false
+                },
+                {
+                    "nombre": "comprobante_enviado",
+                    "tipo": "boolean",
+                    "obligatorio": true
+                }
+            ],
+            "restricciones": [
+                {
+                    "tipo": "c",
+                    "nombre": "pedido_check",
+                    "columnas": "entrega,direccion",
+                    "referencia": null
+                },
+                {
+                    "tipo": "c",
+                    "nombre": "pedido_check1",
+                    "columnas": "estado,motivo_cancelacion",
+                    "referencia": null
+                },
+                {
+                    "tipo": "c",
+                    "nombre": "pedido_entrega_check",
+                    "columnas": "entrega",
+                    "referencia": null
+                },
+                {
+                    "tipo": "c",
+                    "nombre": "pedido_estado_check",
+                    "columnas": "estado",
+                    "referencia": null
+                },
+                {
+                    "tipo": "c",
+                    "nombre": "pedido_telefono_check",
+                    "columnas": "telefono",
+                    "referencia": null
+                },
+                {
+                    "tipo": "c",
+                    "nombre": "pedido_total_check",
+                    "columnas": "total",
+                    "referencia": null
+                },
+                {
+                    "tipo": "f",
+                    "nombre": "pedido_cliente_id_fkey",
+                    "columnas": "cliente_id",
+                    "referencia": "cliente"
+                },
+                {
+                    "tipo": "f",
+                    "nombre": "pedido_usuario_id_fkey",
+                    "columnas": "usuario_id",
+                    "referencia": "usuario"
+                },
+                {
+                    "tipo": "p",
+                    "nombre": "pedido_pkey",
+                    "columnas": "id",
+                    "referencia": null
+                },
+                {
+                    "tipo": "u",
+                    "nombre": "pedido_numero_key",
+                    "columnas": "numero",
+                    "referencia": null
+                }
+            ]
+        },
+        "permiso": {
+            "columnas": [
+                {
+                    "nombre": "id",
+                    "tipo": "smallint",
+                    "obligatorio": true
+                },
+                {
+                    "nombre": "codigo",
+                    "tipo": "character varying(60)",
+                    "obligatorio": true
+                },
+                {
+                    "nombre": "descripcion",
+                    "tipo": "character varying(150)",
+                    "obligatorio": true
+                },
+                {
+                    "nombre": "modulo",
+                    "tipo": "character varying(40)",
+                    "obligatorio": true
+                }
+            ],
+            "restricciones": [
+                {
+                    "tipo": "c",
+                    "nombre": "permiso_codigo_check",
+                    "columnas": "codigo",
+                    "referencia": null
+                },
+                {
+                    "tipo": "p",
+                    "nombre": "permiso_pkey",
+                    "columnas": "id",
+                    "referencia": null
+                },
+                {
+                    "tipo": "u",
+                    "nombre": "permiso_codigo_key",
+                    "columnas": "codigo",
+                    "referencia": null
+                }
+            ]
+        },
+        "pieza": {
+            "columnas": [
+                {
+                    "nombre": "id",
+                    "tipo": "integer",
+                    "obligatorio": true
+                },
+                {
+                    "nombre": "codigo",
+                    "tipo": "character varying(12)",
+                    "obligatorio": true
+                },
+                {
+                    "nombre": "categoria_id",
+                    "tipo": "smallint",
+                    "obligatorio": true
+                },
+                {
+                    "nombre": "nombre",
+                    "tipo": "character varying(100)",
+                    "obligatorio": true
+                },
+                {
+                    "nombre": "descripcion",
+                    "tipo": "character varying(500)",
+                    "obligatorio": false
+                },
+                {
+                    "nombre": "precio",
+                    "tipo": "numeric(10,2)",
+                    "obligatorio": true
+                },
+                {
+                    "nombre": "stock",
+                    "tipo": "integer",
+                    "obligatorio": true
+                },
+                {
+                    "nombre": "stock_minimo",
+                    "tipo": "integer",
+                    "obligatorio": true
+                },
+                {
+                    "nombre": "imagen",
+                    "tipo": "character varying(120)",
+                    "obligatorio": false
+                },
+                {
+                    "nombre": "estado",
+                    "tipo": "character varying(10)",
+                    "obligatorio": true
+                },
+                {
+                    "nombre": "creado_en",
+                    "tipo": "timestamp with time zone",
+                    "obligatorio": true
+                }
+            ],
+            "restricciones": [
+                {
+                    "tipo": "c",
+                    "nombre": "pieza_codigo_check",
+                    "columnas": "codigo",
+                    "referencia": null
+                },
+                {
+                    "tipo": "c",
+                    "nombre": "pieza_estado_check",
+                    "columnas": "estado",
+                    "referencia": null
+                },
+                {
+                    "tipo": "c",
+                    "nombre": "pieza_precio_check",
+                    "columnas": "precio",
+                    "referencia": null
+                },
+                {
+                    "tipo": "c",
+                    "nombre": "pieza_stock_check",
+                    "columnas": "stock",
+                    "referencia": null
+                },
+                {
+                    "tipo": "c",
+                    "nombre": "pieza_stock_minimo_check",
+                    "columnas": "stock_minimo",
+                    "referencia": null
+                },
+                {
+                    "tipo": "f",
+                    "nombre": "pieza_categoria_id_fkey",
+                    "columnas": "categoria_id",
+                    "referencia": "categoria"
+                },
+                {
+                    "tipo": "p",
+                    "nombre": "pieza_pkey",
+                    "columnas": "id",
+                    "referencia": null
+                },
+                {
+                    "tipo": "u",
+                    "nombre": "pieza_codigo_key",
+                    "columnas": "codigo",
+                    "referencia": null
+                }
+            ]
+        },
+        "pieza_imagen": {
+            "columnas": [
+                {
+                    "nombre": "pieza_id",
+                    "tipo": "integer",
+                    "obligatorio": true
+                },
+                {
+                    "nombre": "tipo_mime",
+                    "tipo": "character varying(20)",
+                    "obligatorio": true
+                },
+                {
+                    "nombre": "contenido",
+                    "tipo": "bytea",
+                    "obligatorio": true
+                },
+                {
+                    "nombre": "actualizado_en",
+                    "tipo": "timestamp with time zone",
+                    "obligatorio": true
+                }
+            ],
+            "restricciones": [
+                {
+                    "tipo": "c",
+                    "nombre": "pieza_imagen_contenido_check",
+                    "columnas": "contenido",
+                    "referencia": null
+                },
+                {
+                    "tipo": "c",
+                    "nombre": "pieza_imagen_tipo_mime_check",
+                    "columnas": "tipo_mime",
+                    "referencia": null
+                },
+                {
+                    "tipo": "f",
+                    "nombre": "pieza_imagen_pieza_id_fkey",
+                    "columnas": "pieza_id",
+                    "referencia": "pieza"
+                },
+                {
+                    "tipo": "p",
+                    "nombre": "pieza_imagen_pkey",
+                    "columnas": "pieza_id",
+                    "referencia": null
+                }
+            ]
+        },
+        "proveedor": {
+            "columnas": [
+                {
+                    "nombre": "id",
+                    "tipo": "smallint",
+                    "obligatorio": true
+                },
+                {
+                    "nombre": "nombre",
+                    "tipo": "character varying(100)",
+                    "obligatorio": true
+                },
+                {
+                    "nombre": "nit",
+                    "tipo": "character varying(20)",
+                    "obligatorio": false
+                },
+                {
+                    "nombre": "contacto",
+                    "tipo": "character varying(80)",
+                    "obligatorio": false
+                },
+                {
+                    "nombre": "telefono",
+                    "tipo": "character varying(20)",
+                    "obligatorio": false
+                },
+                {
+                    "nombre": "correo",
+                    "tipo": "character varying(120)",
+                    "obligatorio": false
+                },
+                {
+                    "nombre": "ciudad",
+                    "tipo": "character varying(40)",
+                    "obligatorio": true
+                },
+                {
+                    "nombre": "direccion",
+                    "tipo": "character varying(200)",
+                    "obligatorio": false
+                },
+                {
+                    "nombre": "estado",
+                    "tipo": "character varying(10)",
+                    "obligatorio": true
+                }
+            ],
+            "restricciones": [
+                {
+                    "tipo": "c",
+                    "nombre": "proveedor_correo_check",
+                    "columnas": "correo",
+                    "referencia": null
+                },
+                {
+                    "tipo": "c",
+                    "nombre": "proveedor_estado_check",
+                    "columnas": "estado",
+                    "referencia": null
+                },
+                {
+                    "tipo": "c",
+                    "nombre": "proveedor_nit_check",
+                    "columnas": "nit",
+                    "referencia": null
+                },
+                {
+                    "tipo": "c",
+                    "nombre": "proveedor_telefono_check",
+                    "columnas": "telefono",
+                    "referencia": null
+                },
+                {
+                    "tipo": "p",
+                    "nombre": "proveedor_pkey",
+                    "columnas": "id",
+                    "referencia": null
+                }
+            ]
+        },
+        "recuperacion": {
+            "columnas": [
+                {
+                    "nombre": "id",
+                    "tipo": "integer",
+                    "obligatorio": true
+                },
+                {
+                    "nombre": "usuario_id",
+                    "tipo": "integer",
+                    "obligatorio": true
+                },
+                {
+                    "nombre": "codigo_hash",
+                    "tipo": "character varying(255)",
+                    "obligatorio": true
+                },
+                {
+                    "nombre": "expira_en",
+                    "tipo": "timestamp with time zone",
+                    "obligatorio": true
+                },
+                {
+                    "nombre": "intentos",
+                    "tipo": "smallint",
+                    "obligatorio": true
+                },
+                {
+                    "nombre": "usado",
+                    "tipo": "boolean",
+                    "obligatorio": true
+                },
+                {
+                    "nombre": "creado_en",
+                    "tipo": "timestamp with time zone",
+                    "obligatorio": true
+                },
+                {
+                    "nombre": "ip",
+                    "tipo": "character varying(64)",
+                    "obligatorio": false
+                }
+            ],
+            "restricciones": [
+                {
+                    "tipo": "c",
+                    "nombre": "recuperacion_check",
+                    "columnas": "expira_en,creado_en",
+                    "referencia": null
+                },
+                {
+                    "tipo": "c",
+                    "nombre": "recuperacion_intentos_check",
+                    "columnas": "intentos",
+                    "referencia": null
+                },
+                {
+                    "tipo": "f",
+                    "nombre": "recuperacion_usuario_id_fkey",
+                    "columnas": "usuario_id",
+                    "referencia": "usuario"
+                },
+                {
+                    "tipo": "p",
+                    "nombre": "recuperacion_pkey",
+                    "columnas": "id",
+                    "referencia": null
+                }
+            ]
+        },
+        "reserva": {
+            "columnas": [
+                {
+                    "nombre": "id",
+                    "tipo": "integer",
+                    "obligatorio": true
+                },
+                {
+                    "nombre": "sesion_id",
+                    "tipo": "integer",
+                    "obligatorio": true
+                },
+                {
+                    "nombre": "alumno_id",
+                    "tipo": "integer",
+                    "obligatorio": true
+                },
+                {
+                    "nombre": "estado",
+                    "tipo": "character varying(10)",
+                    "obligatorio": true
+                },
+                {
+                    "nombre": "registrado_por",
+                    "tipo": "integer",
+                    "obligatorio": false
+                },
+                {
+                    "nombre": "creado_en",
+                    "tipo": "timestamp with time zone",
+                    "obligatorio": true
+                },
+                {
+                    "nombre": "cancelado_en",
+                    "tipo": "timestamp with time zone",
+                    "obligatorio": false
+                },
+                {
+                    "nombre": "motivo_cancelacion",
+                    "tipo": "character varying(255)",
+                    "obligatorio": false
+                },
+                {
+                    "nombre": "asistencia_en",
+                    "tipo": "timestamp with time zone",
+                    "obligatorio": false
+                }
+            ],
+            "restricciones": [
+                {
+                    "tipo": "c",
+                    "nombre": "reserva_check",
+                    "columnas": "estado,motivo_cancelacion",
+                    "referencia": null
+                },
+                {
+                    "tipo": "c",
+                    "nombre": "reserva_estado_check",
+                    "columnas": "estado",
+                    "referencia": null
+                },
+                {
+                    "tipo": "f",
+                    "nombre": "reserva_alumno_id_fkey",
+                    "columnas": "alumno_id",
+                    "referencia": "alumno"
+                },
+                {
+                    "tipo": "f",
+                    "nombre": "reserva_registrado_por_fkey",
+                    "columnas": "registrado_por",
+                    "referencia": "usuario"
+                },
+                {
+                    "tipo": "f",
+                    "nombre": "reserva_sesion_id_fkey",
+                    "columnas": "sesion_id",
+                    "referencia": "sesion_clase"
+                },
+                {
+                    "tipo": "p",
+                    "nombre": "reserva_pkey",
+                    "columnas": "id",
+                    "referencia": null
+                }
+            ]
+        },
+        "rol": {
+            "columnas": [
+                {
+                    "nombre": "id",
+                    "tipo": "smallint",
+                    "obligatorio": true
+                },
+                {
+                    "nombre": "nombre",
+                    "tipo": "character varying(40)",
+                    "obligatorio": true
+                },
+                {
+                    "nombre": "descripcion",
+                    "tipo": "character varying(200)",
+                    "obligatorio": false
+                },
+                {
+                    "nombre": "estado",
+                    "tipo": "character varying(10)",
+                    "obligatorio": true
+                },
+                {
+                    "nombre": "creado_en",
+                    "tipo": "timestamp with time zone",
+                    "obligatorio": true
+                }
+            ],
+            "restricciones": [
+                {
+                    "tipo": "c",
+                    "nombre": "rol_estado_check",
+                    "columnas": "estado",
+                    "referencia": null
+                },
+                {
+                    "tipo": "p",
+                    "nombre": "rol_pkey",
+                    "columnas": "id",
+                    "referencia": null
+                }
+            ]
+        },
+        "rolpermiso": {
+            "columnas": [
+                {
+                    "nombre": "rol_id",
+                    "tipo": "smallint",
+                    "obligatorio": true
+                },
+                {
+                    "nombre": "permiso_id",
+                    "tipo": "smallint",
+                    "obligatorio": true
+                }
+            ],
+            "restricciones": [
+                {
+                    "tipo": "f",
+                    "nombre": "rolpermiso_permiso_id_fkey",
+                    "columnas": "permiso_id",
+                    "referencia": "permiso"
+                },
+                {
+                    "tipo": "f",
+                    "nombre": "rolpermiso_rol_id_fkey",
+                    "columnas": "rol_id",
+                    "referencia": "rol"
+                },
+                {
+                    "tipo": "p",
+                    "nombre": "rolpermiso_pkey",
+                    "columnas": "rol_id,permiso_id",
+                    "referencia": null
+                }
+            ]
+        },
+        "sesion": {
+            "columnas": [
+                {
+                    "nombre": "id",
+                    "tipo": "character varying(128)",
+                    "obligatorio": true
+                },
+                {
+                    "nombre": "datos",
+                    "tipo": "text",
+                    "obligatorio": true
+                },
+                {
+                    "nombre": "actualizado",
+                    "tipo": "timestamp with time zone",
+                    "obligatorio": true
+                }
+            ],
+            "restricciones": [
+                {
+                    "tipo": "p",
+                    "nombre": "sesion_pkey",
+                    "columnas": "id",
+                    "referencia": null
+                }
+            ]
+        },
+        "sesion_clase": {
+            "columnas": [
+                {
+                    "nombre": "id",
+                    "tipo": "integer",
+                    "obligatorio": true
+                },
+                {
+                    "nombre": "horario_id",
+                    "tipo": "integer",
+                    "obligatorio": true
+                },
+                {
+                    "nombre": "maestra_id",
+                    "tipo": "integer",
+                    "obligatorio": true
+                },
+                {
+                    "nombre": "fecha",
+                    "tipo": "date",
+                    "obligatorio": true
+                },
+                {
+                    "nombre": "hora_inicio",
+                    "tipo": "time without time zone",
+                    "obligatorio": true
+                },
+                {
+                    "nombre": "hora_fin",
+                    "tipo": "time without time zone",
+                    "obligatorio": true
+                },
+                {
+                    "nombre": "cupo",
+                    "tipo": "smallint",
+                    "obligatorio": true
+                },
+                {
+                    "nombre": "estado",
+                    "tipo": "character varying(12)",
+                    "obligatorio": true
+                },
+                {
+                    "nombre": "motivo_cancelacion",
+                    "tipo": "character varying(255)",
+                    "obligatorio": false
+                }
+            ],
+            "restricciones": [
+                {
+                    "tipo": "c",
+                    "nombre": "sesion_clase_check",
+                    "columnas": "hora_fin,hora_inicio",
+                    "referencia": null
+                },
+                {
+                    "tipo": "c",
+                    "nombre": "sesion_clase_check1",
+                    "columnas": "estado,motivo_cancelacion",
+                    "referencia": null
+                },
+                {
+                    "tipo": "c",
+                    "nombre": "sesion_clase_cupo_check",
+                    "columnas": "cupo",
+                    "referencia": null
+                },
+                {
+                    "tipo": "c",
+                    "nombre": "sesion_clase_estado_check",
+                    "columnas": "estado",
+                    "referencia": null
+                },
+                {
+                    "tipo": "f",
+                    "nombre": "sesion_clase_horario_id_fkey",
+                    "columnas": "horario_id",
+                    "referencia": "horario"
+                },
+                {
+                    "tipo": "f",
+                    "nombre": "sesion_clase_maestra_id_fkey",
+                    "columnas": "maestra_id",
+                    "referencia": "maestra"
+                },
+                {
+                    "tipo": "p",
+                    "nombre": "sesion_clase_pkey",
+                    "columnas": "id",
+                    "referencia": null
+                },
+                {
+                    "tipo": "u",
+                    "nombre": "sesion_clase_horario_id_fecha_key",
+                    "columnas": "horario_id,fecha",
+                    "referencia": null
+                }
+            ]
+        },
+        "taller": {
+            "columnas": [
+                {
+                    "nombre": "id",
+                    "tipo": "smallint",
+                    "obligatorio": true
+                },
+                {
+                    "nombre": "nombre",
+                    "tipo": "character varying(80)",
+                    "obligatorio": true
+                },
+                {
+                    "nombre": "descripcion",
+                    "tipo": "character varying(500)",
+                    "obligatorio": true
+                },
+                {
+                    "nombre": "nivel",
+                    "tipo": "character varying(12)",
+                    "obligatorio": true
+                },
+                {
+                    "nombre": "publico",
+                    "tipo": "character varying(10)",
+                    "obligatorio": true
+                },
+                {
+                    "nombre": "duracion_min",
+                    "tipo": "smallint",
+                    "obligatorio": true
+                },
+                {
+                    "nombre": "precio_clase",
+                    "tipo": "numeric(10,2)",
+                    "obligatorio": true
+                },
+                {
+                    "nombre": "precio_mensual",
+                    "tipo": "numeric(10,2)",
+                    "obligatorio": true
+                },
+                {
+                    "nombre": "estado",
+                    "tipo": "character varying(10)",
+                    "obligatorio": true
+                },
+                {
+                    "nombre": "creado_en",
+                    "tipo": "timestamp with time zone",
+                    "obligatorio": true
+                }
+            ],
+            "restricciones": [
+                {
+                    "tipo": "c",
+                    "nombre": "taller_duracion_min_check",
+                    "columnas": "duracion_min",
+                    "referencia": null
+                },
+                {
+                    "tipo": "c",
+                    "nombre": "taller_estado_check",
+                    "columnas": "estado",
+                    "referencia": null
+                },
+                {
+                    "tipo": "c",
+                    "nombre": "taller_nivel_check",
+                    "columnas": "nivel",
+                    "referencia": null
+                },
+                {
+                    "tipo": "c",
+                    "nombre": "taller_precio_clase_check",
+                    "columnas": "precio_clase",
+                    "referencia": null
+                },
+                {
+                    "tipo": "c",
+                    "nombre": "taller_precio_mensual_check",
+                    "columnas": "precio_mensual",
+                    "referencia": null
+                },
+                {
+                    "tipo": "c",
+                    "nombre": "taller_publico_check",
+                    "columnas": "publico",
+                    "referencia": null
+                },
+                {
+                    "tipo": "p",
+                    "nombre": "taller_pkey",
+                    "columnas": "id",
+                    "referencia": null
+                }
+            ]
+        },
+        "unidad": {
+            "columnas": [
+                {
+                    "nombre": "id",
+                    "tipo": "smallint",
+                    "obligatorio": true
+                },
+                {
+                    "nombre": "nombre",
+                    "tipo": "character varying(30)",
+                    "obligatorio": true
+                },
+                {
+                    "nombre": "abreviatura",
+                    "tipo": "character varying(10)",
+                    "obligatorio": true
+                },
+                {
+                    "nombre": "estado",
+                    "tipo": "character varying(10)",
+                    "obligatorio": true
+                }
+            ],
+            "restricciones": [
+                {
+                    "tipo": "c",
+                    "nombre": "unidad_estado_check",
+                    "columnas": "estado",
+                    "referencia": null
+                },
+                {
+                    "tipo": "p",
+                    "nombre": "unidad_pkey",
+                    "columnas": "id",
+                    "referencia": null
+                }
+            ]
+        },
+        "usuario": {
+            "columnas": [
+                {
+                    "nombre": "id",
+                    "tipo": "integer",
+                    "obligatorio": true
+                },
+                {
+                    "nombre": "rol_id",
+                    "tipo": "smallint",
+                    "obligatorio": true
+                },
+                {
+                    "nombre": "nombre",
+                    "tipo": "character varying(60)",
+                    "obligatorio": true
+                },
+                {
+                    "nombre": "apellido",
+                    "tipo": "character varying(60)",
+                    "obligatorio": true
+                },
+                {
+                    "nombre": "correo",
+                    "tipo": "character varying(120)",
+                    "obligatorio": true
+                },
+                {
+                    "nombre": "telefono",
+                    "tipo": "character varying(20)",
+                    "obligatorio": false
+                },
+                {
+                    "nombre": "clave_hash",
+                    "tipo": "character varying(255)",
+                    "obligatorio": true
+                },
+                {
+                    "nombre": "estado",
+                    "tipo": "character varying(10)",
+                    "obligatorio": true
+                },
+                {
+                    "nombre": "ultimo_acceso",
+                    "tipo": "timestamp with time zone",
+                    "obligatorio": false
+                },
+                {
+                    "nombre": "creado_en",
+                    "tipo": "timestamp with time zone",
+                    "obligatorio": true
+                },
+                {
+                    "nombre": "actualizado_en",
+                    "tipo": "timestamp with time zone",
+                    "obligatorio": true
+                }
+            ],
+            "restricciones": [
+                {
+                    "tipo": "c",
+                    "nombre": "usuario_apellido_check",
+                    "columnas": "apellido",
+                    "referencia": null
+                },
+                {
+                    "tipo": "c",
+                    "nombre": "usuario_correo_check",
+                    "columnas": "correo",
+                    "referencia": null
+                },
+                {
+                    "tipo": "c",
+                    "nombre": "usuario_estado_check",
+                    "columnas": "estado",
+                    "referencia": null
+                },
+                {
+                    "tipo": "c",
+                    "nombre": "usuario_nombre_check",
+                    "columnas": "nombre",
+                    "referencia": null
+                },
+                {
+                    "tipo": "c",
+                    "nombre": "usuario_telefono_check",
+                    "columnas": "telefono",
+                    "referencia": null
+                },
+                {
+                    "tipo": "f",
+                    "nombre": "usuario_rol_id_fkey",
+                    "columnas": "rol_id",
+                    "referencia": "rol"
+                },
+                {
+                    "tipo": "p",
+                    "nombre": "usuario_pkey",
+                    "columnas": "id",
+                    "referencia": null
+                }
+            ]
+        },
+        "venta": {
+            "columnas": [
+                {
+                    "nombre": "id",
+                    "tipo": "integer",
+                    "obligatorio": true
+                },
+                {
+                    "nombre": "numero",
+                    "tipo": "character varying(12)",
+                    "obligatorio": true
+                },
+                {
+                    "nombre": "caja_id",
+                    "tipo": "integer",
+                    "obligatorio": true
+                },
+                {
+                    "nombre": "cliente_id",
+                    "tipo": "integer",
+                    "obligatorio": true
+                },
+                {
+                    "nombre": "usuario_id",
+                    "tipo": "integer",
+                    "obligatorio": true
+                },
+                {
+                    "nombre": "metodo_pago_id",
+                    "tipo": "smallint",
+                    "obligatorio": true
+                },
+                {
+                    "nombre": "fecha",
+                    "tipo": "timestamp with time zone",
+                    "obligatorio": true
+                },
+                {
+                    "nombre": "total",
+                    "tipo": "numeric(12,2)",
+                    "obligatorio": true
+                },
+                {
+                    "nombre": "monto_recibido",
+                    "tipo": "numeric(12,2)",
+                    "obligatorio": false
+                },
+                {
+                    "nombre": "estado",
+                    "tipo": "character varying(10)",
+                    "obligatorio": true
+                },
+                {
+                    "nombre": "motivo_anulacion",
+                    "tipo": "character varying(255)",
+                    "obligatorio": false
+                },
+                {
+                    "nombre": "anulado_por",
+                    "tipo": "integer",
+                    "obligatorio": false
+                },
+                {
+                    "nombre": "anulado_en",
+                    "tipo": "timestamp with time zone",
+                    "obligatorio": false
+                }
+            ],
+            "restricciones": [
+                {
+                    "tipo": "c",
+                    "nombre": "venta_check",
+                    "columnas": "estado,motivo_anulacion,anulado_por",
+                    "referencia": null
+                },
+                {
+                    "tipo": "c",
+                    "nombre": "venta_estado_check",
+                    "columnas": "estado",
+                    "referencia": null
+                },
+                {
+                    "tipo": "c",
+                    "nombre": "venta_monto_recibido_check",
+                    "columnas": "monto_recibido",
+                    "referencia": null
+                },
+                {
+                    "tipo": "c",
+                    "nombre": "venta_total_check",
+                    "columnas": "total",
+                    "referencia": null
+                },
+                {
+                    "tipo": "f",
+                    "nombre": "venta_anulado_por_fkey",
+                    "columnas": "anulado_por",
+                    "referencia": "usuario"
+                },
+                {
+                    "tipo": "f",
+                    "nombre": "venta_caja_id_fkey",
+                    "columnas": "caja_id",
+                    "referencia": "caja"
+                },
+                {
+                    "tipo": "f",
+                    "nombre": "venta_cliente_id_fkey",
+                    "columnas": "cliente_id",
+                    "referencia": "cliente"
+                },
+                {
+                    "tipo": "f",
+                    "nombre": "venta_metodo_pago_id_fkey",
+                    "columnas": "metodo_pago_id",
+                    "referencia": "metodo_pago"
+                },
+                {
+                    "tipo": "f",
+                    "nombre": "venta_usuario_id_fkey",
+                    "columnas": "usuario_id",
+                    "referencia": "usuario"
+                },
+                {
+                    "tipo": "p",
+                    "nombre": "venta_pkey",
+                    "columnas": "id",
+                    "referencia": null
+                },
+                {
+                    "tipo": "u",
+                    "nombre": "venta_numero_key",
+                    "columnas": "numero",
+                    "referencia": null
+                }
+            ]
+        }
+    },
+    "triggers": 20
+}

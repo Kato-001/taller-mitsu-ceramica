@@ -144,6 +144,29 @@ php Docs/pruebas/probar_tienda.php  # tienda pública, carrito, pasarela (QR, ta
 
 > Las claves reales **nunca** se suben a GitHub: van en `.env` (ignorado por Git) y en el panel de Vercel.
 
+## Documentación (ciclos I a III)
+
+| Archivo | Contenido |
+|---|---|
+| `Docs/informe/Informe_Taller_Mitsu_Ciclos_I-III.docx` y `.pdf` | Informe final en formato APA 7 con la estructura de la docente: perfil, Ishikawa, requisitos, análisis, diseño, datos (30 consultas, procedimientos y triggers con resultados reales) e implementación |
+| `Docs/Guion_Presentacion.html` | Guion de la defensa: pasos por rol y caso de uso, datos de prueba, preguntas probables y qué hacer si algo falla |
+| `Docs/Sugerencias_por_ciclo.md` | Cambios que se pueden pedir en cada ciclo y dónde se harían |
+| `Docs/diagramas/` | Diagramas UML (generador en Python, `svg/` y `png/`) e Ishikawa |
+| `Docs/informe/capturas/` | Pantallas del sistema publicado usadas como prototipos |
+
+Para regenerar todo (requiere Python con Pillow y matplotlib, Node con `puppeteer-core`, `docx` y `qrcode`, y LibreOffice):
+
+```bash
+php Docs/informe/esquema_bd.php          # tablas reales → datos/esquema.json
+php Docs/informe/resultados_bd.php       # consultas, procedimientos y triggers → datos/bd.json
+python Docs/diagramas/generar.py         # diagramas UML (svg) + datos/casos.json
+python Docs/diagramas/ishikawa.py
+node Docs/diagramas/render.js            # svg → png
+node Docs/informe/capturas.js            # capturas del sistema publicado
+node Docs/informe/generar_informe.js     # Word
+"C:\Program Files\LibreOffice\program\python.exe" Docs/informe/actualizar_pdf.py   # índice + PDF
+```
+
 ### Avisos
 
 - Supabase gratis **pausa el proyecto tras 7 días sin uso**: entrar al panel de Supabase antes de presentar.
