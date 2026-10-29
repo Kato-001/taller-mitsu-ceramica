@@ -1,0 +1,9 @@
+.env
+.git
+web
+frontend
+Docs
+Bakend
+node_modules
+*.log
+.env.local
