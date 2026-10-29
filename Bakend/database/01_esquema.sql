@@ -308,7 +308,7 @@ create table detalle_compra (
 create table movimiento_material (
     id               bigserial primary key,
     material_id      integer       not null references material (id),
-    tipo             varchar(10)   not null check (tipo in ('ENTRADA', 'CONSUMO', 'MERMA', 'AJUSTE_MAS', 'AJUSTE_MENOS')),
+    tipo             varchar(16)   not null check (tipo in ('ENTRADA', 'CONSUMO', 'MERMA', 'AJUSTE_MAS', 'AJUSTE_MENOS')),
     cantidad         numeric(12,2) not null check (cantidad > 0),
     stock_resultante numeric(12,2) not null default 0 check (stock_resultante >= 0),
     motivo           varchar(255)  not null,
@@ -419,7 +419,7 @@ create table detalle_venta (
 create table movimiento_pieza (
     id               bigserial primary key,
     pieza_id         integer     not null references pieza (id),
-    tipo             varchar(12) not null check (tipo in ('PRODUCCION', 'VENTA', 'ANULACION', 'AJUSTE_MAS', 'AJUSTE_MENOS')),
+    tipo             varchar(16) not null check (tipo in ('PRODUCCION', 'VENTA', 'ANULACION', 'AJUSTE_MAS', 'AJUSTE_MENOS')),
     cantidad         integer     not null check (cantidad > 0),
     stock_resultante integer     not null default 0 check (stock_resultante >= 0),
     motivo           varchar(255) not null,

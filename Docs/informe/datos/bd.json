@@ -1,0 +1,1615 @@
+{
+    "consultas": [
+        {
+            "id": "I1",
+            "titulo": "Insertar un proveedor nuevo",
+            "sql": "insert into proveedor (nombre, nit, contacto, telefono, ciudad)\nvalues ('Arcillas del Chaco (demo)', '4056789014', 'Rosa Ayala', '46640001', 'Tarija') returning id, nombre, ciudad;",
+            "ok": true,
+            "total": 1,
+            "filas": [
+                {
+                    "id": 7,
+                    "nombre": "Arcillas del Chaco (demo)",
+                    "ciudad": "Tarija"
+                }
+            ],
+            "columnas": [
+                "id",
+                "nombre",
+                "ciudad"
+            ]
+        },
+        {
+            "id": "U1",
+            "titulo": "Subir 5 % el precio de las tazas (queda en historial_precio por trigger)",
+            "sql": "update pieza set precio = round(precio * 1.05, 2)\n where categoria_id = (select id from categoria where nombre = 'Tazas y vasos') returning codigo, nombre, precio;",
+            "ok": true,
+            "total": 2,
+            "filas": [
+                {
+                    "codigo": "TZ-002",
+                    "nombre": "Vaso Mejillas",
+                    "precio": "99.75"
+                },
+                {
+                    "codigo": "TZ-001",
+                    "nombre": "Taza esmaltada Nube",
+                    "precio": "99.75"
+                }
+            ],
+            "columnas": [
+                "codigo",
+                "nombre",
+                "precio"
+            ]
+        },
+        {
+            "id": "D1",
+            "titulo": "Borrar sesiones PHP vencidas (la única tabla donde se borra: no tiene historial)",
+            "sql": "delete from sesion where actualizado < now() - interval '2 hours' returning id;",
+            "ok": true,
+            "total": 12,
+            "filas": [
+                {
+                    "id": "1ov80s5v0q4kmk10gs6up4t93j"
+                },
+                {
+                    "id": "h9jvsd835fsjeejqi56bekai7s"
+                },
+                {
+                    "id": "t5esn09r49uk129g9upt398bl6"
+                },
+                {
+                    "id": "ctnsrh2f9rtmqba38o6566malp"
+                },
+                {
+                    "id": "8rn7uv1u0j969p871c3sobt8k1"
+                },
+                {
+                    "id": "ta9q8dtj413neg1sun9t55f0n8"
+                }
+            ],
+            "columnas": [
+                "id"
+            ]
+        },
+        {
+            "id": "Q01",
+            "titulo": "Talleres activos ordenados por precio mensual",
+            "sql": "select nombre, nivel, publico, precio_clase, precio_mensual from taller where estado = 'ACTIVO' order by precio_mensual desc;",
+            "ok": true,
+            "total": 7,
+            "filas": [
+                {
+                    "nombre": "Modelado y torno",
+                    "nivel": "INTERMEDIO",
+                    "publico": "ADULTOS",
+                    "precio_clase": "120.00",
+                    "precio_mensual": "420.00"
+                },
+                {
+                    "nombre": "Torno alfarero",
+                    "nivel": "INTERMEDIO",
+                    "publico": "ADULTOS",
+                    "precio_clase": "120.00",
+                    "precio_mensual": "420.00"
+                },
+                {
+                    "nombre": "Modelado avanzado",
+                    "nivel": "AVANZADO",
+                    "publico": "ADULTOS",
+                    "precio_clase": "110.00",
+                    "precio_mensual": "400.00"
+                },
+                {
+                    "nombre": "Taller de sábado para adultos",
+                    "nivel": "TODOS",
+                    "publico": "ADULTOS",
+                    "precio_clase": "100.00",
+                    "precio_mensual": "360.00"
+                },
+                {
+                    "nombre": "Taller de modelado nocturno",
+                    "nivel": "TODOS",
+                    "publico": "ADULTOS",
+                    "precio_clase": "90.00",
+                    "precio_mensual": "320.00"
+                },
+                {
+                    "nombre": "Modelado a mano",
+                    "nivel": "INICIAL",
+                    "publico": "ADULTOS",
+                    "precio_clase": "90.00",
+                    "precio_mensual": "320.00"
+                }
+            ],
+            "columnas": [
+                "nombre",
+                "nivel",
+                "publico",
+                "precio_clase",
+                "precio_mensual"
+            ]
+        },
+        {
+            "id": "Q02",
+            "titulo": "Materiales en o bajo el stock mínimo (alerta de compra)",
+            "sql": "select nombre, stock, stock_minimo from material where stock <= stock_minimo and estado = 'ACTIVO' order by stock;",
+            "ok": true,
+            "total": 4,
+            "filas": [
+                {
+                    "nombre": "Óxido de hierro",
+                    "stock": "2.00",
+                    "stock_minimo": "2.00"
+                },
+                {
+                    "nombre": "Esmalte transparente",
+                    "stock": "3.00",
+                    "stock_minimo": "5.00"
+                },
+                {
+                    "nombre": "Pinceles de cerámica",
+                    "stock": "9.00",
+                    "stock_minimo": "12.00"
+                },
+                {
+                    "nombre": "Arcilla roja",
+                    "stock": "25.00",
+                    "stock_minimo": "40.00"
+                }
+            ],
+            "columnas": [
+                "nombre",
+                "stock",
+                "stock_minimo"
+            ]
+        },
+        {
+            "id": "Q03",
+            "titulo": "Piezas a la venta con menos de 5 unidades",
+            "sql": "select codigo, nombre, precio, stock from pieza where estado = 'ACTIVO' and stock < 5 order by stock, nombre;",
+            "ok": true,
+            "total": 7,
+            "filas": [
+                {
+                    "codigo": "JR-001",
+                    "nombre": "Jarra Andina",
+                    "precio": "350.00",
+                    "stock": 0
+                },
+                {
+                    "codigo": "VS-001",
+                    "nombre": "Vasija Inti",
+                    "precio": "320.00",
+                    "stock": 0
+                },
+                {
+                    "codigo": "VJ-001",
+                    "nombre": "Set café: vaso y bandeja",
+                    "precio": "160.00",
+                    "stock": 1
+                },
+                {
+                    "codigo": "VJ-003",
+                    "nombre": "Bowl esmaltado mediano",
+                    "precio": "90.00",
+                    "stock": 2
+                },
+                {
+                    "codigo": "TZ-001",
+                    "nombre": "Taza esmaltada Nube",
+                    "precio": "95.00",
+                    "stock": 2
+                },
+                {
+                    "codigo": "VS-002",
+                    "nombre": "Vasija Pajarito",
+                    "precio": "290.00",
+                    "stock": 2
+                }
+            ],
+            "columnas": [
+                "codigo",
+                "nombre",
+                "precio",
+                "stock"
+            ]
+        },
+        {
+            "id": "Q04",
+            "titulo": "Clases programadas para hoy",
+            "sql": "select fecha, hora_inicio, hora_fin, cupo, estado from sesion_clase where fecha = hoy_bo() order by hora_inicio;",
+            "ok": true,
+            "total": 2,
+            "filas": [
+                {
+                    "fecha": "2026-10-29",
+                    "hora_inicio": "10:00:00",
+                    "hora_fin": "12:00:00",
+                    "cupo": 8,
+                    "estado": "PROGRAMADA"
+                },
+                {
+                    "fecha": "2026-10-29",
+                    "hora_inicio": "10:00:00",
+                    "hora_fin": "12:00:00",
+                    "cupo": 6,
+                    "estado": "PROGRAMADA"
+                }
+            ],
+            "columnas": [
+                "fecha",
+                "hora_inicio",
+                "hora_fin",
+                "cupo",
+                "estado"
+            ]
+        },
+        {
+            "id": "Q05",
+            "titulo": "Proveedores de Cochabamba o La Paz",
+            "sql": "select nombre, ciudad, telefono from proveedor where ciudad in ('Cochabamba', 'La Paz') order by ciudad;",
+            "ok": true,
+            "total": 2,
+            "filas": [
+                {
+                    "nombre": "Minera Andina Cochabamba (demo)",
+                    "ciudad": "Cochabamba",
+                    "telefono": "44250001"
+                },
+                {
+                    "nombre": "Minerales Illimani S.R.L. (demo)",
+                    "ciudad": "La Paz",
+                    "telefono": "22450002"
+                }
+            ],
+            "columnas": [
+                "nombre",
+                "ciudad",
+                "telefono"
+            ]
+        },
+        {
+            "id": "Q06",
+            "titulo": "Ventas anuladas con su motivo",
+            "sql": "select numero, fecha::date as fecha, total, motivo_anulacion from venta where estado = 'ANULADA' order by fecha desc;",
+            "ok": true,
+            "total": 3,
+            "filas": [
+                {
+                    "numero": "NV-000036",
+                    "fecha": "2026-10-29",
+                    "total": "95.00",
+                    "motivo_anulacion": "Prueba automática de anulación"
+                },
+                {
+                    "numero": "NV-000033",
+                    "fecha": "2026-10-29",
+                    "total": "95.00",
+                    "motivo_anulacion": "Prueba automática de anulación"
+                },
+                {
+                    "numero": "NV-000026",
+                    "fecha": "2026-10-28",
+                    "total": "325.00",
+                    "motivo_anulacion": "Pieza con fisura detectada al entregar (demostración)"
+                }
+            ],
+            "columnas": [
+                "numero",
+                "fecha",
+                "total",
+                "motivo_anulacion"
+            ]
+        },
+        {
+            "id": "Q07",
+            "titulo": "Cantidad de usuarios por estado",
+            "sql": "select estado, count(*) as usuarios from usuario group by estado;",
+            "ok": true,
+            "total": 1,
+            "filas": [
+                {
+                    "estado": "ACTIVO",
+                    "usuarios": 17
+                }
+            ],
+            "columnas": [
+                "estado",
+                "usuarios"
+            ]
+        },
+        {
+            "id": "Q08",
+            "titulo": "Compras registradas en los últimos 30 días",
+            "sql": "select numero, fecha, total from compra where estado = 'REGISTRADA' and fecha >= hoy_bo() - 30 order by fecha desc;",
+            "ok": true,
+            "total": 6,
+            "filas": [
+                {
+                    "numero": "CP-000006",
+                    "fecha": "2026-10-29",
+                    "total": "415.00"
+                },
+                {
+                    "numero": "CP-000007",
+                    "fecha": "2026-10-29",
+                    "total": "415.00"
+                },
+                {
+                    "numero": "CP-000004",
+                    "fecha": "2026-10-23",
+                    "total": "736.00"
+                },
+                {
+                    "numero": "CP-000003",
+                    "fecha": "2026-10-11",
+                    "total": "2460.00"
+                },
+                {
+                    "numero": "CP-000002",
+                    "fecha": "2026-10-04",
+                    "total": "1225.00"
+                },
+                {
+                    "numero": "CP-000001",
+                    "fecha": "2026-10-01",
+                    "total": "2295.00"
+                }
+            ],
+            "columnas": [
+                "numero",
+                "fecha",
+                "total"
+            ]
+        },
+        {
+            "id": "Q09",
+            "titulo": "Intentos de inicio de sesión fallidos de la última semana",
+            "sql": "select ip, count(*) as intentos from bitacora where accion = 'LOGIN_FALLIDO' and fecha > now() - interval '7 days' group by ip;",
+            "ok": true,
+            "total": 0,
+            "filas": [],
+            "columnas": []
+        },
+        {
+            "id": "Q10",
+            "titulo": "Pedidos web por estado",
+            "sql": "select estado, count(*) as pedidos, coalesce(sum(total), 0) as monto from pedido group by estado order by estado;",
+            "ok": true,
+            "total": 5,
+            "filas": [
+                {
+                    "estado": "CANCELADO",
+                    "pedidos": 2,
+                    "monto": "190.00"
+                },
+                {
+                    "estado": "EN_VERIFICACION",
+                    "pedidos": 1,
+                    "monto": "190.00"
+                },
+                {
+                    "estado": "ENTREGADO",
+                    "pedidos": 3,
+                    "monto": "1050.00"
+                },
+                {
+                    "estado": "PAGADO",
+                    "pedidos": 7,
+                    "monto": "1340.00"
+                },
+                {
+                    "estado": "PENDIENTE_PAGO",
+                    "pedidos": 2,
+                    "monto": "255.00"
+                }
+            ],
+            "columnas": [
+                "estado",
+                "pedidos",
+                "monto"
+            ]
+        },
+        {
+            "id": "Q11",
+            "titulo": "Horario semanal: taller, maestra, día y hora",
+            "sql": "select t.nombre as taller, u.nombre || ' ' || u.apellido as maestra, h.dia_semana, h.hora_inicio, h.hora_fin, h.cupo\n  from horario h join taller t on t.id = h.taller_id join maestra m on m.id = h.maestra_id join usuario u on u.id = m.usuario_id\n where h.estado = 'ACTIVO' order by h.dia_semana, h.hora_inicio;",
+            "ok": true,
+            "total": 13,
+            "filas": [
+                {
+                    "taller": "Modelado a mano",
+                    "maestra": "Rosario Gil",
+                    "dia_semana": 2,
+                    "hora_inicio": "10:00:00",
+                    "hora_fin": "12:00:00",
+                    "cupo": 8
+                },
+                {
+                    "taller": "Modelado avanzado",
+                    "maestra": "Elena Rojas",
+                    "dia_semana": 2,
+                    "hora_inicio": "10:00:00",
+                    "hora_fin": "12:00:00",
+                    "cupo": 6
+                },
+                {
+                    "taller": "Taller de modelado nocturno",
+                    "maestra": "Lucía Paz",
+                    "dia_semana": 2,
+                    "hora_inicio": "18:00:00",
+                    "hora_fin": "20:00:00",
+                    "cupo": 8
+                },
+                {
+                    "taller": "Modelado a mano",
+                    "maestra": "Rosario Gil",
+                    "dia_semana": 3,
+                    "hora_inicio": "10:00:00",
+                    "hora_fin": "12:00:00",
+                    "cupo": 8
+                },
+                {
+                    "taller": "Torno alfarero",
+                    "maestra": "Carla Méndez",
+                    "dia_semana": 3,
+                    "hora_inicio": "10:00:00",
+                    "hora_fin": "12:00:00",
+                    "cupo": 6
+                },
+                {
+                    "taller": "Taller de modelado nocturno",
+                    "maestra": "Lucía Paz",
+                    "dia_semana": 3,
+                    "hora_inicio": "18:00:00",
+                    "hora_fin": "20:00:00",
+                    "cupo": 8
+                }
+            ],
+            "columnas": [
+                "taller",
+                "maestra",
+                "dia_semana",
+                "hora_inicio",
+                "hora_fin",
+                "cupo"
+            ]
+        },
+        {
+            "id": "Q12",
+            "titulo": "Ocupación de las clases de esta semana",
+            "sql": "select s.fecha, t.nombre as taller, count(r.id) filter (where r.estado <> 'CANCELADA') as reservas, s.cupo\n  from sesion_clase s join horario h on h.id = s.horario_id join taller t on t.id = h.taller_id\n  left join reserva r on r.sesion_id = s.id\n where s.fecha between date_trunc('week', hoy_bo())::date and date_trunc('week', hoy_bo())::date + 6\n group by s.id, s.fecha, t.nombre, s.cupo order by s.fecha, t.nombre;",
+            "ok": true,
+            "total": 13,
+            "filas": [
+                {
+                    "fecha": "2026-10-27",
+                    "taller": "Modelado a mano",
+                    "reservas": 4,
+                    "cupo": 8
+                },
+                {
+                    "fecha": "2026-10-27",
+                    "taller": "Modelado avanzado",
+                    "reservas": 4,
+                    "cupo": 6
+                },
+                {
+                    "fecha": "2026-10-27",
+                    "taller": "Taller de modelado nocturno",
+                    "reservas": 5,
+                    "cupo": 8
+                },
+                {
+                    "fecha": "2026-10-28",
+                    "taller": "Modelado a mano",
+                    "reservas": 3,
+                    "cupo": 8
+                },
+                {
+                    "fecha": "2026-10-28",
+                    "taller": "Taller de modelado nocturno",
+                    "reservas": 2,
+                    "cupo": 8
+                },
+                {
+                    "fecha": "2026-10-28",
+                    "taller": "Torno alfarero",
+                    "reservas": 3,
+                    "cupo": 6
+                }
+            ],
+            "columnas": [
+                "fecha",
+                "taller",
+                "reservas",
+                "cupo"
+            ]
+        },
+        {
+            "id": "Q13",
+            "titulo": "Porcentaje de asistencia por alumno",
+            "sql": "select u.nombre || ' ' || u.apellido as alumno,\n       count(*) filter (where r.estado = 'ASISTIO') as asistio, count(*) filter (where r.estado = 'FALTO') as falto,\n       round(100.0 * count(*) filter (where r.estado = 'ASISTIO') \/ nullif(count(*) filter (where r.estado in ('ASISTIO', 'FALTO')), 0)) as porcentaje\n  from reserva r join alumno a on a.id = r.alumno_id join usuario u on u.id = a.usuario_id\n group by alumno order by porcentaje desc nulls last;",
+            "ok": true,
+            "total": 10,
+            "filas": [
+                {
+                    "alumno": "Sofía Arteaga",
+                    "asistio": 2,
+                    "falto": 0,
+                    "porcentaje": "100"
+                },
+                {
+                    "alumno": "Diego Fernández",
+                    "asistio": 17,
+                    "falto": 0,
+                    "porcentaje": "100"
+                },
+                {
+                    "alumno": "Mateo Justiniano",
+                    "asistio": 2,
+                    "falto": 0,
+                    "porcentaje": "100"
+                },
+                {
+                    "alumno": "Joaquín Salvatierra",
+                    "asistio": 14,
+                    "falto": 1,
+                    "porcentaje": "93"
+                },
+                {
+                    "alumno": "Luis Peña",
+                    "asistio": 12,
+                    "falto": 1,
+                    "porcentaje": "92"
+                },
+                {
+                    "alumno": "Camila Sosa",
+                    "asistio": 12,
+                    "falto": 3,
+                    "porcentaje": "80"
+                }
+            ],
+            "columnas": [
+                "alumno",
+                "asistio",
+                "falto",
+                "porcentaje"
+            ]
+        },
+        {
+            "id": "Q14",
+            "titulo": "Detalle de compras con proveedor y material",
+            "sql": "select c.numero, p.nombre as proveedor, m.nombre as material, d.cantidad, d.costo_unitario, d.subtotal\n  from compra c join proveedor p on p.id = c.proveedor_id join detalle_compra d on d.compra_id = c.id join material m on m.id = d.material_id\n order by c.fecha desc, m.nombre;",
+            "ok": true,
+            "total": 16,
+            "filas": [
+                {
+                    "numero": "CP-000007",
+                    "proveedor": "Minera Andina Cochabamba (demo)",
+                    "material": "Arcilla gres blanca",
+                    "cantidad": "20.00",
+                    "costo_unitario": "9.50",
+                    "subtotal": "190.00"
+                },
+                {
+                    "numero": "CP-000006",
+                    "proveedor": "Minera Andina Cochabamba (demo)",
+                    "material": "Arcilla gres blanca",
+                    "cantidad": "20.00",
+                    "costo_unitario": "9.50",
+                    "subtotal": "190.00"
+                },
+                {
+                    "numero": "CP-000007",
+                    "proveedor": "Minera Andina Cochabamba (demo)",
+                    "material": "Óxido de cobalto",
+                    "cantidad": "5.00",
+                    "costo_unitario": "45.00",
+                    "subtotal": "225.00"
+                },
+                {
+                    "numero": "CP-000006",
+                    "proveedor": "Minera Andina Cochabamba (demo)",
+                    "material": "Óxido de cobalto",
+                    "cantidad": "5.00",
+                    "costo_unitario": "45.00",
+                    "subtotal": "225.00"
+                },
+                {
+                    "numero": "CP-000004",
+                    "proveedor": "Minera Andina Cochabamba (demo)",
+                    "material": "Arcilla gres blanca",
+                    "cantidad": "80.00",
+                    "costo_unitario": "9.20",
+                    "subtotal": "736.00"
+                },
+                {
+                    "numero": "CP-000003",
+                    "proveedor": "Insumos Cerámicos del Oriente (demo)",
+                    "material": "Engobe blanco",
+                    "cantidad": "5.00",
+                    "costo_unitario": "60.00",
+                    "subtotal": "300.00"
+                }
+            ],
+            "columnas": [
+                "numero",
+                "proveedor",
+                "material",
+                "cantidad",
+                "costo_unitario",
+                "subtotal"
+            ]
+        },
+        {
+            "id": "Q15",
+            "titulo": "Ventas por método de pago (solo válidas)",
+            "sql": "select mp.nombre as metodo, count(v.id) as ventas, sum(v.total) as total\n  from venta v join metodo_pago mp on mp.id = v.metodo_pago_id where v.estado = 'VALIDA' group by mp.nombre order by total desc;",
+            "ok": true,
+            "total": 3,
+            "filas": [
+                {
+                    "metodo": "Transferencia",
+                    "ventas": 11,
+                    "total": "2435.00"
+                },
+                {
+                    "metodo": "Efectivo",
+                    "ventas": 9,
+                    "total": "2110.00"
+                },
+                {
+                    "metodo": "QR",
+                    "ventas": 8,
+                    "total": "1665.00"
+                }
+            ],
+            "columnas": [
+                "metodo",
+                "ventas",
+                "total"
+            ]
+        },
+        {
+            "id": "Q16",
+            "titulo": "Piezas más vendidas en caja",
+            "sql": "select p.codigo, p.nombre, sum(d.cantidad) as unidades, sum(d.subtotal) as ingresos\n  from detalle_venta d join venta v on v.id = d.venta_id join pieza p on p.id = d.pieza_id\n where v.estado = 'VALIDA' group by p.codigo, p.nombre order by unidades desc;",
+            "ok": true,
+            "total": 5,
+            "filas": [
+                {
+                    "codigo": "TZ-001",
+                    "nombre": "Taza esmaltada Nube",
+                    "unidades": 16,
+                    "ingresos": "1520.00"
+                },
+                {
+                    "codigo": "TZ-002",
+                    "nombre": "Vaso Mejillas",
+                    "unidades": 14,
+                    "ingresos": "1190.00"
+                },
+                {
+                    "codigo": "VJ-001",
+                    "nombre": "Set café: vaso y bandeja",
+                    "unidades": 10,
+                    "ingresos": "1600.00"
+                },
+                {
+                    "codigo": "VJ-002",
+                    "nombre": "Plato llano de gres 28 cm",
+                    "unidades": 10,
+                    "ingresos": "1200.00"
+                },
+                {
+                    "codigo": "JR-001",
+                    "nombre": "Jarra Andina",
+                    "unidades": 2,
+                    "ingresos": "700.00"
+                }
+            ],
+            "columnas": [
+                "codigo",
+                "nombre",
+                "unidades",
+                "ingresos"
+            ]
+        },
+        {
+            "id": "Q17",
+            "titulo": "Kardex de un material con el usuario que hizo cada movimiento",
+            "sql": "select mm.fecha::date as fecha, mm.tipo, mm.cantidad, mm.stock_resultante, u.nombre as usuario\n  from movimiento_material mm join usuario u on u.id = mm.usuario_id join material m on m.id = mm.material_id\n where m.nombre = 'Arcilla roja' order by mm.fecha;",
+            "ok": true,
+            "total": 3,
+            "filas": [
+                {
+                    "fecha": "2026-10-01",
+                    "tipo": "ENTRADA",
+                    "cantidad": "150.00",
+                    "stock_resultante": "150.00",
+                    "usuario": "Valeria"
+                },
+                {
+                    "fecha": "2026-10-19",
+                    "tipo": "CONSUMO",
+                    "cantidad": "95.00",
+                    "stock_resultante": "25.00",
+                    "usuario": "Valeria"
+                },
+                {
+                    "fecha": "2026-10-27",
+                    "tipo": "CONSUMO",
+                    "cantidad": "30.00",
+                    "stock_resultante": "120.00",
+                    "usuario": "Valeria"
+                }
+            ],
+            "columnas": [
+                "fecha",
+                "tipo",
+                "cantidad",
+                "stock_resultante",
+                "usuario"
+            ]
+        },
+        {
+            "id": "Q18",
+            "titulo": "Cierres de caja con su responsable y diferencia del arqueo",
+            "sql": "select c.abierta_en::date as dia, u.nombre || ' ' || u.apellido as responsable, c.total_efectivo, c.total_otros, c.diferencia\n  from caja c join usuario u on u.id = c.usuario_id where c.estado = 'CERRADA' order by c.abierta_en desc;",
+            "ok": true,
+            "total": 14,
+            "filas": [
+                {
+                    "dia": "2026-10-28",
+                    "responsable": "Valeria Suárez",
+                    "total_efectivo": "0.00",
+                    "total_otros": "755.00",
+                    "diferencia": "0.00"
+                },
+                {
+                    "dia": "2026-10-27",
+                    "responsable": "Valeria Suárez",
+                    "total_efectivo": "320.00",
+                    "total_otros": "510.00",
+                    "diferencia": "0.00"
+                },
+                {
+                    "dia": "2026-10-24",
+                    "responsable": "Valeria Suárez",
+                    "total_efectivo": "525.00",
+                    "total_otros": "85.00",
+                    "diferencia": "0.00"
+                },
+                {
+                    "dia": "2026-10-23",
+                    "responsable": "Valeria Suárez",
+                    "total_efectivo": "0.00",
+                    "total_otros": "400.00",
+                    "diferencia": "0.00"
+                },
+                {
+                    "dia": "2026-10-22",
+                    "responsable": "Valeria Suárez",
+                    "total_efectivo": "0.00",
+                    "total_otros": "290.00",
+                    "diferencia": "0.00"
+                },
+                {
+                    "dia": "2026-10-21",
+                    "responsable": "Valeria Suárez",
+                    "total_efectivo": "0.00",
+                    "total_otros": "850.00",
+                    "diferencia": "0.00"
+                }
+            ],
+            "columnas": [
+                "dia",
+                "responsable",
+                "total_efectivo",
+                "total_otros",
+                "diferencia"
+            ]
+        },
+        {
+            "id": "Q19",
+            "titulo": "Permisos de cada rol",
+            "sql": "select r.nombre as rol, count(rp.permiso_id) as permisos, string_agg(p.codigo, ', ' order by p.codigo) as codigos\n  from rol r left join rolpermiso rp on rp.rol_id = r.id left join permiso p on p.id = rp.permiso_id group by r.nombre order by permisos desc;",
+            "ok": true,
+            "total": 5,
+            "filas": [
+                {
+                    "rol": "ADMINISTRADOR",
+                    "permisos": 20,
+                    "codigos": "alumnos.gestionar, asistencia.registrar, bitacora.ver, caja.gestionar, clientes.gestionar, compras.gestionar, configuracion.gestionar, maestras.gestionar, materiales.gestionar, panel.ver, pedidos.gestionar, piezas.gestionar, proveedores.gestionar, reservas.gestionar, roles.gestionar, sesiones.gestionar, talleres.gestionar, usuarios.gestionar, ventas.anular, ventas.registrar"
+                },
+                {
+                    "rol": "ADMINISTRATIVO",
+                    "permisos": 13,
+                    "codigos": "alumnos.gestionar, asistencia.registrar, caja.gestionar, clientes.gestionar, compras.gestionar, materiales.gestionar, panel.ver, pedidos.gestionar, piezas.gestionar, proveedores.gestionar, reservas.gestionar, sesiones.gestionar, ventas.registrar"
+                },
+                {
+                    "rol": "ALUMNO",
+                    "permisos": 2,
+                    "codigos": "portal.alumno, tienda.comprar"
+                },
+                {
+                    "rol": "MAESTRA",
+                    "permisos": 2,
+                    "codigos": "clases.propias, panel.ver"
+                },
+                {
+                    "rol": "CLIENTE",
+                    "permisos": 1,
+                    "codigos": "tienda.comprar"
+                }
+            ],
+            "columnas": [
+                "rol",
+                "permisos",
+                "codigos"
+            ]
+        },
+        {
+            "id": "Q20",
+            "titulo": "Pedidos web con cliente y método con que se pagaron",
+            "sql": "select pe.numero, c.nombre as cliente, pe.total, pe.estado, pg.metodo, pg.estado as estado_pago\n  from pedido pe join cliente c on c.id = pe.cliente_id left join pago pg on pg.pedido_id = pe.id\n order by pe.fecha desc;",
+            "ok": true,
+            "total": 18,
+            "filas": [
+                {
+                    "numero": "PW-000015",
+                    "cliente": "Daniela Rivero",
+                    "total": "95.00",
+                    "estado": "CANCELADO",
+                    "metodo": null,
+                    "estado_pago": null
+                },
+                {
+                    "numero": "PW-000014",
+                    "cliente": "Daniela Rivero",
+                    "total": "350.00",
+                    "estado": "ENTREGADO",
+                    "metodo": "QR",
+                    "estado_pago": "APROBADO"
+                },
+                {
+                    "numero": "PW-000013",
+                    "cliente": "Daniela Rivero",
+                    "total": "95.00",
+                    "estado": "PAGADO",
+                    "metodo": "PAYPAL",
+                    "estado_pago": "APROBADO"
+                },
+                {
+                    "numero": "PW-000012",
+                    "cliente": "Daniela Rivero",
+                    "total": "320.00",
+                    "estado": "PAGADO",
+                    "metodo": "TARJETA",
+                    "estado_pago": "RECHAZADO"
+                },
+                {
+                    "numero": "PW-000012",
+                    "cliente": "Daniela Rivero",
+                    "total": "320.00",
+                    "estado": "PAGADO",
+                    "metodo": "TARJETA",
+                    "estado_pago": "APROBADO"
+                },
+                {
+                    "numero": "PW-000011",
+                    "cliente": "Daniela Rivero",
+                    "total": "160.00",
+                    "estado": "PENDIENTE_PAGO",
+                    "metodo": null,
+                    "estado_pago": null
+                }
+            ],
+            "columnas": [
+                "numero",
+                "cliente",
+                "total",
+                "estado",
+                "metodo",
+                "estado_pago"
+            ]
+        },
+        {
+            "id": "Q21",
+            "titulo": "Piezas con precio mayor al promedio de su categoría",
+            "sql": "select p.codigo, p.nombre, p.precio from pieza p\n where p.precio > (select avg(x.precio) from pieza x where x.categoria_id = p.categoria_id) order by p.precio desc;",
+            "ok": true,
+            "total": 2,
+            "filas": [
+                {
+                    "codigo": "JR-001",
+                    "nombre": "Jarra Andina",
+                    "precio": "350.00"
+                },
+                {
+                    "codigo": "VJ-001",
+                    "nombre": "Set café: vaso y bandeja",
+                    "precio": "160.00"
+                }
+            ],
+            "columnas": [
+                "codigo",
+                "nombre",
+                "precio"
+            ]
+        },
+        {
+            "id": "Q22",
+            "titulo": "Alumnos que nunca faltaron a una clase",
+            "sql": "select u.nombre || ' ' || u.apellido as alumno from alumno a join usuario u on u.id = a.usuario_id\n where exists (select 1 from reserva r where r.alumno_id = a.id and r.estado = 'ASISTIO')\n   and not exists (select 1 from reserva r where r.alumno_id = a.id and r.estado = 'FALTO');",
+            "ok": true,
+            "total": 3,
+            "filas": [
+                {
+                    "alumno": "Diego Fernández"
+                },
+                {
+                    "alumno": "Mateo Justiniano"
+                },
+                {
+                    "alumno": "Sofía Arteaga"
+                }
+            ],
+            "columnas": [
+                "alumno"
+            ]
+        },
+        {
+            "id": "Q23",
+            "titulo": "Talleres con más reservas que el promedio",
+            "sql": "select t.nombre, (select count(*) from reserva r join sesion_clase s on s.id = r.sesion_id join horario h on h.id = s.horario_id\n                   where h.taller_id = t.id and r.estado <> 'CANCELADA') as reservas\n  from taller t\n where (select count(*) from reserva r join sesion_clase s on s.id = r.sesion_id join horario h on h.id = s.horario_id\n         where h.taller_id = t.id and r.estado <> 'CANCELADA')\n     > (select avg(n) from (select count(*) as n from reserva r join sesion_clase s on s.id = r.sesion_id join horario h on h.id = s.horario_id\n                             where r.estado <> 'CANCELADA' group by h.taller_id) x)\n order by reservas desc;",
+            "ok": true,
+            "total": 3,
+            "filas": [
+                {
+                    "nombre": "Modelado a mano",
+                    "reservas": 85
+                },
+                {
+                    "nombre": "Torno alfarero",
+                    "reservas": 55
+                },
+                {
+                    "nombre": "Taller de modelado nocturno",
+                    "reservas": 39
+                }
+            ],
+            "columnas": [
+                "nombre",
+                "reservas"
+            ]
+        },
+        {
+            "id": "Q24",
+            "titulo": "Materiales que nunca se compraron",
+            "sql": "select nombre from material m where not exists (select 1 from detalle_compra d where d.material_id = m.id);",
+            "ok": true,
+            "total": 0,
+            "filas": [],
+            "columnas": []
+        },
+        {
+            "id": "Q25",
+            "titulo": "Proveedor al que más se le compró",
+            "sql": "select nombre, (select sum(total) from compra c where c.proveedor_id = p.id and c.estado = 'REGISTRADA') as comprado from proveedor p\n where p.id = (select proveedor_id from compra where estado = 'REGISTRADA' group by proveedor_id order by sum(total) desc limit 1);",
+            "ok": true,
+            "total": 1,
+            "filas": [
+                {
+                    "nombre": "Minera Andina Cochabamba (demo)",
+                    "comprado": "3861.00"
+                }
+            ],
+            "columnas": [
+                "nombre",
+                "comprado"
+            ]
+        },
+        {
+            "id": "Q26",
+            "titulo": "Día con mayor venta del último mes",
+            "sql": "select fecha::date as dia, sum(total) as total from venta where estado = 'VALIDA' group by fecha::date\nhaving sum(total) = (select max(t) from (select sum(total) as t from venta where estado = 'VALIDA' and fecha > now() - interval '30 days' group by fecha::date) x);",
+            "ok": true,
+            "total": 1,
+            "filas": [
+                {
+                    "dia": "2026-10-17",
+                    "total": "880.00"
+                }
+            ],
+            "columnas": [
+                "dia",
+                "total"
+            ]
+        },
+        {
+            "id": "Q27",
+            "titulo": "Clases futuras que todavía tienen cupo libre",
+            "sql": "select s.fecha, s.hora_inicio, (select t.nombre from horario h join taller t on t.id = h.taller_id where h.id = s.horario_id) as taller,\n       s.cupo - (select count(*) from reserva r where r.sesion_id = s.id and r.estado <> 'CANCELADA') as libres\n  from sesion_clase s where s.fecha > hoy_bo() and s.estado = 'PROGRAMADA'\n   and (select count(*) from reserva r where r.sesion_id = s.id and r.estado <> 'CANCELADA') < s.cupo\n order by s.fecha, s.hora_inicio limit 10;",
+            "ok": true,
+            "total": 10,
+            "filas": [
+                {
+                    "fecha": "2026-10-30",
+                    "hora_inicio": "10:00:00",
+                    "taller": "Modelado a mano",
+                    "libres": 5
+                },
+                {
+                    "fecha": "2026-10-30",
+                    "hora_inicio": "10:00:00",
+                    "taller": "Torno alfarero",
+                    "libres": 2
+                },
+                {
+                    "fecha": "2026-10-31",
+                    "hora_inicio": "10:00:00",
+                    "taller": "Taller de sábado para adultos",
+                    "libres": 6
+                },
+                {
+                    "fecha": "2026-10-31",
+                    "hora_inicio": "16:00:00",
+                    "taller": "Cerámica para niños",
+                    "libres": 10
+                },
+                {
+                    "fecha": "2026-10-31",
+                    "hora_inicio": "18:00:00",
+                    "taller": "Modelado y torno",
+                    "libres": 1
+                },
+                {
+                    "fecha": "2026-11-03",
+                    "hora_inicio": "10:00:00",
+                    "taller": "Modelado a mano",
+                    "libres": 3
+                }
+            ],
+            "columnas": [
+                "fecha",
+                "hora_inicio",
+                "taller",
+                "libres"
+            ]
+        },
+        {
+            "id": "Q28",
+            "titulo": "Maestras con más alumnos atendidos que la maestra promedio",
+            "sql": "select u.nombre || ' ' || u.apellido as maestra,\n       (select count(*) from reserva r join sesion_clase s on s.id = r.sesion_id where s.maestra_id = m.id and r.estado = 'ASISTIO') as atendidos\n  from maestra m join usuario u on u.id = m.usuario_id\n where (select count(*) from reserva r join sesion_clase s on s.id = r.sesion_id where s.maestra_id = m.id and r.estado = 'ASISTIO')\n     >= (select avg(n) from (select count(*) as n from reserva r join sesion_clase s on s.id = r.sesion_id where r.estado = 'ASISTIO' group by s.maestra_id) x)\n order by atendidos desc;",
+            "ok": true,
+            "total": 1,
+            "filas": [
+                {
+                    "maestra": "Carla Méndez",
+                    "atendidos": 34
+                }
+            ],
+            "columnas": [
+                "maestra",
+                "atendidos"
+            ]
+        },
+        {
+            "id": "Q29",
+            "titulo": "Clientes que compraron en caja y también en la tienda en línea",
+            "sql": "select nombre from cliente c\n where c.id in (select cliente_id from venta where estado = 'VALIDA') and c.id in (select cliente_id from pedido where estado in ('PAGADO', 'ENTREGADO'));",
+            "ok": true,
+            "total": 0,
+            "filas": [],
+            "columnas": []
+        },
+        {
+            "id": "Q30",
+            "titulo": "Valor del inventario de materiales frente al total comprado en el mes",
+            "sql": "select (select sum(stock * costo_promedio) from material) as valor_inventario,\n       (select coalesce(sum(total), 0) from compra where estado = 'REGISTRADA' and date_trunc('month', fecha) = date_trunc('month', hoy_bo())) as comprado_mes;",
+            "ok": true,
+            "total": 1,
+            "filas": [
+                {
+                    "valor_inventario": "4100.1700",
+                    "comprado_mes": "7546.00"
+                }
+            ],
+            "columnas": [
+                "valor_inventario",
+                "comprado_mes"
+            ]
+        }
+    ],
+    "procedimientos": [
+        {
+            "id": "PA1",
+            "nombre": "fn_registrar_venta",
+            "descripcion": "Venta de 1 Vaso Mejillas en efectivo con Bs 200 recibidos",
+            "sql": "select mitsu.fn_registrar_venta(2, 1, 1, 200, jsonb_build_array(jsonb_build_object('pieza_id', (select id from mitsu.pieza where codigo = 'TZ-002'), 'cantidad', 1))) as venta_id;\r\n      select numero, total, monto_recibido, (select stock from mitsu.pieza where codigo = 'TZ-002') as stock_restante from mitsu.venta order by id desc limit 1",
+            "ok": true,
+            "total": 1,
+            "filas": [
+                {
+                    "numero": "NV-000045",
+                    "total": "95.00",
+                    "monto_recibido": "200.00",
+                    "stock_restante": 2
+                }
+            ],
+            "columnas": [
+                "numero",
+                "total",
+                "monto_recibido",
+                "stock_restante"
+            ]
+        },
+        {
+            "id": "PA2",
+            "nombre": "fn_anular_venta",
+            "descripcion": "Anular la última venta válida con motivo",
+            "sql": "select mitsu.fn_anular_venta((select max(id) from mitsu.venta where estado = 'VALIDA'), 1, 'Cliente devolvió la pieza');\r\n      select numero, estado, motivo_anulacion from mitsu.venta where anulado_en is not null order by anulado_en desc limit 1",
+            "ok": true,
+            "total": 1,
+            "filas": [
+                {
+                    "numero": "NV-000029",
+                    "estado": "ANULADA",
+                    "motivo_anulacion": "Cliente devolvió la pieza"
+                }
+            ],
+            "columnas": [
+                "numero",
+                "estado",
+                "motivo_anulacion"
+            ]
+        },
+        {
+            "id": "PA3",
+            "nombre": "fn_registrar_compra",
+            "descripcion": "Compra de 50 kg de arcilla roja a Bs 6,80",
+            "sql": "select mitsu.fn_registrar_compra(2, 1, mitsu.hoy_bo(), 'Prueba', jsonb_build_array(jsonb_build_object('material_id', (select id from mitsu.material where nombre = 'Arcilla roja'), 'cantidad', 50, 'costo', 6.8))) as compra_id;\r\n      select nombre, stock, costo_promedio from mitsu.material where nombre = 'Arcilla roja'",
+            "ok": true,
+            "total": 1,
+            "filas": [
+                {
+                    "nombre": "Arcilla roja",
+                    "stock": "75.00",
+                    "costo_promedio": "6.70"
+                }
+            ],
+            "columnas": [
+                "nombre",
+                "stock",
+                "costo_promedio"
+            ]
+        },
+        {
+            "id": "PA4",
+            "nombre": "fn_anular_compra",
+            "descripcion": "Anular la última compra registrada",
+            "sql": "select mitsu.fn_anular_compra((select max(id) from mitsu.compra where estado = 'REGISTRADA'), 1, 'Proveedor envió material equivocado');\r\n      select numero, estado, motivo_anulacion from mitsu.compra where estado = 'ANULADA' order by id desc limit 1",
+            "ok": true,
+            "total": 1,
+            "filas": [
+                {
+                    "numero": "CP-000007",
+                    "estado": "ANULADA",
+                    "motivo_anulacion": "Proveedor envió material equivocado"
+                }
+            ],
+            "columnas": [
+                "numero",
+                "estado",
+                "motivo_anulacion"
+            ]
+        },
+        {
+            "id": "PA5",
+            "nombre": "fn_reservar_clase",
+            "descripcion": "Reservar la próxima clase con cupo para un alumno",
+            "sql": "select mitsu.fn_reservar_clase((select s.id from mitsu.sesion_clase s where s.fecha > mitsu.hoy_bo() and s.estado = 'PROGRAMADA'\r\n               and not exists (select 1 from mitsu.reserva r where r.sesion_id = s.id and r.alumno_id = 4) order by s.fecha limit 1), 4, 1) as reserva_id",
+            "ok": true,
+            "total": 1,
+            "filas": [
+                {
+                    "reserva_id": 265
+                }
+            ],
+            "columnas": [
+                "reserva_id"
+            ]
+        },
+        {
+            "id": "PA6",
+            "nombre": "fn_generar_sesiones",
+            "descripcion": "Generar el calendario de las próximas 6 semanas",
+            "sql": "select mitsu.fn_generar_sesiones(mitsu.hoy_bo(), mitsu.hoy_bo() + 42) as clases_creadas",
+            "ok": true,
+            "total": 1,
+            "filas": [
+                {
+                    "clases_creadas": 39
+                }
+            ],
+            "columnas": [
+                "clases_creadas"
+            ]
+        },
+        {
+            "id": "PA7",
+            "nombre": "sp_cerrar_caja",
+            "descripcion": "Cerrar la caja abierta declarando Bs 500 en efectivo",
+            "sql": "do $$ declare c integer := (select id from mitsu.caja where estado = 'ABIERTA'); begin call mitsu.sp_cerrar_caja(c, 2, 500, 'Arqueo de prueba'); end $$;\r\n      select estado, total_efectivo, monto_declarado, diferencia from mitsu.caja order by cerrada_en desc nulls last limit 1",
+            "ok": true,
+            "total": 1,
+            "filas": [
+                {
+                    "estado": "CERRADA",
+                    "total_efectivo": "310.00",
+                    "monto_declarado": "500.00",
+                    "diferencia": "-10.00"
+                }
+            ],
+            "columnas": [
+                "estado",
+                "total_efectivo",
+                "monto_declarado",
+                "diferencia"
+            ]
+        },
+        {
+            "id": "PA8",
+            "nombre": "fn_crear_pedido",
+            "descripcion": "Pedido web de 1 Taza Nube con retiro en el taller",
+            "sql": "select mitsu.fn_crear_pedido((select id from mitsu.usuario where correo = 'cliente@mitsu.test'), (select c.id from mitsu.cliente c join mitsu.usuario u on u.id = c.usuario_id where u.correo = 'cliente@mitsu.test'), 'RETIRO', null, '72040001', null, jsonb_build_array(jsonb_build_object('pieza_id', (select id from mitsu.pieza where codigo = 'TZ-001'), 'cantidad', 1))) as pedido_id;\r\n      select numero, estado, total, expira_en::time(0) as reservado_hasta from mitsu.pedido order by id desc limit 1",
+            "ok": true,
+            "total": 1,
+            "filas": [
+                {
+                    "numero": "PW-000022",
+                    "estado": "PENDIENTE_PAGO",
+                    "total": "95.00",
+                    "reservado_hasta": "19:15:14"
+                }
+            ],
+            "columnas": [
+                "numero",
+                "estado",
+                "total",
+                "reservado_hasta"
+            ]
+        },
+        {
+            "id": "PA9",
+            "nombre": "fn_registrar_pago",
+            "descripcion": "Pedido web nuevo pagado con tarjeta (aprobado)",
+            "sql": "with p as (select mitsu.fn_crear_pedido((select id from mitsu.usuario where correo = 'cliente@mitsu.test'), (select c.id from mitsu.cliente c join mitsu.usuario u on u.id = c.usuario_id where u.correo = 'cliente@mitsu.test'), 'RETIRO', null, '72040001', null, jsonb_build_array(jsonb_build_object('pieza_id', (select id from mitsu.pieza where codigo = 'TZ-001'), 'cantidad', 1))) as id)\r\n      select p.id as pedido_id, mitsu.fn_registrar_pago(p.id, 'TARJETA', 'APROBADO', 'AUT-PRUEBA', 'Visa', '4242', 'DANIELA RIVERO', null, 'Aprobado') as pago_id from p;\r\n      select numero, estado, pagado_en::time(0) as pagado from mitsu.pedido order by id desc limit 1",
+            "ok": true,
+            "total": 1,
+            "filas": [
+                {
+                    "numero": "PW-000023",
+                    "estado": "PAGADO",
+                    "pagado": "18:45:14"
+                }
+            ],
+            "columnas": [
+                "numero",
+                "estado",
+                "pagado"
+            ]
+        },
+        {
+            "id": "PA11",
+            "nombre": "fn_cancelar_pedido",
+            "descripcion": "Cancelar el pedido en verificación de la demostración",
+            "sql": "select mitsu.fn_cancelar_pedido((select id from mitsu.pedido where estado = 'EN_VERIFICACION' order by id limit 1), 1, 'Cliente desistió'),\r\n             (select count(*) from mitsu.movimiento_pieza where tipo = 'DEVOLUCION_WEB') as devoluciones",
+            "ok": true,
+            "total": 1,
+            "filas": [
+                {
+                    "fn_cancelar_pedido": "",
+                    "devoluciones": 2
+                }
+            ],
+            "columnas": [
+                "fn_cancelar_pedido",
+                "devoluciones"
+            ]
+        }
+    ],
+    "triggers": [
+        {
+            "regla": "RN04 tg_reserva_validar",
+            "descripcion": "Reservar una clase que ya pasó",
+            "sql": "insert into mitsu.reserva (sesion_id, alumno_id) values ((select min(id) from mitsu.sesion_clase where fecha < mitsu.hoy_bo()), 1)",
+            "ok": false,
+            "error": "La clase no está disponible para reservas."
+        },
+        {
+            "regla": "RN04 tg_reserva_validar",
+            "descripcion": "Reservar dos veces la misma clase",
+            "sql": "insert into mitsu.reserva (sesion_id, alumno_id) select sesion_id, alumno_id from mitsu.reserva r join mitsu.sesion_clase s on s.id = r.sesion_id where r.estado = 'RESERVADA' and s.fecha > mitsu.hoy_bo() limit 1",
+            "ok": false,
+            "error": "El alumno ya tiene una reserva en esta clase."
+        },
+        {
+            "regla": "RN06 tg_movimiento_material",
+            "descripcion": "Consumir más arcilla de la que hay",
+            "sql": "insert into mitsu.movimiento_material (material_id, tipo, cantidad, motivo, usuario_id) values ((select id from mitsu.material where nombre = 'Arcilla roja'), 'CONSUMO', 9999, 'Prueba', 2)",
+            "ok": false,
+            "error": "Stock insuficiente de \"Arcilla roja\": hay 25.00 y se pidió 9999.00."
+        },
+        {
+            "regla": "RN07 tg_stock_protegido",
+            "descripcion": "Cambiar el stock de una pieza a mano",
+            "sql": "update mitsu.pieza set stock = 100 where id = 1",
+            "ok": false,
+            "error": "El stock solo cambia con compras, ventas o ajustes registrados."
+        },
+        {
+            "regla": "RN08 tg_detalle_venta_precio",
+            "descripcion": "Intentar vender a otro precio (el trigger copia el real)",
+            "sql": "insert into mitsu.venta (caja_id, cliente_id, usuario_id, metodo_pago_id) select id, 1, 2, 1 from mitsu.caja where estado = 'ABIERTA'; insert into mitsu.detalle_venta (venta_id, pieza_id, cantidad, precio_unitario) values ((select max(id) from mitsu.venta), (select id from mitsu.pieza where codigo = 'TZ-002'), 1, 1); select numero, total from mitsu.venta order by id desc limit 1",
+            "ok": true,
+            "total": 1,
+            "filas": [
+                {
+                    "numero": "NV-000046",
+                    "total": "95.00"
+                }
+            ],
+            "columnas": [
+                "numero",
+                "total"
+            ]
+        },
+        {
+            "regla": "RN09 tg_venta_reglas",
+            "descripcion": "Modificar una venta anulada",
+            "sql": "update mitsu.venta set total = 0 where estado = 'ANULADA'",
+            "ok": false,
+            "error": "La venta NV-000036 ya está anulada y no se puede modificar."
+        },
+        {
+            "regla": "RN02 tg_ultimo_admin",
+            "descripcion": "Desactivar al único administrador",
+            "sql": "update mitsu.usuario set estado = 'INACTIVO' where correo = 'admin@mitsu.test'",
+            "ok": false,
+            "error": "No se puede desactivar ni cambiar de rol al único administrador activo."
+        },
+        {
+            "regla": "RN03 horario_sin_cruce_maestra",
+            "descripcion": "Horario cruzado para la misma maestra",
+            "sql": "insert into mitsu.horario (taller_id, maestra_id, dia_semana, hora_inicio, hora_fin, cupo) values (1, 1, 2, '11:00', '13:00', 5)",
+            "ok": false,
+            "error": "conflicting key value violates exclusion constraint \"horario_sin_cruce_maestra\""
+        },
+        {
+            "regla": "ux_material_nombre (normalizar)",
+            "descripcion": "Material con el mismo nombre en mayúsculas y con tilde",
+            "sql": "insert into mitsu.material (categoria_id, unidad_id, nombre) values (1, 1, 'ARCÍLLA ROJA')",
+            "ok": false,
+            "error": "duplicate key value violates unique constraint \"ux_material_nombre\""
+        },
+        {
+            "regla": "tg_pedido_estado",
+            "descripcion": "Pasar un pedido entregado a pagado",
+            "sql": "update mitsu.pedido set estado = 'PAGADO' where estado = 'ENTREGADO'",
+            "ok": false,
+            "error": "El pedido PW-000005 ya está entregado y no puede cambiar."
+        },
+        {
+            "regla": "Mínimo privilegio",
+            "descripcion": "El usuario de la aplicación intenta borrar una tabla",
+            "sql": "drop table mitsu.bitacora",
+            "ok": false,
+            "error": "must be owner of table bitacora"
+        }
+    ],
+    "volumen": [
+        {
+            "tabla": "alumno",
+            "estimado": -1,
+            "bytes": 57344,
+            "filas": 10
+        },
+        {
+            "tabla": "bitacora",
+            "estimado": 55,
+            "bytes": 90112,
+            "filas": 98
+        },
+        {
+            "tabla": "caja",
+            "estimado": -1,
+            "bytes": 40960,
+            "filas": 15
+        },
+        {
+            "tabla": "categoria",
+            "estimado": -1,
+            "bytes": 40960,
+            "filas": 9
+        },
+        {
+            "tabla": "cliente",
+            "estimado": 6,
+            "bytes": 73728,
+            "filas": 7
+        },
+        {
+            "tabla": "compra",
+            "estimado": -1,
+            "bytes": 65536,
+            "filas": 6
+        },
+        {
+            "tabla": "configuracion",
+            "estimado": -1,
+            "bytes": 32768,
+            "filas": 6
+        },
+        {
+            "tabla": "detalle_compra",
+            "estimado": -1,
+            "bytes": 40960,
+            "filas": 16
+        },
+        {
+            "tabla": "detalle_pedido",
+            "estimado": -1,
+            "bytes": 40960,
+            "filas": 15
+        },
+        {
+            "tabla": "detalle_venta",
+            "estimado": -1,
+            "bytes": 40960,
+            "filas": 41
+        },
+        {
+            "tabla": "historial_precio",
+            "estimado": -1,
+            "bytes": 24576,
+            "filas": 1
+        },
+        {
+            "tabla": "horario",
+            "estimado": -1,
+            "bytes": 49152,
+            "filas": 13
+        },
+        {
+            "tabla": "maestra",
+            "estimado": -1,
+            "bytes": 49152,
+            "filas": 4
+        },
+        {
+            "tabla": "material",
+            "estimado": 11,
+            "bytes": 73728,
+            "filas": 11
+        },
+        {
+            "tabla": "metodo_pago",
+            "estimado": -1,
+            "bytes": 40960,
+            "filas": 3
+        },
+        {
+            "tabla": "movimiento_material",
+            "estimado": -1,
+            "bytes": 40960,
+            "filas": 25
+        },
+        {
+            "tabla": "movimiento_pieza",
+            "estimado": 51,
+            "bytes": 73728,
+            "filas": 70
+        },
+        {
+            "tabla": "pago",
+            "estimado": -1,
+            "bytes": 65536,
+            "filas": 14
+        },
+        {
+            "tabla": "pedido",
+            "estimado": -1,
+            "bytes": 81920,
+            "filas": 15
+        },
+        {
+            "tabla": "permiso",
+            "estimado": -1,
+            "bytes": 40960,
+            "filas": 23
+        },
+        {
+            "tabla": "pieza",
+            "estimado": 8,
+            "bytes": 98304,
+            "filas": 8
+        },
+        {
+            "tabla": "pieza_imagen",
+            "estimado": -1,
+            "bytes": 16384,
+            "filas": 0
+        },
+        {
+            "tabla": "proveedor",
+            "estimado": -1,
+            "bytes": 65536,
+            "filas": 3
+        },
+        {
+            "tabla": "recuperacion",
+            "estimado": -1,
+            "bytes": 16384,
+            "filas": 0
+        },
+        {
+            "tabla": "reserva",
+            "estimado": 248,
+            "bytes": 98304,
+            "filas": 250
+        },
+        {
+            "tabla": "rol",
+            "estimado": -1,
+            "bytes": 40960,
+            "filas": 5
+        },
+        {
+            "tabla": "rolpermiso",
+            "estimado": -1,
+            "bytes": 24576,
+            "filas": 38
+        },
+        {
+            "tabla": "sesion",
+            "estimado": 98,
+            "bytes": 90112,
+            "filas": 102
+        },
+        {
+            "tabla": "sesion_clase",
+            "estimado": 80,
+            "bytes": 98304,
+            "filas": 80
+        },
+        {
+            "tabla": "taller",
+            "estimado": -1,
+            "bytes": 49152,
+            "filas": 7
+        },
+        {
+            "tabla": "unidad",
+            "estimado": -1,
+            "bytes": 40960,
+            "filas": 4
+        },
+        {
+            "tabla": "usuario",
+            "estimado": 17,
+            "bytes": 81920,
+            "filas": 17
+        },
+        {
+            "tabla": "venta",
+            "estimado": 29,
+            "bytes": 114688,
+            "filas": 31
+        }
+    ]
+}
