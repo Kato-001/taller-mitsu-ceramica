@@ -635,16 +635,18 @@ add(tabla('Plataforma elegida', ['Elemento', 'Elección', 'Motivo'], [
 ], null, { anchos: [22, 33, 45] }));
 add(H3('Estructura de carpetas'));
 add(codigo(`Taller-Mitsu_Proyecto Final/
-├── api/index.php        Front controller: todas las rutas y sus permisos
-├── app/core/            Auth, Session, Csrf, Validator, View, Mailer, helpers
-├── app/controllers/     Un controlador por grupo de casos de uso
-├── app/models/          Un modelo por entidad (consultas con parámetros)
-├── app/services/        Pasarela de pago
-├── app/views/           Vistas por paquete (P1_Seguridad ... P4_Ventas, Tienda)
-├── public/              CSS, JavaScript e imágenes
-├── Bakend/database/     Scripts SQL 01 a 07 y ejecutor
-├── Docs/                Informe, diagramas, capturas, pruebas y guion
-└── vercel.json          Configuración del despliegue`));
+├── Bakend/                 Lógica del sistema y base de datos
+│   ├── app/core/           Auth, Session, Csrf, Validator, View, Mailer, helpers
+│   ├── app/controllers/    Un controlador por grupo de casos de uso
+│   ├── app/models/         Un modelo por entidad (consultas con parámetros)
+│   ├── app/services/       Pasarela de pago
+│   └── database/           Scripts SQL 01 a 07 y ejecutor
+├── Frontend/               Lo que ve el usuario
+│   ├── views/              Vistas por paquete (P1_Seguridad ... P4_Ventas, Tienda)
+│   └── public/             CSS, JavaScript e imágenes
+├── Docs/                   Informe, diagramas, capturas, pruebas y guion
+├── api/index.php           Entrada de todas las rutas (Vercel exige la carpeta api/)
+└── vercel.json             Configuración del despliegue`));
 add(H2('6.2 Diagrama de componentes principal del sistema'));
 add(figura('Diagrama de componentes principal', DIAG('componentes'), NOTA_FUENTE));
 add(H2('6.3 Diagrama de componentes de cada paquete'));

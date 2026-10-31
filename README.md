@@ -68,19 +68,25 @@ flowchart TB
 
 ```
 Taller-Mitsu_Proyecto Final/
-├── api/index.php       Controlador frontal: entrada de todas las peticiones (Vercel exige la carpeta api/)
-├── app/                Backend MVC
-│   ├── core/           Router, Auth, Session (en BD), Csrf, Validator, View, Database, Mailer, helpers
-│   ├── controllers/    Un controlador por grupo de casos de uso
-│   ├── models/         Consultas SQL parametrizadas
-│   └── views/          Pantallas por paquete: P1_Seguridad, P2_Clases, P3_Inventario, P4_Ventas
-├── public/             Frontend estático: CSS, JavaScript, fotos de las piezas, favicon
-├── Bakend/database/    Scripts SQL de PostgreSQL (01 a 06) y ejecutar.php para instalarlos
-├── Docs/               Informe, diagramas, pruebas y material de la presentación
+├── Bakend/                 Lógica del sistema y base de datos (lo que el usuario no ve)
+│   ├── app/
+│   │   ├── bootstrap.php   Arranque: entorno, carga de clases, errores y sesión
+│   │   ├── core/           Router, Auth, Session (en BD), Csrf, Validator, View, Database, Mailer, helpers
+│   │   ├── controllers/    Un controlador por grupo de casos de uso
+│   │   ├── models/         Consultas SQL parametrizadas (un modelo por entidad)
+│   │   └── services/       Pasarela de pago
+│   └── database/           Scripts SQL de PostgreSQL (01 a 07) y ejecutar.php para instalarlos
+├── Frontend/               Lo que ve el usuario
+│   ├── views/              Pantallas por paquete: P1_Seguridad, P2_Clases, P3_Inventario, P4_Ventas, Tienda
+│   └── public/             Archivos que el navegador descarga tal cual: CSS, JavaScript, fotos y favicon
+├── Docs/                   Informe, diagramas, capturas, pruebas, guion y sugerencias
+├── api/index.php           Entrada de todas las peticiones (Vercel exige que esté en la carpeta api/)
 └── router.php · .htaccess · vercel.json · .env.example · README.md
 ```
 
-No se usan solo las carpetas «Backend / Frontend» porque no son dos programas separados: PHP arma las pantallas en el servidor (MVC). El backend es `app/` (más `Bakend/database`) y el frontend son `app/views` y `public/`.
+- **Bakend** decide *qué* pasa: verifica permisos, aplica las reglas y guarda en la base de datos.
+- **Frontend** decide *cómo se ve*: las pantallas (`views`) y sus estilos, scripts e imágenes (`public`). `public` es necesaria: es la única carpeta que el navegador puede descargar directamente; el resto queda oculto.
+- **Los casos de uso no son una carpeta**: cada uno se reparte entre un controlador (Bakend) y sus pantallas (Frontend), y se documenta en `Docs` (fichas y diagramas). Los usuarios y roles se guardan en la base de datos.
 
 ---
 

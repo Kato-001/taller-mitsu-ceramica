@@ -10,6 +10,5 @@ Thumbs.db
 .env*
 
 !.env.example
-frontend/
 .vscode/
 __pycache__/

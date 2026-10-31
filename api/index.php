@@ -8,7 +8,7 @@
 
 declare(strict_types=1);
 
-require __DIR__ . '/../app/bootstrap.php';
+require __DIR__ . '/../Bakend/app/bootstrap.php';
 
 $r = new Router();
 

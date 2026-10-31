@@ -309,7 +309,7 @@ c.texto(115, 110, 'Navegador web', 11.5, 'middle')
 c.texto(115, 128, 'HTML · CSS · JavaScript', 10.5, 'middle', color=GRIS)
 n2 = nodo(c, 340, 0, 300, 230, 'Vercel (región gru1)', '«servidor»')
 componente(c, 365, 60, 'api/index.php', 'PHP 8.3 · vercel-php', w=250)
-componente(c, 365, 130, 'Assets estáticos', 'public/ · CSS · JS · imágenes', w=250)
+componente(c, 365, 130, 'Assets estáticos', 'Frontend/public · CSS · JS · imágenes', w=250)
 n3 = nodo(c, 760, 0, 300, 230, 'Supabase (sa-east-1)', '«servidor»')
 componente(c, 785, 60, 'Supavisor (pooler)', 'puerto 6543 · modo transacción', w=250)
 componente(c, 785, 130, 'PostgreSQL 17', 'esquema mitsu · RLS · triggers', w=250, estereotipo='«base de datos»')
@@ -322,10 +322,10 @@ asociacion(c, n2, n5, etiqueta='HTTPS (opcional)', tipo='dep')
 c.guardar(ruta('despliegue'))
 
 c = Lienzo()
-capas = [('Capa de presentación', 'app/views (layouts, parciales, vistas por paquete) · public/assets (CSS, JS)'),
-         ('Capa de control', 'api/index.php (Router) · app/controllers (un controlador por grupo de casos de uso)'),
-         ('Capa de servicios y núcleo', 'app/core: Auth, Session, Csrf, Validator, View, Mailer · app/services: Pasarela'),
-         ('Capa de modelo (acceso a datos)', 'app/models: un modelo por entidad, consultas con PDO y parámetros'),
+capas = [('Capa de presentación', 'Frontend/views (layouts, parciales, vistas por paquete) · Frontend/public (CSS, JS)'),
+         ('Capa de control', 'api/index.php (Router) · Bakend/app/controllers (uno por grupo de casos de uso)'),
+         ('Capa de servicios y núcleo', 'Bakend/app/core: Auth, Session, Csrf, Validator, View, Mailer · services: Pasarela'),
+         ('Capa de modelo (acceso a datos)', 'Bakend/app/models: un modelo por entidad, consultas con PDO y parámetros'),
          ('Capa de datos', 'PostgreSQL 17 · esquema mitsu: tablas, triggers, funciones PA1–PA12, RLS')]
 for k, (t, d) in enumerate(capas):
     caja = paquete(c, 0, k * 110, 720, 80, t)
