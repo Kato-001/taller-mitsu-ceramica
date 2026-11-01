@@ -53,7 +53,7 @@ $rechazos = array_filter($pagos, fn($x) => $x['estado'] === 'RECHAZADO');
                         </form>
                         <div class="qr-simular">
                             <small class="faint">Modo demostración · simular la respuesta del banco:</small>
-                            <div class="grid-2">
+                            <div class="qr-simular-botones">
                                 <form method="post" action="/pago/qr">
                                     <?= csrf_field() ?><input type="hidden" name="pedido_id" value="<?= $p['id'] ?>"><input type="hidden" name="simular" value="aprobado">
                                     <button class="btn btn-outline btn-block"><?= icono('ok-circulo') ?> Pago realizado</button>

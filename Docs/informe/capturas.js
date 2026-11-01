@@ -1,7 +1,9 @@
 /**
  * Captura las pantallas del sistema publicado (prototipos de cada caso de uso).
  *
- *   NODE_PATH=<carpeta con puppeteer-core> node Docs/informe/capturas.js [https://taller-mitsu-ceramica.vercel.app]
+ *   NODE_PATH=<carpeta con puppeteer-core> node Docs/informe/capturas.js [https://taller-mitsu-ceramica.vercel.app] [cuenta,cuenta]
+ *
+ * Con la lista de cuentas (por ejemplo "cliente") solo se rehacen las capturas de esas cuentas.
  *
  * Una entrada con "enlace" abre primero la ruta y luego el primer enlace que contenga ese texto.
  */
@@ -10,6 +12,7 @@ const path = require('path');
 const puppeteer = require('puppeteer-core');
 
 const BASE = process.argv[2] || 'https://taller-mitsu-ceramica.vercel.app';
+const SOLO = process.argv[3] ? process.argv[3].split(',') : null;
 const SALIDA = path.join(__dirname, 'capturas');
 const CUENTAS = {
     admin: ['admin@mitsu.test', 'Admin2026!'], ventas: ['ventas@mitsu.test', 'Ventas2026!'],
@@ -33,7 +36,7 @@ const PANTALLAS = {
     cliente: [['CU20_mis_pedidos', '/mis-pedidos'], ['CU21_comprobante', '/mis-pedidos', 0, '/mis-pedidos/ver']],
 };
 
-const foto = (p, nombre) => p.screenshot({ path: path.join(SALIDA, nombre + '.png') }).then(() => console.log(nombre, p.url().replace(BASE, '')));
+const foto = (p, nombre, completa = false) => p.screenshot({ path: path.join(SALIDA, nombre + '.png'), fullPage: completa }).then(() => console.log(nombre, p.url().replace(BASE, '')));
 const ir = (p, accion) => Promise.all([p.waitForNavigation({ waitUntil: 'networkidle2' }), accion]);
 
 /** Carrito → checkout → pasarela (QR y tarjeta) y al final cancela el pedido para devolver el stock. */
@@ -47,7 +50,7 @@ async function compraDePrueba(p) {
     await foto(p, 'CU20_checkout');
     await ir(p, p.click('form[action="/tienda/checkout"] button.btn-primary'));
     await new Promise(t => setTimeout(t, 900));
-    await foto(p, 'CU21_pasarela');
+    await foto(p, 'CU21_pasarela', true);   // completa: incluye los botones que simulan la respuesta del banco
     await p.click('[data-metodo=tarjeta]');
     await new Promise(t => setTimeout(t, 500));
     await foto(p, 'CU21_tarjeta');
@@ -58,7 +61,7 @@ async function compraDePrueba(p) {
 (async () => {
     fs.mkdirSync(SALIDA, { recursive: true });
     const navegador = await puppeteer.launch({ executablePath: 'C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe', headless: true });
-    for (const [cuenta, lista] of Object.entries(PANTALLAS)) {
+    for (const [cuenta, lista] of Object.entries(PANTALLAS).filter(([c]) => !SOLO || SOLO.includes(c))) {
         const contexto = await navegador.createBrowserContext();
         const p = await contexto.newPage();
         await p.setViewport({ width: 1366, height: 800 });
