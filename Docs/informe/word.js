@@ -83,7 +83,7 @@ function celda(texto, op = {}) {
     const lineas = String(texto ?? '').split('\n');
     return new d.TableCell({
         children: lineas.map(l => new d.Paragraph({
-            children: runs(l, { size: op.tam || 20, bold: op.negrita, font: op.mono ? CODIGO : FUENTE }),
+            children: runs(l, { size: op.tam || 20, bold: op.negrita, font: op.mono ? CODIGO : FUENTE, ...(op.color ? { color: op.color } : {}) }),
             alignment: op.derecha ? d.AlignmentType.RIGHT : d.AlignmentType.LEFT,
         })),
         borders: op.bordes || { top: SIN, bottom: SIN, left: SIN, right: SIN },
@@ -125,17 +125,27 @@ function tabla(titulo, encabezados, filas, nota, op = {}) {
 function ficha(cu, actores) {
     nTabla++;
     const b = { top: GRILLA, bottom: GRILLA, left: GRILLA, right: GRILLA };
-    const fila = (k, v) => new d.TableRow({ cantSplit: true, children: [celda(k, { negrita: true, fondo: 'F1E4D3', bordes: b, ancho: 24 }), celda(v, { bordes: b, ancho: 76 })] });
+    let k = 0;
+    const fila = (t, v) => {
+        const fondo = k++ % 2 ? 'DAEEF3' : undefined;
+        return new d.TableRow({ cantSplit: true, children: [celda(t, { negrita: true, fondo, bordes: b, ancho: 24 }), celda(v, { fondo, bordes: b, ancho: 76 })] });
+    };
+    const cab = new d.TableRow({
+        tableHeader: true,
+        children: ['Elemento', 'Descripción'].map((t, i) => celda(t, { negrita: true, color: 'FFFFFF', fondo: '4BACC6', bordes: b, ancho: i ? 76 : 24 })),
+    });
     const num = l => l.map((t, i) => `${i + 1}. ${t}`).join('\n');
     const filas = [
-        fila('Caso de uso', `${cu.id} ${cu.nombre}`),
-        fila('Ciclo / paquete', `Ciclo ${cu.ciclo} · ${cu.paquete}`),
+        cab,
+        fila('Id. caso de uso', `${cu.id}: ${cu.nombre}`),
+        fila('Objetivo', cu.proposito),
         fila('Actores', cu.actores.map(a => actores[a]).join(', ')),
-        fila('Propósito', cu.proposito),
+        fila('Actor iniciador', actores[cu.actores[0]]),
+        fila('Ciclo / paquete', `Ciclo ${cu.ciclo} · ${cu.paquete}`),
         fila('Precondición', cu.pre),
-        fila('Flujo principal', num(cu.flujo)),
-        fila('Flujos alternos', cu.alternos.join('\n')),
         fila('Postcondición', cu.post),
+        fila('Flujo principal', num(cu.flujo)),
+        fila('Flujo alterno / excepción', cu.alternos.join('\n')),
         fila('Ruta en el sistema', cu.ruta),
     ];
     return [

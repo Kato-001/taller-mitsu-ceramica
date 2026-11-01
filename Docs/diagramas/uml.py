@@ -17,6 +17,11 @@ RELLENO = '#fbf6ee'      # crema del taller
 RELLENO_2 = '#f1e4d3'    # arcilla clara
 ACENTO = '#9c5b3a'       # terracota
 GRIS = '#777777'
+# colores al estilo de Enterprise Architect (como los pide la cátedra)
+PAQ = '#FFF5A8'          # paquetes: amarillo
+CU = '#B9D1EE'           # casos de uso: celeste
+ROB = '#CADCF3'          # clases de análisis (interfaz, control, entidad)
+ROB_LINEA = '#4A6FA5'
 
 _fuentes = {}
 
@@ -107,22 +112,22 @@ def icono(c, tipo, x, y, r=15):
         c.linea([(x - 10, y + 24), (x, y + 10), (x + 10, y + 24)])
         return y + 26
     if tipo == 'frm':
-        c.linea([(x - r - 10, y - r), (x - r - 10, y + r)], sw=1.5)
-        c.linea([(x - r - 10, y), (x - r, y)], sw=1.5)
-        c.elipse(x, y, r, r, fill=RELLENO_2, sw=1.5)
+        c.linea([(x - r - 10, y - r), (x - r - 10, y + r)], stroke=ROB_LINEA, sw=1.5)
+        c.linea([(x - r - 10, y), (x - r, y)], stroke=ROB_LINEA, sw=1.5)
+        c.elipse(x, y, r, r, fill=ROB, stroke=ROB_LINEA, sw=1.5)
         return y + r
     if tipo == 'ctrl':
-        c.elipse(x, y, r, r, fill=RELLENO_2, sw=1.5)
-        c.linea([(x + 2, y - r - 5), (x - 5, y - r), (x + 2, y - r + 5)], sw=1.5)
+        c.elipse(x, y, r, r, fill=ROB, stroke=ROB_LINEA, sw=1.5)
+        c.linea([(x + 2, y - r - 5), (x - 5, y - r), (x + 2, y - r + 5)], stroke=ROB_LINEA, sw=1.5)
         return y + r
     if tipo == 'ent':
-        c.elipse(x, y, r, r, fill=RELLENO_2, sw=1.5)
-        c.linea([(x - r, y + r + 2), (x + r, y + r + 2)], sw=1.5)
+        c.elipse(x, y, r, r, fill=ROB, stroke=ROB_LINEA, sw=1.5)
+        c.linea([(x - r, y + r + 2), (x + r, y + r + 2)], stroke=ROB_LINEA, sw=1.5)
         return y + r + 2
     if tipo == 'bd':
-        c.elipse(x, y - r + 4, r, 5, fill=RELLENO_2)
-        c.rect(x - r, y - r + 4, 2 * r, 2 * r - 6, fill=RELLENO_2)
-        c.elipse(x, y - r + 4, r, 5, fill=RELLENO_2)
+        c.elipse(x, y - r + 4, r, 5, fill=ROB, stroke=ROB_LINEA)
+        c.rect(x - r, y - r + 4, 2 * r, 2 * r - 6, fill=ROB, stroke=ROB_LINEA)
+        c.elipse(x, y - r + 4, r, 5, fill=ROB, stroke=ROB_LINEA)
         return y + r
     raise ValueError(tipo)
 
@@ -464,7 +469,7 @@ def casos_de_uso(titulo, actores, casos, relaciones, ruta, extras=None, ancho_ca
         c.linea([(xa + (16 if xa < xc else -16), ya), (borde, yc)])
     for clave, texto in casos:
         x, y = posc[clave]
-        c.elipse(x, y, ancho_caso / 2, 23)
+        c.elipse(x, y, ancho_caso / 2, 23, fill=CU)
         partes = _partir(texto, ancho_caso - 40, 11.5)
         for k, p in enumerate(partes):
             c.texto(x, y + 4 - 7 * (len(partes) - 1) + 14 * k, p, 11.5, 'middle')
@@ -512,12 +517,12 @@ def _recortar(caja, hacia):
     return cx + dx * t, cy + dy * t
 
 
-def clase(c, x, y, nombre, atributos=(), operaciones=(), estereotipo=None, minimo=150, tam=11.5, fill=RELLENO):
+def clase(c, x, y, nombre, atributos=(), operaciones=(), estereotipo=None, minimo=150, tam=11.5, fill=RELLENO, cab=RELLENO_2):
     w = max([minimo, ancho(nombre, 12.5, True) + 24] + [ancho(a, tam) + 18 for a in list(atributos) + list(operaciones)])
     hcab = 26 + (14 if estereotipo else 0)
     h = hcab + max(1, len(atributos)) * 15 + 8 + (len(operaciones) * 15 + 8 if operaciones else 0)
     c.rect(x, y, w, h, fill=fill)
-    c.rect(x, y, w, hcab, fill=RELLENO_2)
+    c.rect(x, y, w, hcab, fill=cab)
     yy = y + 18
     if estereotipo:
         c.texto(x + w / 2, yy, estereotipo, 10.5, 'middle', color=GRIS)
@@ -572,9 +577,9 @@ def asociacion(c, a, b, m1='', m2='', etiqueta='', tipo='asoc', puntos=None):
         c.texto(xm, ym - 5, etiqueta, 11, 'middle', cursiva=True, color=GRIS, fondo='white')
 
 
-def paquete(c, x, y, w, h, nombre, fill=RELLENO):
+def paquete(c, x, y, w, h, nombre, fill=PAQ):
     tw = ancho(nombre, 12, True) + 20
-    c.rect(x, y, min(tw, w * 0.8), 20, fill=RELLENO_2)
+    c.rect(x, y, min(tw, w * 0.8), 20, fill=fill)
     c.texto(x + 8, y + 15, nombre, 12, negrita=True)
     c.rect(x, y + 20, w, h - 20, fill=fill)
     return (x, y + 20, w, h - 20)

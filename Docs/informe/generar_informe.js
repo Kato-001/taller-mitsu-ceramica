@@ -186,16 +186,24 @@ add(tabla('Resumen de la entrevista a la gerente', ['Tema', 'Respuesta resumida'
 // ===========================================================================
 // 2. ELEMENTOS DEL SISTEMA BASADO EN COMPUTADORAS
 // ===========================================================================
-add(H1('2. Elementos del sistema basado en computadoras'));
+add(H1('2. Elementos del sistema en computadoras'));
 add(H2('2.1 Hardware'));
 add(H3('2.1.1 Servidor'));
 add(P('El sistema no necesita un servidor propio en el taller: se ejecuta en la nube. La aplicación PHP corre en Vercel como función sin servidor (región gru1, São Paulo) y la base de datos PostgreSQL está en Supabase (región sa-east-1). Ambos servicios escalan solos y se pagan por uso; en su plan gratuito alcanzan para el volumen del taller.'));
 add(H3('2.1.2 Cliente'));
-add(P('Cualquier computadora, tableta o celular con un navegador actualizado (Chrome, Edge, Firefox o Safari). Recomendado para recepción: procesador de 2 núcleos, 4 GB de RAM y pantalla de 13 pulgadas o más para el punto de venta.'));
+add(P('Cualquier computadora, tableta o celular con un navegador actualizado. Para la recepción y el punto de venta se recomienda la siguiente configuración:'));
+add(tabla('Configuración recomendada del equipo cliente', ['Nombre', 'Versión', 'Características'], [
+    ['Procesador', 'Intel Core i3 o AMD Ryzen 3 (o superior)', '2 núcleos o más'], ['Memoria RAM', 'DDR4', '4 GB o más'],
+    ['Disco', 'SSD', '128 GB o más'], ['Monitor', '13 pulgadas o más', 'Resolución 1366 × 768 o mayor'],
+    ['Celular (maestras y alumnos)', 'Android 9 o iOS 14 en adelante', 'Navegador actualizado'],
+], 'Configuración mínima estimada por el equipo; el sistema se probó también en celular.', { anchos: [28, 40, 32] }));
 add(H3('2.1.3 Medios de comunicación'));
 add(P('Conexión a internet de banda ancha (se recomienda 10 Mbps o más) por Wi-Fi o cable. Todo el tráfico viaja cifrado por HTTPS; la conexión de la aplicación a la base de datos usa TLS.'));
 add(H3('2.1.4 Otros dispositivos'));
-add(P('Impresora (térmica o común) para la nota de venta y el comprobante; celular de la maestra para registrar asistencia; celular del cliente para pagar con el QR del taller.'));
+add(tabla('Otros dispositivos', ['Nombre', 'Características'], [
+    ['Impresora térmica o común', 'Imprime la nota de venta y los comprobantes.'], ['Celular de la maestra', 'Registra la asistencia desde la clase.'],
+    ['Celular del cliente', 'Escanea el QR del taller para pagar los pedidos en línea.'], ['Cámara o celular', 'Toma las fotos de las piezas para la tienda.'],
+], null, { anchos: [35, 65] }));
 add(H2('2.2 Software'));
 add(H3('2.2.1 Servidor'));
 add(tabla('Software del lado del servidor', ['Componente', 'Elección', 'Uso'], [
@@ -206,9 +214,16 @@ add(tabla('Software del lado del servidor', ['Componente', 'Elección', 'Uso'], 
     ['Correo', 'SMTP de Gmail (se configura con contraseña de aplicación)', 'Comprobantes y recuperación de contraseña'],
 ], null, { anchos: [20, 42, 38] }));
 add(H3('2.2.2 Cliente'));
-add(P('Navegador web. La interfaz usa HTML5, CSS3 y JavaScript sin librerías externas pesadas; funciona en modo claro y oscuro y se adapta al celular.'));
+add(tabla('Software del lado del cliente', ['Nombre', 'Versión'], [
+    ['Sistema operativo', 'Windows 10/11, macOS, Android o iOS'], ['Navegador', 'Chrome, Edge, Firefox o Safari (versión actual)'],
+    ['Interfaz', 'HTML5, CSS3 y JavaScript propio, modo claro y oscuro, adaptable al celular'],
+], null, { anchos: [35, 65] }));
 add(H3('2.2.3 Otro software adicional'));
-add(P('Git y GitHub para el control de versiones; Visual Studio Code como editor; LibreOffice y la librería docx para el informe; Puppeteer para capturar las pantallas y probar el diseño en celular.'));
+add(tabla('Otro software adicional', ['Nombre', 'Descripción'], [
+    ['Git y GitHub', 'Control de versiones y repositorio público.'], ['Visual Studio Code', 'Editor de código.'],
+    ['Generador UML propio (Python)', 'Diagramas UML en notación de Enterprise Architect, generados desde la especificación de los casos de uso.'],
+    ['LibreOffice y librería docx', 'Armado del informe y exportación a PDF.'], ['Puppeteer', 'Capturas de pantalla y pruebas en celular.'],
+], null, { anchos: [35, 65] }));
 add(H2('2.3 Datos'));
 add(P(`La información se guarda en ${Object.keys(ESQUEMA).length} tablas relacionales: usuarios, roles y permisos; maestras, alumnos, talleres, horarios, clases y reservas; proveedores, materiales, compras y movimientos (kardex); piezas, clientes, cajas, ventas, pedidos en línea y pagos. Las contraseñas se guardan cifradas con bcrypt y de las tarjetas solo se guarda la marca y los cuatro últimos dígitos. El volumen es bajo (miles de registros por año; ver la tabla de volumen en el capítulo 5).`));
 add(H2('2.4 Procesos'));
@@ -271,7 +286,7 @@ add(tabla('Costo estimado de desarrollo', ['Concepto', 'Cálculo', 'Monto (Bs)']
     ['Total estimado', '', '20.000'],
 ], 'Estimado. Bs 25 por hora corresponde a una referencia de pago a practicantes; las horas son aproximadas.', { anchos: [50, 32, 18], derecha: [2] }));
 add(H2('4.2 Costos de software'));
-add(P('Todo el software usado es libre o gratuito (Tabla 7), por lo que el costo de licencias es **Bs 0**.'));
+add(P('Todo el software usado es libre o gratuito (ver la tabla de herramientas de software en 3.3.1), por lo que el costo de licencias es **Bs 0**.'));
 add(H2('4.3 Costos de infraestructura'));
 add(tabla('Costo estimado de infraestructura', ['Concepto', 'Plan', 'Costo mensual (Bs)'], [
     ['Publicación de la aplicación', 'Vercel Hobby (actual)', '0'], ['Base de datos', 'Supabase Free (actual)', '0'],
@@ -453,7 +468,7 @@ CICLOS.forEach(([c, t]) => {
 add(H2('2.3 Detallar un caso de uso'));
 CICLOS.forEach(([c, t]) => {
     add(H3(t));
-    deCiclo(c).forEach(x => add(ficha(x, ACTORES)));
+    deCiclo(c).forEach(x => add(figura(`Diagrama de casos de uso ${x.id} ${x.nombre}`, DIAG(`cu_${x.id}`), NOTA_FUENTE, { alto: 230 }), ficha(x, ACTORES)));
 });
 add(H2('2.4 Prototipar interfaz de usuario'));
 add(P('Los prototipos son las pantallas reales del sistema publicado, capturadas en computadora (1366 × 800) y en celular. La interfaz usa la paleta de colores arcilla y crema del taller.'));
@@ -490,7 +505,19 @@ CICLOS.forEach(([c, t]) => {
 add(H1('Capítulo 3. Flujo de trabajo: análisis'));
 add(H2('3.1 Análisis de la arquitectura'));
 add(H3('3.1.1 Identificar paquetes'));
-add(tabla('Paquetes de análisis', ['Paquete', 'Responsabilidad', 'Ciclo'], [
+add(P('Los casos de uso se agrupan en paquetes según el área del taller que atienden. Cada paquete se construye en un ciclo; los paquetes del ciclo IV (cafetería, cobros y reportes) quedan planificados.'));
+const DESC_PAQ = {
+    P1: 'Gestiona el acceso al sistema y su configuración: inicio y cierre de sesión, recuperación de contraseña, usuarios, roles con su matriz de permisos, bitácora de auditoría y catálogos generales (categorías, unidades y métodos de pago). Garantiza que cada persona vea y haga solo lo que su rol permite.',
+    P2: 'Administra la enseñanza: maestras, talleres, horarios semanales, generación del calendario de clases, reservas con control de cupo, registro de asistencia y alumnos con su portal. Reemplaza la hoja de Excel de horarios y el cuaderno de reservas.',
+    P3: 'Controla los insumos de producción: materiales con stock mínimo, proveedores, compras con costo promedio y el kardex de entradas, consumos, mermas y ajustes. Evita quedarse sin arcilla o esmalte en plena producción.',
+    P4: 'Reúne todo lo que genera ingresos: piezas de cerámica con foto, venta en caja con nota numerada, apertura y cierre de caja con arqueo, tienda en línea con carrito, pasarela de pago (QR, tarjeta o PayPal) y gestión de pedidos web.',
+};
+Object.entries(PAQUETES).forEach(([p, n]) => add(
+    figura(`Paquete ${n}`, DIAG(`paq_${p}`), NOTA_FUENTE, { ancho: 300 }),
+    new d.Paragraph({ keepNext: true, spacing: { before: 120 }, children: W.runs(`**${n.toUpperCase()}**`) }),
+    P(DESC_PAQ[p]),
+));
+add(tabla('Resumen de paquetes de análisis', ['Paquete', 'Responsabilidad', 'Ciclo'], [
     ['P1 Seguridad y configuración', 'Acceso, usuarios, roles, permisos, bitácora, catálogos', 'I'],
     ['P2 Clases y reservas', 'Maestras, talleres, horarios, calendario, reservas, asistencia, alumnos', 'II'],
     ['P3 Inventario y compras', 'Materiales, proveedores, compras, kardex y alertas', 'III'],
@@ -498,10 +525,11 @@ add(tabla('Paquetes de análisis', ['Paquete', 'Responsabilidad', 'Ciclo'], [
     ['P5 Cafetería · P6 Cobros · P7 Reportes', 'Menú, comandas, mensualidades, reportes', 'IV (planificado)'],
 ], null, { anchos: [33, 52, 15] }));
 add(H3('3.1.2 Relacionar paquetes y casos de uso'));
-add(figura('Paquetes con sus casos de uso', DIAG('paquetes_casos'), NOTA_FUENTE));
+add(P('Cada paquete incluye los casos de uso que le pertenecen. Los diagramas siguientes muestran, para cada paquete, sus casos de uso unidos con la relación «include».'));
+Object.entries(PAQUETES).forEach(([p, n]) => add(figura(`Paquete ${n} y sus casos de uso`, DIAG(`relpaq_${p}`), NOTA_FUENTE, { alto: 420 })));
 add(H3('3.1.3 Vista de paquetes'));
-add(P('Todos los paquetes usan P1, porque cada acción verifica la sesión y el permiso. P4 usa P3 porque las piezas comparten categorías con el inventario.'));
-add(figura('Vista de paquetes y sus dependencias', DIAG('paquetes'), NOTA_FUENTE, { ancho: 560 }));
+add(P('La vista de cada paquete muestra, dentro del paquete, los actores que participan y los casos de uso que ejecutan, incluidas las relaciones «include» y «extend» entre casos de uso del mismo paquete.'));
+Object.entries(PAQUETES).forEach(([p, n]) => add(figura(`Vista del paquete ${n}`, DIAG(`vista_${p}`), NOTA_FUENTE, { alto: 520 })));
 add(H2('3.2 Analizar un caso de uso'));
 add(P('Para cada caso de uso se elaboró un diagrama de comunicación con las clases de análisis: el actor, la interfaz «frm», el controlador «ctrl» y las entidades «entidad». Los mensajes están numerados en el orden en que ocurren; los que dependen de una condición llevan la guarda entre corchetes y los que se repiten llevan un asterisco. Por su ancho, los diagramas se presentan en páginas horizontales.'));
 seccion(true);
@@ -511,12 +539,16 @@ CICLOS.forEach(([c, t]) => {
 });
 seccion();
 add(H2('3.3 Análisis de clase'));
-add(P('Las clases de análisis de cada ciclo se agrupan en tres columnas: interfaces (lo que ve el usuario), controladores (coordinan el caso de uso) y entidades (datos que persisten). Las entidades con nombre fn_ o sp_ son funciones o procedimientos de la base de datos que ejecutan una operación completa en una transacción.'));
+add(P('Para cada caso de uso se elaboró un diagrama de clases de análisis con tres tipos de clase: la interfaz «form» (lo que ve el usuario, con sus campos y acciones), el controlador «control» (coordina el caso de uso) y las entidades «entidad» (datos que persisten, con los atributos reales de su tabla). Las clases «procedimiento» son funciones de PostgreSQL que ejecutan una operación completa en una transacción. Los métodos son los mensajes del diagrama de comunicación del mismo caso de uso.'));
+seccion(true);
 CICLOS.forEach(([c, t]) => {
     add(H3(t));
-    add(figura(`Clases de análisis del ${t.split(':')[0].toLowerCase()}`, DIAG(`analisis_ciclo_${c}`), NOTA_FUENTE, { alto: 640 }));
+    deCiclo(c).forEach(x => add(figura(`Clases de análisis ${x.id} ${x.nombre}`, DIAG(`clases_${x.id}`), NOTA_FUENTE, { alto: 500 })));
 });
+seccion();
 add(H2('3.4 Análisis de paquetes'));
+add(P('Todos los paquetes dependen de P1, porque cada acción verifica la sesión y el permiso del usuario. P4 depende de P3 porque las piezas comparten categorías con el inventario. No hay dependencias en ciclo, por lo que cada paquete puede construirse y probarse en su propio ciclo.'));
+add(figura('Análisis de paquetes: dependencias', DIAG('paquetes'), NOTA_FUENTE, { ancho: 560 }));
 add(tabla('Contenido de cada paquete', ['Paquete', 'Interfaces', 'Controladores', 'Entidades'], Object.keys(PAQUETES).map(p => {
     const set = t => [...new Set(CASOS.filter(x => x.paquete === p).flatMap(x => x.participantes.filter(q => t.includes(q.tipo)).map(q => q.nombre)))].join(', ');
     return [PAQUETES[p], set(['frm']), set(['ctrl']), set(['ent', 'bd'])];
@@ -527,10 +559,10 @@ add(tabla('Contenido de cada paquete', ['Paquete', 'Interfaces', 'Controladores'
 // ===========================================================================
 add(H1('Capítulo 4. Flujo de trabajo: diseño'));
 add(H2('4.1 Diseño de arquitectura'));
-add(H3('4.1.1 Diseño físico: diagrama de despliegue'));
+add(H3('4.1.1 Diseño de datos lógico (diagrama de despliegue)'));
 add(P('El navegador del usuario se comunica por HTTPS con Vercel, donde corre la aplicación PHP. La aplicación se conecta a PostgreSQL en Supabase a través del pooler Supavisor en modo transacción (puerto 6543) con un usuario de mínimo privilegio. El correo SMTP y el ingreso con Google son servicios externos opcionales.'));
 add(figura('Diagrama de despliegue', DIAG('despliegue'), NOTA_FUENTE));
-add(H3('4.1.2 Diseño lógico: diagrama organizado en capas'));
+add(H3('4.1.2 Diseño de datos físico (diagrama organizado en capas)'));
 add(P('La aplicación sigue el patrón MVC con cinco capas. Cada capa solo usa la de abajo: las vistas no consultan la base de datos y los modelos no generan HTML. Las reglas críticas se repiten en la capa de datos (triggers) como última defensa.'));
 add(figura('Arquitectura en capas', DIAG('capas'), NOTA_FUENTE, { ancho: 560 }));
 
@@ -539,10 +571,10 @@ add(figura('Arquitectura en capas', DIAG('capas'), NOTA_FUENTE, { ancho: 560 }))
 // ===========================================================================
 add(H1('Capítulo 5. Diseño de datos'));
 add(H2('5.1 Diseño de datos lógico'));
-add(H3('Diagrama de clases persistentes'));
+add(H3('Diagrama de clase'));
 add(P('Las clases persistentes se derivan de las entidades de análisis. Se muestran por paquete; las llaves foráneas se representan como asociaciones y las composiciones (rombo negro) indican que la parte no existe sin el todo, como el detalle de una venta.'));
 Object.entries(PAQUETES).forEach(([p, n]) => add(figura(`Clases persistentes de ${n}`, DIAG(`per_${p}`), NOTA_FUENTE, { alto: 600 })));
-add(H3('Mapeo de clases a tablas'));
+add(H3('Mapeo'));
 const nombreClase = t => t.split('_').map(s => s[0].toUpperCase() + s.slice(1)).join('');
 const restr = (t, tipo) => (ESQUEMA[t].restricciones || []).filter(k => k.tipo === tipo);
 add(tabla('Mapeo de clases persistentes a tablas', ['Clase', 'Tabla', 'Llave primaria', 'Llaves foráneas → tabla'],
@@ -557,6 +589,28 @@ add(tabla('Ejemplo de 1FN: de la hoja de Excel a la tabla horario', ['Antes (Exc
 add(P('**Segunda forma normal (2FN):** todo atributo depende de la llave completa. En rolpermiso, cuya llave es (rol_id, permiso_id), no se guarda el nombre del permiso, porque dependería solo de permiso_id; ese dato está en la tabla permiso. En detalle_venta la llave es id y precio_unitario depende del detalle (es el precio con que se vendió, copiado por un trigger), no de la pieza: es un dato histórico, no una redundancia.'));
 add(P('**Tercera forma normal (3FN):** no hay dependencias transitivas. El material no guarda el nombre de su categoría ni de su unidad, sino categoria_id y unidad_id; así, si se renombra “kg” a “kilogramo”, se cambia en un solo lugar. Lo mismo ocurre con el método de pago de una venta y con el rol de un usuario.'));
 add(H2('5.2 Diseño de datos físico'));
+add(P(`El diccionario de datos describe cada una de las ${Object.keys(ESQUEMA).length} tablas de la base publicada: atributo, tipo de dato, amplitud, llave, si admite nulos y una descripción. Se generó desde el catálogo de PostgreSQL, por lo que coincide con la base real.`));
+const DESC_COL = {
+    id: 'Identificador único', nombre: 'Nombre', apellido: 'Apellido', correo: 'Correo electrónico', telefono: 'Teléfono de contacto',
+    estado: 'Estado del registro', descripcion: 'Descripción', creado_en: 'Fecha y hora de creación', actualizado_en: 'Fecha y hora de la última modificación',
+    fecha: 'Fecha del registro', total: 'Importe total (Bs)', precio: 'Precio (Bs)', cantidad: 'Cantidad', stock: 'Existencia actual',
+    stock_minimo: 'Existencia mínima antes de alertar', costo: 'Costo unitario (Bs)', costo_promedio: 'Costo promedio ponderado (Bs)', numero: 'Número correlativo del documento',
+    observacion: 'Observación', motivo: 'Motivo del cambio o anulación', codigo: 'Código', clave_hash: 'Contraseña cifrada con bcrypt', ultimo_acceso: 'Último ingreso al sistema',
+    ci: 'Cédula de identidad', nit: 'NIT', direccion: 'Dirección', subtotal: 'Subtotal de la línea (Bs)', precio_unitario: 'Precio unitario aplicado (Bs)',
+    hora_inicio: 'Hora de inicio', hora_fin: 'Hora de fin', dia_semana: 'Día de la semana (1 = lunes)', cupo: 'Cupo máximo de alumnos', tipo: 'Tipo o clase del registro',
+    accion: 'Acción realizada', modulo: 'Módulo del sistema', ip: 'Dirección IP de origen', detalle: 'Detalle en formato JSON', valor: 'Valor configurado', clave: 'Nombre del parámetro',
+};
+const descCol = n => DESC_COL[n] || (n.endsWith('_id') ? `Referencia a ${n.slice(0, -3).replace(/_/g, ' ')}` : n.charAt(0).toUpperCase() + n.slice(1).replace(/_/g, ' '));
+Object.keys(ESQUEMA).forEach(t => {
+    const pkc = ((restr(t, 'p')[0] || {}).columnas || '').split(',');
+    const fkc = new Set(restr(t, 'f').flatMap(k => k.columnas.split(',')));
+    add(tabla(`Tabla ${t}`, ['Atributo', 'Tipo de dato', 'Amplitud', 'Llave', 'Nulo', 'Descripción'], ESQUEMA[t].columnas.map(col => {
+        const m = col.tipo.match(/^(.*?)\s*\(([^)]*)\)$/);
+        const base = (m ? m[1] : col.tipo).replace('character varying', 'varchar').replace('timestamp with time zone', 'timestamptz').replace('timestamp without time zone', 'timestamp').replace('time without time zone', 'time');
+        const llave = [pkc.includes(col.nombre) ? 'PK' : '', fkc.has(col.nombre) ? 'FK' : ''].filter(Boolean).join(' / ');
+        return [col.nombre, base, m ? m[2] : '', llave, col.obligatorio ? 'No' : 'Sí', descCol(col.nombre)];
+    }), null, { anchos: [22, 16, 11, 10, 8, 33], tam: 17, mono: [0] }));
+});
 add(H3('Tabla de volumen'));
 const CRECE = { reserva: 1500, sesion_clase: 650, bitacora: 6000, venta: 900, detalle_venta: 1400, movimiento_pieza: 1800, movimiento_material: 400, pedido: 300, detalle_pedido: 450, pago: 380, compra: 60, detalle_compra: 150, caja: 300, sesion: 3000, alumno: 120, cliente: 250, usuario: 150, historial_precio: 30, recuperacion: 40, pieza_imagen: 40, pieza: 40, material: 10 };
 add(tabla('Volumen de datos por tabla', ['Tabla', 'Filas actuales', 'Tamaño actual (KB)', 'Crecimiento anual estimado (filas)'],
@@ -612,7 +666,7 @@ if (it >= 0) {
     add(P('Ejemplo: trigger que valida una reserva (bloquea la clase y revisa cupo y fecha):', { sinSangria: true }));
     add(codigo(s02.slice(it, s02.indexOf('$$;', it) + 3)));
 }
-add(H2('5.3 Diseñar casos de uso: diagramas de secuencia'));
+add(H2('5.3 Diseñar casos de uso (diagrama de secuencia)'));
 add(P('Los diagramas de secuencia muestran, en orden temporal, los mensajes entre el actor, la interfaz, el controlador y las entidades, con los fragmentos alt (alternativa), opt (opcional) y loop (repetición). Los nombres de controladores y métodos son los del código fuente.'));
 seccion(true);
 CICLOS.forEach(([c, t]) => {
@@ -626,13 +680,15 @@ seccion();
 // ===========================================================================
 add(H1('Capítulo 6. Flujo de trabajo: implementación'));
 add(H2('6.1 Elección de la plataforma de desarrollo del software'));
-add(tabla('Plataforma elegida', ['Elemento', 'Elección', 'Motivo'], [
-    ['Lenguaje de programación', 'PHP 8.3 sin framework (MVC propio)', 'Conocido por el equipo, gratuito y soportado en Vercel; sin framework se ve y se explica cada capa.'],
-    ['Base de datos', 'PostgreSQL 17 (Supabase)', 'Triggers, funciones PL/pgSQL, restricciones EXCLUDE para horarios y seguridad por filas.'],
-    ['Sistema operativo', 'Linux en la nube (Vercel y Supabase); Windows 11 en desarrollo', 'No hay que administrar servidores.'],
-    ['Interfaz', 'HTML5, CSS3 y JavaScript propio', 'Rápida, adaptable al celular, con modo claro y oscuro.'],
-    ['Otros', 'Git y GitHub, Puppeteer, PDO pdo_pgsql', 'Versiones, pruebas visuales y acceso seguro a datos.'],
-], null, { anchos: [22, 33, 45] }));
+[
+    ['Lenguaje de programación', '**PHP 8.3** sin framework, con un MVC propio. Es conocido por el equipo, gratuito y soportado en Vercel; al no usar framework se ve y se explica cada capa. La interfaz usa HTML5, CSS3 y JavaScript propio, adaptable al celular y con modo claro y oscuro.'],
+    ['Base de datos', '**PostgreSQL 17** en Supabase. Permite triggers, funciones PL/pgSQL, restricciones EXCLUDE para que no se crucen los horarios y seguridad por filas.'],
+    ['Sistemas operativos', 'En producción, **Linux** en la nube (Vercel y Supabase), por lo que no hay servidores que administrar. En desarrollo, **Windows 11** con el servidor integrado de PHP.'],
+    ['Otros', 'Git y GitHub para el control de versiones, PDO con pdo_pgsql para el acceso seguro a datos, Puppeteer para las pruebas y capturas, y Visual Studio Code como editor.'],
+].forEach(([t, x]) => add(H3(t), P(x)));
+add(H2('6.2 Implementación de la arquitectura del sistema'));
+add(H3('Diagrama de componentes principal del sistema'));
+add(figura('Diagrama de componentes principal', DIAG('componentes'), NOTA_FUENTE));
 add(H3('Estructura de carpetas'));
 add(codigo(`Taller-Mitsu_Proyecto Final/
 ├── Bakend/                 Lógica del sistema y base de datos
@@ -647,9 +703,8 @@ add(codigo(`Taller-Mitsu_Proyecto Final/
 ├── Docs/                   Informe, diagramas, capturas, pruebas y guion
 ├── api/index.php           Entrada de todas las rutas (Vercel exige la carpeta api/)
 └── vercel.json             Configuración del despliegue`));
-add(H2('6.2 Diagrama de componentes principal del sistema'));
-add(figura('Diagrama de componentes principal', DIAG('componentes'), NOTA_FUENTE));
-add(H2('6.3 Diagrama de componentes de cada paquete'));
+add(H2('6.3 Implementación de la arquitectura del subsistema'));
+add(H3('Diagrama de componentes de cada paquete'));
 Object.entries(PAQUETES).forEach(([p, n]) => add(figura(`Componentes de ${n}`, DIAG(`componentes_${p}`), NOTA_FUENTE, { alto: 600 })));
 add(H3('Seguridad implementada'));
 add(L([

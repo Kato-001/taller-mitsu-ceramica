@@ -12,7 +12,8 @@ import sys
 
 sys.path.insert(0, os.path.dirname(__file__))
 import uml
-from uml import Lienzo, clase, asociacion, paquete, nodo, componente, ancho, RELLENO, RELLENO_2, GRIS, TINTA, ACENTO
+import re
+from uml import Lienzo, clase, asociacion, paquete, nodo, componente, ancho, RELLENO, RELLENO_2, GRIS, TINTA, ACENTO, CU, ROB_LINEA
 from casos import CASOS, ACTORES, PAQUETES
 
 AQUI = os.path.dirname(os.path.abspath(__file__))
@@ -40,6 +41,7 @@ for cu in CASOS:
 # 2. Casos de uso
 # ---------------------------------------------------------------------------
 LADO = {'adm': 'izq', 'admv': 'izq', 'mae': 'der', 'alu': 'der', 'cli': 'der', 'vis': 'der', 'usr': 'izq'}
+EXTRAS = [('CU10', 'CU09', '«include»'), ('CU20', 'CU21', '«include»'), ('CU18', 'CU19', '«include»'), ('CU16', 'CU13', '«extend»')]
 
 
 def actores_de(casos):
@@ -55,11 +57,8 @@ for ciclo, titulo in CICLOS.items():
     lista = [cu for cu in CASOS if cu['ciclo'] == ciclo]
     acts = actores_de(lista)
     rel = [(a, cu['id']) for cu in lista for a in cu['actores']]
-    extras = []
-    if ciclo == 'II':
-        extras = [('CU10', 'CU09', '«include»')]
-    if ciclo == 'III':
-        extras = [('CU20', 'CU21', '«include»'), ('CU18', 'CU19', '«include»'), ('CU16', 'CU13', '«extend»')]
+    ids = {cu['id'] for cu in lista}
+    extras = [e for e in EXTRAS if e[0] in ids and e[1] in ids]
     uml.casos_de_uso(titulo, [(a, ACTORES[a], LADO[a]) for a in acts],
                      [(cu['id'], f"{cu['id']} {cu['nombre']}") for cu in lista], rel, ruta(f'cu_ciclo_{ciclo}'), extras=extras, ancho_caso=270)
 
@@ -118,77 +117,176 @@ for p, t in (('P1', 'Ciclo I'), ('P2', 'Ciclo II'), ('P3', 'Ciclo III'), ('P4', 
     c.texto(x + w / 2, y + h / 2 + 5, t, 12, 'middle', color=GRIS)
 c.guardar(ruta('paquetes'))
 
-# paquetes con sus casos de uso
-c = Lienzo()
-x = 0
-for p, nombre in PAQUETES.items():
+
+
+def caso_elipse(c, x, y, texto, rx=110, ry=30, tam=11):
+    c.elipse(x, y, rx, ry, fill=CU)
+    partes = uml._partir(texto, rx * 2 - 40, tam)
+    for j, t in enumerate(partes):
+        c.texto(x, y + 4 - 6.5 * (len(partes) - 1) + 13 * j, t, tam, 'middle')
+
+
+def nombre_paquete(p):
+    return PAQUETES[p].split(' ', 1)[1].upper()
+
+
+for p in PAQUETES:
     lista = [cu for cu in CASOS if cu['paquete'] == p]
-    alto = 50 + len(lista) * 58
-    paquete(c, x, 0, 270, alto, nombre)
+    # 3.1.1 el paquete solo
+    c = Lienzo()
+    paquete(c, 0, 0, 420, 170, nombre_paquete(p))
+    c.guardar(ruta(f'paq_{p}'))
+
+    # 3.1.2 paquete con sus casos de uso
+    c = Lienzo()
+    paso = 76
+    alto = max(220, len(lista) * paso)
+    py = alto / 2
+    xp, yp, wp, hp = 0, py - 90, 300, 180
+    cx = 640
     for k, cu in enumerate(lista):
-        cy = 60 + k * 58
-        c.elipse(x + 135, cy, 120, 22)
-        partes = uml._partir(f"{cu['id']} {cu['nombre']}", 210, 11)
-        for j, t in enumerate(partes):
-            c.texto(x + 135, cy + 4 - 6.5 * (len(partes) - 1) + 13 * j, t, 11, 'middle')
-    x += 300
-c.guardar(ruta('paquetes_casos'))
+        cy = paso / 2 + k * paso + (alto - len(lista) * paso) / 2
+        c.linea([(xp + wp, py), (cx - 110, cy)], dash='5,4')
+        c.texto(xp + wp + (cx - 110 - xp - wp) * 0.58, py + (cy - py) * 0.58 + 4, '«include»', 10.5, 'middle', fondo='white')
+    paquete(c, xp, yp, wp, hp, nombre_paquete(p))
+    for k, cu in enumerate(lista):
+        cy = paso / 2 + k * paso + (alto - len(lista) * paso) / 2
+        caso_elipse(c, cx, cy, f"{cu['id']} {cu['nombre'].upper()}")
+    c.guardar(ruta(f'relpaq_{p}'))
+
+    # 3.1.3 vista del paquete: actores y casos de uso dentro del paquete
+    c = Lienzo()
+    acts = actores_de(lista)
+    paso = 74
+    alto = 60 + len(lista) * paso
+    posc = {cu['id']: (560, 70 + k * paso) for k, cu in enumerate(lista)}
+    bary = sorted(acts, key=lambda a: sum(posc[cu['id']][1] for cu in lista if a in cu['actores']) / max(1, sum(a in cu['actores'] for cu in lista)))
+    posa = {a: (110, 40 + alto * (k + 1) / (len(bary) + 1)) for k, a in enumerate(bary)}
+    paquete(c, 0, 0, 820, alto + 40, nombre_paquete(p))
+    for cu in lista:
+        for a in cu['actores']:
+            (xa, ya), (xc, yc) = posa[a], posc[cu['id']]
+            c.linea([(xa + 18, ya), (xc - 130, yc)], fin='llena')
+    ids = set(posc)
+    for k, (a, b, et) in enumerate(e for e in EXTRAS if e[0] in ids and e[1] in ids):
+        (x1, y1), (x2, y2) = posc[a], posc[b]
+        xr = x1 + 130 + 24 + 14 * k
+        c.linea([(x1 + 118, y1 + 10), (xr, y1 + 10), (xr, y2 + 10), (x2 + 120, y2 + 10)], dash='6,4', fin='abierta')
+        c.texto(xr + 4, (y1 + y2) / 2 + 14, et, 10.5, color=GRIS, fondo=uml.PAQ)
+    for cu in lista:
+        caso_elipse(c, *posc[cu['id']], f"{cu['id']} {cu['nombre'].upper()}", rx=130, ry=28)
+    for a, (x, y) in posa.items():
+        fondo = uml.icono(c, 'actor', x, y - 10)
+        c.texto(x, fondo + 14, ACTORES[a], 12, 'middle', negrita=True)
+    c.guardar(ruta(f'vista_{p}'))
+
+# diagrama de cada caso de uso para su ficha (como en Enterprise Architect)
+for cu in CASOS:
+    socios = [e for e in EXTRAS if cu['id'] in e[:2]]
+    otros = [x for e in socios for x in e[:2] if x != cu['id']]
+    nombres = {x['id']: x['nombre'] for x in CASOS}
+    acts = [(a, ACTORES[a], 'izq' if k % 2 == 0 else 'der') for k, a in enumerate(cu['actores'])]
+    uml.casos_de_uso(f"{cu['id']} {cu['nombre']}", acts,
+                     [(cu['id'], f"{cu['id']} {cu['nombre']}")] + [(o, f"{o} {nombres[o]}") for o in otros],
+                     [(a, cu['id']) for a in cu['actores']], ruta(f"cu_{cu['id']}"), extras=socios, ancho_caso=250)
 
 # ---------------------------------------------------------------------------
-# 4. Clases de análisis por ciclo (interfaz → control → entidad)
+# 3b. Clases de análisis por caso de uso: «form» → «control» → «entidad»
 # ---------------------------------------------------------------------------
-for ciclo, titulo in CICLOS.items():
-    lista = [cu for cu in CASOS if cu['ciclo'] == ciclo]
-    cols = {'actor': [], 'frm': [], 'ctrl': [], 'ent': []}
-    aristas = set()
-    for cu in lista:
-        tipos = {k: (t if t != 'bd' else 'ent', n) for k, t, n in cu['part']}
-        for k, (t, n) in tipos.items():
-            if n not in cols[t]:
-                cols[t].append(n)
-        actor = tipos['a'][1]
-        for a in cu['actores']:
-            if ACTORES[a] not in cols['actor']:
-                cols['actor'].append(ACTORES[a])
-            aristas.add((ACTORES[a], tipos['f'][1]))
-        aristas.add((tipos['f'][1], tipos['c'][1]))
-        for k, (t, n) in tipos.items():
-            if t == 'ent':
-                aristas.add((tipos['c'][1], n))
-    for actor in list(cols['actor']):
-        if not any(a == actor for a, _ in aristas):
-            cols['actor'].remove(actor)
-    # ordenar por baricentro respecto a la columna anterior
-    orden = ['actor', 'frm', 'ctrl', 'ent']
-    for i in range(1, 4):
-        prev = cols[orden[i - 1]]
-        def bc(n):
-            vs = [prev.index(a) for a, b in aristas if b == n and a in prev]
-            return sum(vs) / len(vs) if vs else 0
-        cols[orden[i]].sort(key=bc)
-    c = Lienzo()
-    pos = {}
-    xs = {'actor': 0, 'frm': 220, 'ctrl': 480, 'ent': 760}
-    alto = max(len(v) for v in cols.values()) * 84
-    for t, nombres in cols.items():
-        paso = alto / max(1, len(nombres))
-        for k, n in enumerate(nombres):
-            pos[(t, n)] = (xs[t], paso * (k + 0.5))
-    def buscar(n, tipos):
-        for t in tipos:
-            if (t, n) in pos:
-                return pos[(t, n)]
-    for a, b in sorted(aristas):
-        pa = buscar(a, ['actor', 'frm', 'ctrl'])
-        pb = buscar(b, ['frm', 'ctrl', 'ent'] if a in cols['actor'] else ['ctrl', 'ent'])
-        c.linea([(pa[0] + 18, pa[1]), (pb[0] - 18 - (10 if b in cols['frm'] else 0), pb[1])])
-    for (t, n), (x, y) in pos.items():
-        fondo = uml.icono(c, t, x, y - (8 if t == 'actor' else 0))
-        if t == 'actor':
-            c.texto(x, fondo + 13, n, 11.5, 'middle', negrita=True)
+TABLA_DE = {'Sesion': 'sesion_clase'}
+
+
+def tabla_de(nombre):
+    t = TABLA_DE.get(nombre) or re.sub(r'(?<!^)(?=[A-Z])', '_', nombre).lower()
+    return t if t in ESQUEMA else None
+
+
+def corto(texto, n=44):
+    return texto if len(texto) <= n else texto[:n - 1] + '…'
+
+
+for cu in CASOS:
+    tipos = {k: t for k, t, _ in cu['part']}
+    nombres = {k: n for k, _, n in cu['part']}
+    ops = {k: [] for k in tipos}
+    campos = []
+
+    def recorrer(lista):
+        for p in lista:
+            if p[0] == 'm':
+                destino, texto = p[2], p[3]
+                if p[1] == 'a':
+                    for arg in re.findall(r'\(([^)]*)\)', texto)[:1]:
+                        campos.extend(a.strip() for a in arg.split(',') if a.strip() and a.strip() not in campos)
+                if destino != 'a' and texto not in ops[destino]:
+                    ops[destino].append(texto)
+            elif p[0] == 's':
+                if p[2] not in ops[p[1]]:
+                    ops[p[1]].append(p[2])
+            elif p[0] == 'alt':
+                for _, sub in p[1]:
+                    recorrer(sub)
+            elif p[0] in ('opt', 'loop'):
+                recorrer(p[2])
+    recorrer(cu['pasos'])
+
+    def crear(cv, x, y, k):
+        t, n = tipos[k], nombres[k]
+        metodos = ['+ ' + corto(m) for m in ops[k][:6]]
+        if t == 'frm':
+            return clase(cv, x, y, n, ['+ ' + a for a in campos[:6]] or ['+ mensaje'], ['+ mostrarInterfaz()'] + metodos,
+                         estereotipo='«form»', minimo=190, tam=10.5, fill='white', cab='#EAF1FB')
+        if t == 'ctrl':
+            return clase(cv, x, y, n, ['- modelos', '- sesion'], metodos, estereotipo='«control»', minimo=200, tam=10.5, fill='white', cab='#EAF1FB')
+        if t == 'bd':
+            return clase(cv, x, y, n, ['(transacción en PostgreSQL)'], metodos, estereotipo='«procedimiento»', minimo=190, tam=10.5, fill='white', cab='#EAF1FB')
+        tb = tabla_de(n)
+        attrs = []
+        if tb:
+            cols = [col for col in ESQUEMA[tb]['columnas']]
+            attrs = [f"+ {col['nombre']}: {tipo_corto_simple(col['tipo'])}" for col in cols[:6]] + (['…'] if len(cols) > 6 else [])
         else:
-            c.texto(x, fondo + 14, n, 11.5, 'middle', negrita=True, fondo='white')
-    c.guardar(ruta(f'analisis_ciclo_{ciclo}'))
+            attrs = ['(servicio externo de pago)']
+        return clase(cv, x, y, n, attrs, metodos, estereotipo='«servicio»' if not tb else '«entidad»', minimo=180, tam=10.5, fill='white', cab='#EAF1FB')
+
+    def tipo_corto_simple(t):
+        return re.sub(r'\(.*\)', '', t.replace('character varying', 'varchar').replace('timestamp with time zone', 'timestamp')
+                      .replace('timestamp without time zone', 'timestamp')).strip()
+
+    tmp = Lienzo()
+    claves_ent = [k for k, t in tipos.items() if t in ('ent', 'bd')]
+    med = {k: crear(tmp, 0, 0, k) for k in tipos if k != 'a'}
+    gap = 26
+    alto_e = sum(med[k][3] for k in claves_ent) + gap * (len(claves_ent) - 1)
+    alto = max(alto_e, med['f'][3], med['c'][3])
+    c = Lienzo()
+    xf = 110
+    bf = crear(c, xf, (alto - med['f'][3]) / 2, 'f')
+    xc = bf[0] + bf[2] + 90
+    bc = crear(c, xc, (alto - med['c'][3]) / 2, 'c')
+    xe = bc[0] + bc[2] + 110
+    y = (alto - alto_e) / 2
+    bes = []
+    for k in claves_ent:
+        bes.append(crear(c, xe, y, k))
+        y += med[k][3] + gap
+    ya = alto / 2
+    fondo = uml.icono(c, 'actor', 20, ya - 10)
+    c.texto(20, fondo + 14, nombres['a'], 11.5, 'middle', negrita=True)
+    c.linea([(40, ya), (bf[0], ya)], fin='llena')
+    c.linea([(bf[0] + bf[2], ya), (bc[0], ya)], fin='llena')
+    c.texto(bf[0] + bf[2] + 10, ya - 6, '1', 10.5, 'middle')
+    c.texto(bc[0] - 12, ya - 6, '1', 10.5, 'middle')
+    xm = bc[0] + bc[2] + 50
+    for be in bes:
+        ye = be[1] + be[3] / 2
+        c.linea([(bc[0] + bc[2], ya), (xm, ya), (xm, ye), (be[0], ye)], fin='llena')
+    xa, ya0 = c.x0 - 16, c.y0 - 36
+    c.rect(xa, ya0, c.x1 + 16 - xa, c.y1 + 14 - ya0, fill='none', stroke=TINTA, sw=1.3)
+    c.el.insert(0, c.el.pop())
+    uml._pentagono(c, xa, ya0, f"{cu['id']} {cu['nombre']}")
+    c.guardar(ruta(f"clases_{cu['id']}"))
+
 
 # ---------------------------------------------------------------------------
 # 5. Modelo de dominio (conceptual)

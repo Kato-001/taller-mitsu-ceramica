@@ -157,7 +157,7 @@ php Docs/pruebas/probar_tienda.php  # tienda pública, carrito, pasarela (QR, ta
 | `Docs/informe/Informe_Taller_Mitsu_Ciclos_I-III.docx` y `.pdf` | Informe final en formato APA 7 con la estructura de la docente: perfil, Ishikawa, requisitos, análisis, diseño, datos (30 consultas, procedimientos y triggers con resultados reales) e implementación |
 | `Docs/Guion_Presentacion.html` | Guion de la defensa: pasos por rol y caso de uso, datos de prueba, preguntas probables y qué hacer si algo falla |
 | `Docs/Sugerencias_por_ciclo.md` | Cambios que se pueden pedir en cada ciclo y dónde se harían |
-| `Docs/diagramas/` | Diagramas UML (generador en Python, `svg/` y `png/`) e Ishikawa |
+| `Docs/diagramas/` | Diagramas UML con la notación de Enterprise Architect (paquetes, casos de uso, comunicación, clases de análisis por caso de uso, secuencia, datos, despliegue y componentes), generados en Python (`svg/` y `png/`), e Ishikawa |
 | `Docs/informe/capturas/` | Pantallas del sistema publicado usadas como prototipos |
 
 Para regenerar todo (requiere Python con Pillow y matplotlib, Node con `puppeteer-core`, `docx` y `qrcode`, y LibreOffice):
