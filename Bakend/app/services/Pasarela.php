@@ -4,7 +4,8 @@
  * ---------------------------------------------------------------------
  * Simula la respuesta de un procesador de pagos para los tres métodos:
  *   - QR bancario: el cliente paga con la app de su banco y avisa; el taller
- *     confirma el depósito (CU22).
+ *     confirma el depósito (CU22). También se puede simular la respuesta del banco
+ *     (pago realizado → pedido pagado; pago no realizado → rechazado, se reintenta).
  *   - Tarjeta: se valida el número (algoritmo de Luhn), la fecha y el CVV.
  *     Tarjetas de prueba: terminada en 0002 → rechazada por fondos; 0069 → vencida;
  *     cualquier otra válida → aprobada.

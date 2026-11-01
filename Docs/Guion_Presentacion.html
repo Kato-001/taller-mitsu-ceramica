@@ -105,6 +105,7 @@
         <div><div class="quien">Repositorio</div><a href="https://github.com/Kato-001/taller-mitsu-ceramica" target="_blank" rel="noopener">github.com/Kato-001/taller-mitsu-ceramica</a></div>
         <div><div class="quien">Duración sugerida</div>20 minutos + 5 de preguntas</div>
       </div>
+      <div style="margin-top:12px"><div class="quien">Grupo 4 · Integrantes</div>Baqueros Hurtado Marco Antonio Junior · Estaca Paco Sergio · Miranda Soria Mauricio · Santeyana Durán Sarah Nicol</div>
       <div class="progreso" aria-label="Avance"><div id="barra"></div></div>
       <div class="quien" id="avance" style="margin-top:6px">0 de 0 pasos</div>
     </div>
@@ -115,10 +116,11 @@
     <div class="tarjeta">
       <ol class="pasos" data-grupo="antes">
         <li><input type="checkbox"><span><strong>Despertar la base de datos:</strong> el plan gratuito de Supabase se pausa tras 7 días sin uso. Abra el sistema el día anterior e ingrese con cualquier cuenta. Si dice “No se pudo conectar”, entre a supabase.com → proyecto → <em>Restore project</em> y espere 2 a 3 minutos.</span></li>
-        <li><input type="checkbox"><span>Probar en el sistema publicado las 5 cuentas del cuadro “Datos de prueba”.</span></li>
+        <li><input type="checkbox"><span>Probar en el sistema publicado las 5 cuentas de prueba del cuadro “Datos de prueba”.</span></li>
         <li><input type="checkbox"><span>Abrir el informe en PDF en la página del índice y, en otra pestaña, el repositorio de GitHub.</span></li>
         <li><input type="checkbox"><span>Abrir 3 ventanas del navegador: una normal (administrador), una privada (alumno o cliente) y otra de otro navegador (maestra). Así no hay que cerrar sesión a cada rato.</span></li>
         <li><input type="checkbox"><span>Verificar que hay una <strong>caja abierta</strong> (Caja → Abrir caja con Bs 200) para poder vender en el ciclo III.</span></li>
+        <li><input type="checkbox"><span>Revisar que las piezas de la tienda tengan stock (Piezas). Si alguna está agotada: abrir su kardex → movimiento de <strong>Producción</strong>.</span></li>
         <li><input type="checkbox"><span>Tener el celular con el sistema abierto para mostrar que es adaptable y escanear el QR.</span></li>
       </ol>
     </div>
@@ -131,11 +133,11 @@
       <table>
         <thead><tr><th>Tiempo</th><th>Bloque</th><th>Qué se muestra</th><th>Integrante</th></tr></thead>
         <tbody>
-          <tr><td>2 min</td><td>Introducción</td><td>Problema del taller (Ishikawa), PUDS en 4 ciclos, arquitectura (despliegue y capas).</td><td>Integrante 1</td></tr>
-          <tr><td>5 min</td><td>Ciclo I</td><td>CU01 a CU06: ingreso, roles y permisos, bitácora.</td><td>Integrante 2</td></tr>
-          <tr><td>5 min</td><td>Ciclo II</td><td>CU07 a CU12: talleres, horarios, calendario, reserva y asistencia.</td><td>Integrante 3</td></tr>
-          <tr><td>6 min</td><td>Ciclo III</td><td>CU13 a CU22: compras y kardex, venta en caja, tienda en línea y pago.</td><td>Integrantes 4 y 5</td></tr>
-          <tr><td>2 min</td><td>Base de datos y cierre</td><td>Triggers que bloquean errores, consultas, conclusiones y ciclo IV.</td><td>Integrante 1</td></tr>
+          <tr><td>2 min</td><td>Introducción</td><td>Problema del taller (Ishikawa), PUDS en 4 ciclos, arquitectura (despliegue y capas).</td><td>Baqueros Hurtado Marco Antonio Junior</td></tr>
+          <tr><td>5 min</td><td>Ciclo I</td><td>CU01 a CU06: ingreso, recuperación con código, roles y permisos, bitácora.</td><td>Estaca Paco Sergio</td></tr>
+          <tr><td>5 min</td><td>Ciclo II</td><td>CU07 a CU12: talleres, horarios, calendario, reserva y asistencia.</td><td>Miranda Soria Mauricio</td></tr>
+          <tr><td>6 min</td><td>Ciclo III</td><td>CU13 a CU22: compras y kardex, venta en caja, tienda en línea y pago.</td><td>Santeyana Durán Sarah Nicol</td></tr>
+          <tr><td>2 min</td><td>Base de datos y cierre</td><td>Triggers que bloquean errores, consultas, conclusiones y ciclo IV.</td><td>Baqueros Hurtado Marco Antonio Junior</td></tr>
         </tbody>
       </table>
     </div>
@@ -163,9 +165,10 @@
       <div class="cuerpo">
         <ol class="pasos" data-grupo="cu02">
           <li><input type="checkbox"><span>En el login, “¿Olvidaste tu contraseña?” → escribir <code>alumno@mitsu.test</code>.</span></li>
-          <li><input type="checkbox"><span>Mostrar que pide un código de 6 dígitos con vencimiento de 15 minutos.</span></li>
+          <li><input type="checkbox"><span>Aparece el <strong>código de 6 dígitos en la pantalla</strong> (vence en 15 minutos) → botón “Copiar” → pegarlo en el campo.</span></li>
+          <li><input type="checkbox"><span>Escribir como nueva contraseña la misma de siempre, <code>Alumno2026!</code>, para no romper la cuenta de prueba → “Tu contraseña fue restablecida”.</span></li>
         </ol>
-        <div class="decir"><b>Qué decir</b>Solo se guarda el hash del código; al quinto intento fallido se anula. Si el correo no existe, se muestra el mismo mensaje para no revelar qué correos están registrados. El envío real por Gmail se activa al configurar el SMTP.</div>
+        <div class="decir"><b>Qué decir</b>Solo se guarda el hash del código; al quinto intento fallido se anula y se puede usar una sola vez. Como el sistema todavía no tiene un servidor de correo, en modo demostración el código se muestra en la pantalla; al configurar el SMTP de Gmail se envía al correo sin cambiar nada del código.</div>
       </div>
     </details>
 
@@ -270,10 +273,12 @@
           <li><input type="checkbox"><span>“Pagar” → pide ingresar → ingresar como cliente → <strong>vuelve al carrito</strong> con la pieza.</span></li>
           <li><input type="checkbox"><span>Confirmar con retiro en el taller → pasarela: “tus piezas están reservadas por 30:00”.</span></li>
           <li><input type="checkbox"><span>Tarjeta <code>4000 0000 0000 0002</code> → rechazada. Luego <code>4242 4242 4242 4242</code>, 12/30, CVV 123 → aprobada y comprobante con •••• 4242.</span></li>
-          <li><input type="checkbox"><span>Otro pedido con <strong>QR</strong>: mostrar el QR del taller, escribir un n.º de comprobante → “En verificación”.</span></li>
+          <li><input type="checkbox"><span>Otro pedido con <strong>QR</strong>: mostrar el QR del taller → “Pago no realizado” → rechazado, se puede reintentar → “Pago realizado” → <strong>Pagado</strong> con comprobante.</span></li>
+          <li><input type="checkbox"><span>Un tercer pedido con QR → escribir un n.º de transacción → “Ya pagué” → “En verificación”.</span></li>
           <li><input type="checkbox"><span>Como administrativo, Pedidos web → abrir ese pedido → “Confirmar” el depósito → Pagado → “Entregado”.</span></li>
+          <li><input type="checkbox"><span>Abrir el kardex de la pieza vendida: aparece la salida “Venta en línea”. Si se cancela un pedido, aparece “Pedido web cancelado” y el stock vuelve.</span></li>
         </ol>
-        <div class="decir"><b>Qué decir</b>La pasarela está en modo demostración: no cobra dinero real. El número de tarjeta se valida con el algoritmo de Luhn y solo se guardan la marca y los 4 últimos dígitos, como exige PCI DSS. El stock se reserva al crear el pedido y se libera si no se paga en 30 minutos. El comprobante se envía por correo cuando se configure el SMTP de Gmail.</div>
+        <div class="decir"><b>Qué decir</b>La pasarela está en modo demostración: no cobra dinero real. Los botones “Pago realizado” y “Pago no realizado” simulan la respuesta del banco al pagar con QR. El número de tarjeta se valida con el algoritmo de Luhn y solo se guardan la marca y los 4 últimos dígitos, como exige PCI DSS. El stock se descuenta al crear el pedido, queda descontado si el pago se aprueba y vuelve a la tienda si el pedido se cancela o no se paga en 30 minutos. El comprobante queda en “Mis pedidos” y se enviará por correo cuando se configure el SMTP de Gmail.</div>
       </div>
     </details>
 
@@ -333,6 +338,8 @@
       <details><summary>¿Por qué PHP sin framework?</summary><p>Para mostrar y explicar cada capa del MVC: front controller con rutas y permisos, controladores, modelos con PDO, vistas y servicios. Es gratuito y corre en Vercel con vercel-php.</p></details>
       <details><summary>¿Cómo está normalizada la base?</summary><p>Hasta tercera forma normal: cada horario es una fila por día (1FN), las tablas puente como rolpermiso solo tienen sus llaves (2FN) y el material guarda categoria_id y unidad_id en lugar de sus nombres (3FN). El precio en detalle_venta es un dato histórico, no una redundancia.</p></details>
       <details><summary>¿Por qué la tienda se ve primero y el login después?</summary><p>Porque así compra la gente: primero mira. Solo al pagar se pide ingresar, para asociar el pedido a un correo y enviar el comprobante. El carrito se conserva al ingresar.</p></details>
+      <details><summary>¿Por qué el código de recuperación sale en la pantalla?</summary><p>Porque todavía no hay un servidor de correo configurado. Es solo para la demostración: en producción se configuran las variables SMTP y el código se envía al correo; mostrarlo en la pantalla permitiría a cualquiera que conozca un correo cambiar esa contraseña.</p></details>
+      <details><summary>¿Cuándo se descuenta el stock en la tienda?</summary><p>Al crear el pedido: las piezas se reservan con un movimiento “Venta en línea” en el kardex. Si el pago se aprueba se quedan descontadas; si el pedido se cancela o pasan 30 minutos sin pagar, el procedimiento fn_vencer_pedidos las devuelve con un movimiento “Pedido web cancelado”.</p></details>
       <details><summary>¿Qué incluye el ciclo IV?</summary><p>Cafetería (menú y comandas), cobro de mensualidades con control de morosidad, pedidos personalizados, notificaciones y reportes con indicadores. Está planificado en el alcance y en el diagrama general de paquetes.</p></details>
     </div>
   </section>
@@ -348,6 +355,7 @@
           <tr><td>“La sesión expiró” (error 419)</td><td>Es la protección CSRF: la pestaña quedó abierta mucho tiempo. Recargar y repetir.</td></tr>
           <tr><td>No hay clases con cupo para reservar</td><td>Como administrativo, Calendario → Generar calendario para el próximo mes.</td></tr>
           <tr><td>El pedido ya no aparece para pagar</td><td>Venció a los 30 minutos (el stock volvió). Crear otro desde el carrito.</td></tr>
+          <tr><td>“… está agotada por ahora” al agregar al carrito</td><td>Como administrativo, Piezas → kardex de esa pieza → movimiento de Producción con algunas unidades.</td></tr>
           <tr><td>Se olvidó qué cuenta tiene cada ventana</td><td>El nombre y el rol aparecen abajo a la izquierda del menú.</td></tr>
           <tr><td>Falla internet en el aula</td><td>Usar los datos del celular como punto de acceso; si no, presentar con las capturas del informe (sección 2.4).</td></tr>
         </tbody>

@@ -8,6 +8,7 @@
  * Seguridad: el código se guarda con password_hash(), vence en 15 minutos, admite
  * 5 intentos, se limita la cantidad de solicitudes y la respuesta es la misma exista
  * o no el correo (no se revela qué correos están registrados).
+ * Modo demostración: si no hay SMTP configurado, el código se muestra en la pantalla.
  */
 
 declare(strict_types=1);
@@ -34,13 +35,25 @@ final class RecuperacionController extends Controlador
             flash('error', 'Demasiadas solicitudes. Espere unos minutos e intente de nuevo.');
             redirect('/recuperar');
         }
-        if (!Mailer::configurado()) {
-            error_log('[Mitsu] Recuperación solicitada pero SMTP no está configurado');
-            flash('error', 'El envío de correos no está configurado. Pida a la administración que restablezca su contraseña.');
-            redirect('/recuperar');
-        }
-
         $u = Recuperacion::usuarioPorCorreo($correo);
+
+        // Sin servidor de correo (modo demostración) el código se muestra en la pantalla para copiarlo
+        if (!Mailer::configurado()) {
+            if (!$u) {
+                flash('error', 'No hay una cuenta activa con ese correo.');
+                redirect('/recuperar');
+            }
+            if (Recuperacion::solicitudesRecientes((int) $u['id']) >= Recuperacion::MAX_SOLICITUDES) {
+                $_SESSION['recuperar_correo'] = $correo;
+                flash('error', 'Ya se generaron varios códigos para este correo. Use el último o espere 15 minutos.');
+                redirect('/recuperar/codigo');
+            }
+            $_SESSION['recuperar_correo'] = $correo;
+            $_SESSION['recuperar_demo'] = Recuperacion::crear((int) $u['id']);
+            Bitacora::registrar('RECUPERAR_SOLICITUD', 'SEGURIDAD', 'usuario', (int) $u['id'], 'Código de recuperación mostrado en pantalla (sin correo)', (int) $u['id']);
+            flash('ok', 'Generamos tu código de verificación. Cópialo y pégalo abajo.');
+            redirect('/recuperar/codigo');
+        }
         if ($u) {
             if (Recuperacion::solicitudesRecientes((int) $u['id']) >= Recuperacion::MAX_SOLICITUDES) {
                 $_SESSION['recuperar_correo'] = $correo;
@@ -73,7 +86,10 @@ final class RecuperacionController extends Controlador
         if (empty($_SESSION['recuperar_correo'])) {
             redirect('/recuperar');
         }
-        $this->vista('P1_Seguridad/recuperar_codigo', ['correo' => $_SESSION['recuperar_correo']], 'auth');
+        $this->vista('P1_Seguridad/recuperar_codigo', [
+            'correo' => $_SESSION['recuperar_correo'],
+            'demo'   => $_SESSION['recuperar_demo'] ?? null,
+        ], 'auth');
     }
 
     public function restablecer(): void
@@ -109,7 +125,7 @@ final class RecuperacionController extends Controlador
 
         Recuperacion::restablecer($r, $d['password']);
         Bitacora::registrar('RECUPERAR_CONTRASENA', 'SEGURIDAD', 'usuario', (int) $u['id'], 'Contraseña restablecida con código enviado al correo', (int) $u['id']);
-        unset($_SESSION['recuperar_correo']);
+        unset($_SESSION['recuperar_correo'], $_SESSION['recuperar_demo']);
         flash('ok', 'Tu contraseña fue restablecida. Ya puedes ingresar con la nueva contraseña.');
         redirect('/login');
     }

@@ -268,6 +268,8 @@ a.agenda-item:hover { transform: translateX(4px); box-shadow: var(--shadow); }
 .pasos-rec span.ok { background: var(--ok); color: #fff; }
 .pasos-rec i { flex: 0 0 48px; height: 3px; border-radius: 3px; background: var(--border); }
 .pasos-rec i.on { background: var(--grad); }
+.codigo-demo { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 12px 16px; margin-bottom: 6px; border-radius: 12px; background: var(--info-soft); border: 1px dashed var(--info); }
+.codigo-demo .mono { font-size: 28px; font-weight: 700; letter-spacing: 8px; color: var(--info); }
 .codigo-otp { font-family: var(--mono); font-size: 28px; letter-spacing: 12px; text-align: center; height: 60px; }
 
 /* ---------------------------------------------------------- Páginas de error */

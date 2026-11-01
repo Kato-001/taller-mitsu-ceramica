@@ -1,7 +1,7 @@
 <?php
 /**
  * CU02 · Recuperar contraseña · Paso 2: código y nueva contraseña
- * @var string $correo
+ * @var string $correo @var ?string $demo código visible cuando no hay servidor de correo
  */
 $titulo = 'Código de verificación';
 // El correo se muestra parcialmente oculto: ca••••@gmail.com
@@ -15,8 +15,18 @@ $oculto = mb_substr($local, 0, 2) . str_repeat('•', max(2, mb_strlen($local) -
             <span><strong>Mitsü</strong><small><?= e(config('NOMBRE_TALLER', 'Taller de Cerámica Mitsü')) ?></small></span>
         </a>
         <div class="pasos-rec"><span class="ok"><?= icono('check', 14) ?></span><i class="on"></i><span class="on">2</span></div>
+<?php if ($demo): ?>
+        <h1 style="font-size:26px">Tu código de verificación</h1>
+        <p class="soft" style="margin:8px 0 14px">Código para <strong><?= e($oculto) ?></strong>. Cópialo, pégalo abajo y elige tu nueva contraseña. Vence en 15 minutos.</p>
+        <div class="codigo-demo">
+            <span class="mono" id="codigo-demo"><?= e($demo) ?></span>
+            <button type="button" class="btn btn-outline btn-sm" data-copiar="codigo-demo"><?= icono('check', 15) ?> Copiar</button>
+        </div>
+        <small class="faint" style="display:block;margin:0 0 18px">Modo demostración: sin servidor de correo, el código se muestra aquí en lugar de enviarse.</small>
+<?php else: ?>
         <h1 style="font-size:26px">Revisa tu correo</h1>
         <p class="soft" style="margin:8px 0 22px">Escribe el código de 6 dígitos que enviamos a <strong><?= e($oculto) ?></strong> y elige tu nueva contraseña. El código vence en 15 minutos.</p>
+<?php endif; ?>
         <form method="post" action="/recuperar/codigo" class="stack" data-validar>
             <?= csrf_field() ?>
             <label class="field"><span>Código de verificación</span>

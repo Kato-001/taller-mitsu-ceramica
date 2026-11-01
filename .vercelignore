@@ -1,7 +1,6 @@
 .env
 .env.local
 .git
-web
 Docs
 Bakend/database
 node_modules

@@ -65,6 +65,7 @@
 .pasarela .panel-pago[hidden] { display: none; }
 .qr-caja { display: grid; grid-template-columns: 240px 1fr; gap: 22px; align-items: center; }
 .qr-caja img { width: 240px; height: 240px; object-fit: contain; background: #fff; border-radius: 16px; padding: 10px; border: 1px solid var(--border); }
+.qr-simular { display: grid; gap: 8px; padding-top: 12px; border-top: 1px dashed var(--border); }
 @media (max-width: 640px) { .qr-caja { grid-template-columns: 1fr; justify-items: center; } .pasarela .metodos { grid-template-columns: 1fr; } }
 .tarjeta-visual { aspect-ratio: 1.586; max-width: 340px; border-radius: 18px; padding: 20px; color: #fff; background: linear-gradient(135deg, #3a2a20, #a8552f 60%, #d48a5e); box-shadow: var(--shadow-lg); display: flex; flex-direction: column; justify-content: space-between; font-family: var(--mono); }
 .tarjeta-visual .num { font-size: 19px; letter-spacing: 2px; }

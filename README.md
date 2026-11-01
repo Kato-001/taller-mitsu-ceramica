@@ -7,7 +7,8 @@ Sistema web para un taller de cerámica de Santa Cruz (Bolivia) que **dicta clas
 | **Universidad** | Universidad Autónoma Gabriel René Moreno (UAGRM) · FICCT |
 | **Materia** | Ingeniería en Requisitos y Modelado |
 | **Docente** | M.Sc. Ing. Angélica Garzón Cuéllar |
-| **Integrantes** | Aquise Huanca Camila · Baqueros Hurtado Marco Antonio Junior · Estaca Paco Sergio · Miranda Soria Mauricio · Santeyana Durán Sarah Nicol |
+| **Grupo** | 4 |
+| **Integrantes** | Baqueros Hurtado Marco Antonio Junior · Estaca Paco Sergio · Miranda Soria Mauricio · Santeyana Durán Sarah Nicol |
 | **Metodología** | Proceso Unificado (PUDS) en 4 ciclos · UML |
 | **Sistema en línea** | https://taller-mitsu-ceramica.vercel.app |
 | **Repositorio** | https://github.com/Kato-001/taller-mitsu-ceramica |
@@ -26,9 +27,13 @@ Contraseñas **inventadas solo para la demostración** (no son de personas reale
 | Alumno | `alumno@mitsu.test` | `Alumno2026!` | Portal: reservar y cancelar clases, ver su historial, comprar en la tienda |
 | Cliente | `cliente@mitsu.test` | `Cliente2026!` | Tienda en línea: carrito, pago con QR, tarjeta o PayPal, sus pedidos y comprobantes |
 
-La página principal (`/`) es la **tienda pública**: cualquier visitante ve las piezas y las clases sin iniciar sesión. Para pagar se ingresa con correo y contraseña (o con Google cuando se configure) y el comprobante llega al correo. Las cuentas de alumno se crean en **/registro** y las de cliente en **/tienda/registro**.
+La página principal (`/`) es la **tienda pública**: cualquier visitante ve las piezas y las clases sin iniciar sesión. Para pagar se ingresa con correo y contraseña (o con Google) y el comprobante queda en **Mis pedidos** (y llega al correo cuando el SMTP está configurado). Las cuentas de alumno se crean en **/registro** y las de cliente en **/tienda/registro**.
 
-**Pasarela de pago (modo demostración, sin cobro real):** QR bancario del taller (el taller confirma el depósito), tarjeta (`4242 4242 4242 4242` aprobada · `4000 0000 0000 0002` rechazada, cualquier fecha futura y CVV) y PayPal (sandbox simulado). De la tarjeta solo se guardan la marca y los 4 últimos dígitos.
+**Pasarela de pago (modo demostración, sin cobro real):** QR bancario del taller (botones **Pago realizado** / **Pago no realizado** que simulan la respuesta del banco, o **Ya pagué** para que el taller confirme el depósito), tarjeta (`4242 4242 4242 4242` aprobada · `4000 0000 0000 0002` rechazada, cualquier fecha futura y CVV) y PayPal (sandbox simulado). De la tarjeta solo se guardan la marca y los 4 últimos dígitos.
+
+**Stock:** al crear el pedido las piezas se descuentan y quedan reservadas 30 minutos; si el pago se aprueba se quedan descontadas y si el pedido se cancela o vence, vuelven a la tienda.
+
+**Recuperar contraseña sin correo configurado:** en **/recuperar** se escribe el correo de la cuenta y el código de 6 dígitos aparece en la pantalla con un botón **Copiar** para pegarlo. Con el SMTP configurado, el código se envía por correo.
 
 ---
 
@@ -96,7 +101,7 @@ Taller-Mitsu_Proyecto Final/
 - Sesiones guardadas en la tabla `sesion` (cada petición en Vercel puede caer en otra instancia); cookies `HttpOnly`, `SameSite=Lax` y `Secure`.
 - Token **CSRF** en todo POST, escape de toda salida con `e()` (XSS) y **100 % de consultas parametrizadas**.
 - Permisos por rol (`rol`, `permiso`, `rolpermiso`) verificados en el servidor en cada acción con `Auth::requerir()`.
-- Bloqueo tras 5 intentos fallidos por IP en 10 minutos; recuperación con código de 6 dígitos (hash, 15 minutos, 5 intentos, misma respuesta aunque el correo no exista).
+- Bloqueo tras 5 intentos fallidos por IP en 10 minutos; recuperación con código de 6 dígitos (hash, 15 minutos, 5 intentos, misma respuesta aunque el correo no exista). Sin SMTP el código se muestra en pantalla: es solo para la demostración, en producción debe configurarse el correo.
 - Páginas de error 403, 404, 419 y 500; entrada que no sea UTF-8 se rechaza.
 - Usuario de base de datos de **mínimo privilegio** (`mitsu_app`: solo SELECT, INSERT, UPDATE, DELETE y EXECUTE) y **RLS** activado en todo el esquema.
 - **Bitácora** de operaciones con usuario, acción, módulo, IP y fecha.
@@ -137,7 +142,7 @@ Con el servidor local levantado:
 ```bash
 php Docs/pruebas/probar_rutas.php   # todas las pantallas con cada rol + accesos prohibidos (403)
 php Docs/pruebas/probar_flujos.php  # ventas, anulación, compras, reservas, asistencia y validaciones
-php Docs/pruebas/probar_tienda.php  # tienda pública, carrito, pasarela (QR, tarjeta, PayPal) y pedidos web
+php Docs/pruebas/probar_tienda.php  # tienda pública, carrito, pasarela (QR, QR simulado, tarjeta, PayPal), pedidos web y recuperación con código en pantalla
 ```
 
 ### Variables de entorno en Vercel
@@ -145,7 +150,7 @@ php Docs/pruebas/probar_tienda.php  # tienda pública, carrito, pasarela (QR, ta
 | Variable | Valor |
 |---|---|
 | `DATABASE_URL` | `postgresql://mitsu_app.<ref>:<clave>@aws-1-sa-east-1.pooler.supabase.com:6543/postgres?sslmode=require` |
-| `SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`, `SMTP_PASS`, `SMTP_FROM_NAME` | Gmail del taller con **contraseña de aplicación** (recuperar contraseña y enviar comprobantes) |
+| `SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`, `SMTP_PASS`, `SMTP_FROM_NAME` | Gmail del taller con **contraseña de aplicación** (recuperar contraseña y enviar comprobantes). Opcional: sin ellas el código de recuperación se muestra en pantalla |
 | `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET` | Credenciales OAuth de Google Cloud para "Continuar con Google" (URI de redirección: `https://<dominio>/auth/google/callback`) |
 
 > Las claves reales **nunca** se suben a GitHub: van en `.env` (ignorado por Git) y en el panel de Vercel.
@@ -176,4 +181,5 @@ node Docs/informe/generar_informe.js     # Word
 ### Avisos
 
 - Supabase gratis **pausa el proyecto tras 7 días sin uso**: entrar al panel de Supabase antes de presentar.
+- Cada corrida de `probar_tienda.php` vende 4 piezas de prueba (Vasija Inti, Vaso Mejillas, Vasija Pajarito y Jarra Andina): si alguna queda agotada, reponer el stock en **Piezas → Kardex** con un movimiento de producción.
 - Los datos de demostración (precios, stocks, proveedores, alumnos y ventas) son **estimados o ficticios**. Los horarios de las clases salen de la entrevista a la gerencia.

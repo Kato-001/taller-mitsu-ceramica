@@ -1051,7 +1051,8 @@
    "alternos": [
     "2a. Número inválido o tarjeta vencida: se avisa sin guardar nada.",
     "3a. Pago rechazado (fondos insuficientes): se registra el intento RECHAZADO.",
-    "1a. El pedido ya fue pagado: “El pedido no está esperando pago”."
+    "1a. El pedido ya fue pagado: “El pedido no está esperando pago”.",
+    "4a. Modo demostración del QR: el cliente toca «Pago realizado» y el pedido pasa a PAGADO, o «Pago no realizado» y se registra el intento RECHAZADO."
    ],
    "post": "El pago queda registrado y el pedido PAGADO o EN_VERIFICACION.",
    "ruta": "/pago · /pago/tarjeta · /pago/qr · /pago/paypal",

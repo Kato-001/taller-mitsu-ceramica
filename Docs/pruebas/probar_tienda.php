@@ -103,6 +103,17 @@ verificar('CU21 La pasarela muestra el QR del taller', str_contains($html, 'qr-t
 [, $msg] = post($base, $anon, '/pago/qr', ['pedido_id' => $qr, 'comprobante' => '784512369']);
 verificar('CU21 Aviso de pago por QR queda en verificación', str_contains($msg, 'confirmará'), $msg);
 
+// --- QR simulado: el banco rechaza y luego aprueba
+post($base, $anon, '/tienda/carrito/agregar', ['pieza_id' => 4, 'cantidad' => 1]);
+[, , $dest] = post($base, $anon, '/tienda/checkout', ['entrega' => 'RETIRO', 'telefono' => '72040001', 'direccion' => '', 'nota' => '']);
+$qrs = pedidoDe($dest);
+[, $html] = pedir("$base/pago?pedido=$qrs", $anon);
+verificar('CU21 La pasarela ofrece simular la respuesta del banco', str_contains($html, 'Pago realizado') && str_contains($html, 'Pago no realizado'));
+[, $msg] = post($base, $anon, '/pago/qr', ['pedido_id' => $qrs, 'simular' => 'rechazado']);
+verificar('CU21 QR simulado: pago no realizado', str_contains($msg, 'rechazado'), $msg);
+[, $msg, , $html] = post($base, $anon, '/pago/qr', ['pedido_id' => $qrs, 'simular' => 'aprobado']);
+verificar('CU21 QR simulado: pago realizado', str_contains($msg, 'aprobado') && str_contains($html, 'COMPROBANTE DE PAGO'), $msg);
+
 // --- Pedido que se cancela: vuelve el stock
 post($base, $anon, '/tienda/carrito/agregar', ['pieza_id' => 1, 'cantidad' => 1]);
 [, , $dest] = post($base, $anon, '/tienda/checkout', ['entrega' => 'RETIRO', 'telefono' => '72040001', 'direccion' => '', 'nota' => '']);
@@ -129,6 +140,18 @@ verificar('CU22 Marcar pedido como entregado', str_contains($msg, 'entregado'), 
 verificar('CU22 Un pedido entregado no se cancela', str_contains($msg, 'entregado'), $msg);
 [$cod] = pedir("$base/pedidos", $staff);
 verificar('CU22 Listado de pedidos web', $cod === 200, "HTTP $cod");
+
+// --- CU02 sin servidor de correo: el código se muestra en la pantalla (se deja la misma contraseña)
+$rec = tempnam(sys_get_temp_dir(), 'mt');
+[, $msg, , $html] = post($base, $rec, '/recuperar', ['correo' => 'cliente@mitsu.test']);
+if (str_contains($html, 'id="codigo-demo"')) {
+    preg_match('/id="codigo-demo">(\d{6})</', $html, $m);
+    verificar('CU02 Código visible para copiar y pegar', isset($m[1]), $msg);
+    [, $msg] = post($base, $rec, '/recuperar/codigo', ['codigo' => $m[1] ?? '', 'password' => 'Cliente2026!', 'password_confirmacion' => 'Cliente2026!']);
+    verificar('CU02 Restablecer con el código mostrado', str_contains($msg, 'restablecida'), $msg);
+} else {
+    verificar('CU02 Código enviado por correo (SMTP configurado)', str_contains($msg, 'código'), $msg);
+}
 
 echo $fallos ? "\n$fallos FALLA(S)\n" : "\nTODO OK\n";
 exit($fallos ? 1 : 0);

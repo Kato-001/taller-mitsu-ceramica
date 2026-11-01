@@ -24,7 +24,8 @@ const SQL = f => fs.readFileSync(path.join(RAIZ, 'Bakend', 'database', f), 'utf8
 
 const REPO = 'https://github.com/Kato-001/taller-mitsu-ceramica';
 const SITIO = 'https://taller-mitsu-ceramica.vercel.app';
-const INTEGRANTES = ['Aquise Huanca Camila', 'Baqueros Hurtado Marco Antonio Junior', 'Estaca Paco Sergio', 'Miranda Soria Mauricio', 'Santeyana Durán Sarah Nicol'];
+const GRUPO = 'Grupo 4';
+const INTEGRANTES = ['Baqueros Hurtado Marco Antonio Junior', 'Estaca Paco Sergio', 'Miranda Soria Mauricio', 'Santeyana Durán Sarah Nicol'];
 const CICLOS = [['I', 'Ciclo I: seguridad y configuración'], ['II', 'Ciclo II: clases y reservas'], ['III', 'Ciclo III: inventario, ventas y tienda en línea']];
 const deCiclo = c => CASOS.filter(x => x.ciclo === c);
 const NOTA_FUENTE = 'Elaboración propia.';
@@ -70,6 +71,7 @@ const dato = (k, v) => new d.Paragraph({ spacing: { after: 100 }, indent: { left
 add(
     dato('Materia', 'Ingeniería en Requisitos y Modelado (INF342)'),
     dato('Docente', 'M.Sc. Ing. Angélica Garzón Cuéllar'),
+    dato('Grupo', GRUPO),
     dato('Integrantes', ''),
     ...INTEGRANTES.map(n => new d.Paragraph({ indent: { left: 2160 }, spacing: { after: 60 }, children: [new d.TextRun({ text: '• ' + n, font: W.FUENTE })] })),
     new d.Paragraph({ spacing: { before: 600 }, alignment: d.AlignmentType.CENTER, children: [new d.TextRun({ text: 'Santa Cruz de la Sierra – Bolivia', font: W.FUENTE, bold: true })] }),
@@ -271,7 +273,7 @@ add(tabla('Herramientas de software', ['Herramienta', 'Uso', 'Costo'], [
     ['Python, Node.js y Puppeteer', 'Diagramas, informe y capturas de pantalla', 'Gratuito'], ['LibreOffice', 'Índice y exportación a PDF', 'Gratuito'],
 ], null, { anchos: [35, 45, 20] }));
 add(H3('3.3.2 Hardware'));
-add(P('Cinco computadoras portátiles de los integrantes (procesador de 4 núcleos, 8 GB de RAM o más) y conexión a internet. No se compró hardware.'));
+add(P('Cuatro computadoras portátiles de los integrantes (procesador de 4 núcleos, 8 GB de RAM o más) y conexión a internet. No se compró hardware.'));
 
 // ===========================================================================
 // 4–6. COSTOS, BENEFICIOS Y CLIENTES
@@ -812,7 +814,7 @@ const estiloTitulo = (id, nombre, op) => ({
     paragraph: { alignment: op.centro ? d.AlignmentType.CENTER : d.AlignmentType.LEFT, spacing: { before: op.antes ?? 240, after: 120, line: 360 }, keepNext: true, keepLines: true, outlineLevel: op.nivel },
 });
 const doc = new d.Document({
-    creator: 'Grupo Mitsü', title: 'Sistema de Información para la Gestión Integral del Taller de Cerámica Mitsü', description: 'Informe final ciclos I a III',
+    creator: GRUPO, title: 'Sistema de Información para la Gestión Integral del Taller de Cerámica Mitsü', description: 'Informe final ciclos I a III',
     features: { updateFields: true },
     styles: {
         default: { document: { run: { font: W.FUENTE, size: 24 } } },

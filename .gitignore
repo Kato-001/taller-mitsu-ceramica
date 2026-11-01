@@ -1,14 +1,10 @@
 # Configuración local con credenciales
-.env
+.env*
+!.env.example
 .vercel
+.vscode/
+__pycache__/
 node_modules
 *.log
 .DS_Store
 Thumbs.db
-
-.vercel
-.env*
-
-!.env.example
-.vscode/
-__pycache__/

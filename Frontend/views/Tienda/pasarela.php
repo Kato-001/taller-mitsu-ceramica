@@ -19,7 +19,7 @@ $rechazos = array_filter($pagos, fn($x) => $x['estado'] === 'RECHAZADO');
         </div>
     </div>
 
-    <div class="aviso-demo anim"><?= icono('info', 18) ?><div><strong>Pasarela en modo de demostración.</strong> No se cobra dinero real. Para probar con tarjeta use <span class="mono">4242 4242 4242 4242</span> (aprobada) o <span class="mono">4000 0000 0000 0002</span> (rechazada), con cualquier fecha futura y CVV de 3 dígitos.</div></div>
+    <div class="aviso-demo anim"><?= icono('info', 18) ?><div><strong>Pasarela en modo de demostración.</strong> No se cobra dinero real. Con QR puede simular la respuesta del banco con <strong>Pago realizado</strong> o <strong>Pago no realizado</strong>. Para probar con tarjeta use <span class="mono">4242 4242 4242 4242</span> (aprobada) o <span class="mono">4000 0000 0000 0002</span> (rechazada), con cualquier fecha futura y CVV de 3 dígitos.</div></div>
 
     <?php if ($rechazos): ?>
         <div class="alert alert-warn anim"><?= icono('alerta') ?><div>Intento anterior rechazado: <?= e(reset($rechazos)['detalle']) ?>. Puedes intentar otra vez o elegir otro método.</div></div>
@@ -51,6 +51,19 @@ $rechazos = array_filter($pagos, fn($x) => $x['estado'] === 'RECHAZADO');
                                 <input class="input" name="comprobante" maxlength="30" pattern="[A-Za-z0-9\-]{4,30}" data-msg="Letras, números y guiones (4 a 30)." placeholder="Ej. 784512369"></label>
                             <button class="btn btn-primary btn-block"><?= icono('check') ?> Ya pagué</button>
                         </form>
+                        <div class="qr-simular">
+                            <small class="faint">Modo demostración · simular la respuesta del banco:</small>
+                            <div class="grid-2">
+                                <form method="post" action="/pago/qr">
+                                    <?= csrf_field() ?><input type="hidden" name="pedido_id" value="<?= $p['id'] ?>"><input type="hidden" name="simular" value="aprobado">
+                                    <button class="btn btn-outline btn-block"><?= icono('ok-circulo') ?> Pago realizado</button>
+                                </form>
+                                <form method="post" action="/pago/qr">
+                                    <?= csrf_field() ?><input type="hidden" name="pedido_id" value="<?= $p['id'] ?>"><input type="hidden" name="simular" value="rechazado">
+                                    <button class="btn btn-ghost btn-block btn-danger-ghost"><?= icono('alerta') ?> Pago no realizado</button>
+                                </form>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </section>

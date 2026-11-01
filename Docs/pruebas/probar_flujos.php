@@ -7,6 +7,7 @@
  */
 
 declare(strict_types=1);
+date_default_timezone_set('America/La_Paz');   // la misma zona que la aplicación (las fechas se validan en hora de Bolivia)
 
 $base = $argv[1] ?? 'http://127.0.0.1:8077';
 $fallos = 0;

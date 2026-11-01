@@ -39,11 +39,21 @@ final class PagoController extends Controlador
         $this->registrar($p, 'TARJETA', $estado, $ref, ['marca' => $marca, 'ultimos4' => $ultimos, 'titular' => $titular, 'detalle' => $detalle], $volver);
     }
 
-    /** QR: el cliente declara que pagó con su banco; el taller confirma el depósito. */
+    /**
+     * QR: el cliente declara que pagó con su banco y el taller confirma el depósito.
+     * En modo demostración también se puede simular la respuesta del banco (aprobado o rechazado).
+     */
     public function qr(): void
     {
         $p = $this->pedidoPropio('pedido_id');
         $volver = url('/pago', ['pedido' => $p['id'], 'metodo' => 'qr']);
+        $simulado = entrada('simular');
+        if ($simulado === 'aprobado') {
+            $this->registrar($p, 'QR', 'APROBADO', Pasarela::referencia('QR'), ['detalle' => 'Pago QR confirmado por el banco (simulado)'], $volver);
+        }
+        if ($simulado === 'rechazado') {
+            $this->registrar($p, 'QR', 'RECHAZADO', Pasarela::referencia('REC'), ['detalle' => 'El banco rechazó el pago QR (simulado)'], $volver);
+        }
         $comprobante = entrada('comprobante');
         if ($comprobante !== '' && !preg_match('/^[A-Za-z0-9\-]{4,30}$/', $comprobante)) {
             flash('error', 'El número de transacción solo admite letras, números y guiones (4 a 30).');

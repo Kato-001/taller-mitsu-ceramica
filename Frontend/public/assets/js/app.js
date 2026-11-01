@@ -218,6 +218,23 @@
     b.classList.toggle('on', input.type === 'text');
   }));
 
+  /* Copiar un texto (código de verificación en modo demostración) */
+  $$('[data-copiar]').forEach((b) => b.addEventListener('click', () => {
+    const texto = document.getElementById(b.dataset.copiar).textContent.trim();
+    const listo = () => toast('ok', 'Código copiado. Pégalo en el campo de abajo.');
+    if (navigator.clipboard && window.isSecureContext) {
+      navigator.clipboard.writeText(texto).then(listo, () => toast('error', 'No se pudo copiar: selecciónalo y cópialo a mano.'));
+    } else {
+      const area = document.createElement('textarea');
+      area.value = texto;
+      document.body.appendChild(area);
+      area.select();
+      document.execCommand('copy');
+      area.remove();
+      listo();
+    }
+  }));
+
   /* Filtros que se aplican al cambiar */
   $$('[data-autoenviar]').forEach((el) => el.addEventListener('change', () => el.form.requestSubmit ? el.form.requestSubmit() : el.form.submit()));
 
