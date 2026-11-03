@@ -29,6 +29,7 @@ const INTEGRANTES = ['Baqueros Hurtado Marco Antonio Junior', 'Estaca Paco Sergi
 const CICLOS = [['I', 'Ciclo I: seguridad y configuración'], ['II', 'Ciclo II: clases y reservas'], ['III', 'Ciclo III: inventario, ventas y tienda en línea']];
 const deCiclo = c => CASOS.filter(x => x.ciclo === c);
 const NOTA_FUENTE = 'Elaboración propia.';
+const { ROLES, CASOS: COMPLEMENTO } = require('./complemento_casos');
 
 /** Estructura de carpetas del repositorio tal como está en Git (git ls-files). */
 function arbolGit() {
@@ -526,32 +527,37 @@ add(figura('Diagrama de actividad del proceso actual (modelo de negocio)', DIAG(
 // ===========================================================================
 add(H1('Capítulo 2. Flujo de trabajo: captura de requisitos'));
 add(H2('2.1 Identificar actores y casos de uso'));
-add(H4('Actores'));
-add(tabla('Actores del sistema', ['Actor', 'Descripción'], [
-    ['Visitante', 'Persona sin cuenta que ve la tienda y las clases.'], ['Cliente', 'Visitante que creó su cuenta para comprar en línea.'],
-    ['Alumno', 'Persona inscrita que reserva clases desde su portal; también puede comprar.'], ['Maestra', 'Dicta talleres y registra la asistencia de sus clases.'],
-    ['Administrativo', 'Recepción y ventas: reservas, inventario, compras, ventas, caja y pedidos web.'], ['Administrador', 'Gerencia: además de lo anterior, usuarios, roles, bitácora, configuración, maestras y talleres.'],
-], null, { anchos: [22, 78] }));
+add(P('Los actores son las personas que interactúan con el sistema. Se identificaron a partir de la entrevista y del modelo de negocio: cada carril de los diagramas de actividad del capítulo 1 es un actor. Para cada uno se describe quién es, qué hace en el sistema y hasta dónde llega su acceso.'));
+add(H4('Identificar actores y describir roles'));
+ROLES.forEach(([n, , nombre, quien, funciones, rol]) => add(
+    new d.Paragraph({ keepNext: true, spacing: { before: 200, after: 40 }, children: W.runs(`**${n}: ${nombre}**`) }),
+    new d.Paragraph({ keepNext: true, indent: { left: 360 }, children: W.runs(quien) }),
+    new d.Paragraph({ keepNext: true, indent: { left: 360 }, children: W.runs(`**Funcionalidades principales:** ${funciones}`) }),
+    new d.Paragraph({ indent: { left: 360 }, children: W.runs(`**Rol en el sistema:** ${rol}`) }),
+));
+add(P('Todos los actores con cuenta heredan de Usuario el ingreso, el cierre de sesión y la recuperación de contraseña. El Cliente y el Alumno pueden comprar en la tienda; el Administrador puede hacer todo lo del Administrativo.'));
 add(figura('Generalización de actores', DIAG('actores'), NOTA_FUENTE, { ancho: 520 }));
-add(H4('Casos de uso'));
-CICLOS.forEach(([c, t]) => {
-    add(H4(t));
-    add(tabla(`Casos de uso del ${t.split(':')[0].toLowerCase()}`, ['Código', 'Caso de uso', 'Actores', 'Paquete'],
-        deCiclo(c).map(x => [x.id, x.nombre, x.actores.map(a => ACTORES[a]).join(', '), x.paquete]), null, { anchos: [12, 46, 28, 14] }));
-});
-add(H4('Ciclo IV: cafetería, cobros y reportes (planificado)'));
-add(P('CU23 Gestionar menú de cafetería · CU24 Registrar comandas · CU25 Cobrar mensualidades y controlar morosidad · CU26 Pedidos personalizados · CU27 Notificaciones · CU28 Reportes e indicadores. No forman parte de esta entrega.'));
+add(H4('Identificar casos de uso'));
+add(P('Cada caso de uso es un objetivo completo que un actor logra con el sistema. Se identificaron 22 casos de uso para los ciclos I a III, agrupados en cuatro paquetes; los del ciclo IV quedan planificados.'));
+add(tabla('Casos de uso identificados', ['ID', 'Caso de uso', 'Actores', 'Ciclo', 'Paquete'],
+    CASOS.map(x => [x.id, x.nombre, x.actores.map(a => ACTORES[a]).join(', '), x.ciclo, x.paquete]), null, { anchos: [10, 42, 26, 9, 13] }));
+add(tabla('Casos de uso planificados para el ciclo IV', ['ID', 'Caso de uso', 'Paquete'], [
+    ['CU23', 'Gestionar menú de cafetería', 'P5'], ['CU24', 'Registrar comandas', 'P5'], ['CU25', 'Cobrar mensualidades y controlar morosidad', 'P6'],
+    ['CU26', 'Gestionar pedidos personalizados', 'P6'], ['CU27', 'Enviar notificaciones', 'P7'], ['CU28', 'Generar reportes e indicadores', 'P7'],
+], 'No forman parte de esta entrega.', { anchos: [10, 75, 15] }));
 add(H2('2.2 Priorizar los casos de uso'));
-add(P('La prioridad se asignó según el valor para el taller y el riesgo técnico: los casos de prioridad alta y riesgo alto se construyeron primero dentro de cada ciclo, porque concentran las reglas más delicadas (cupo, stock, dinero).'));
+add(P('La prioridad indica qué tan necesario es el caso de uso para que el taller funcione, y el riesgo, qué tan delicada es su construcción. Dentro de cada ciclo se construyeron primero los de prioridad alta y riesgo alto, porque concentran las reglas más delicadas: cupo, stock y dinero.'));
 CICLOS.forEach(([c, t]) => {
     add(H4(t));
-    add(tabla(`Priorización del ${t.split(':')[0].toLowerCase()}`, ['Código', 'Caso de uso', 'Prioridad', 'Riesgo'],
-        deCiclo(c).map(x => [x.id, x.nombre, x.prioridad, x.riesgo]), null, { anchos: [12, 58, 15, 15] }));
+    add(tabla(`Priorización del ${t.split(':')[0].toLowerCase()}`, ['Caso de uso', 'Prioridad', 'Riesgo', 'Justificación'],
+        deCiclo(c).map(x => [`${x.id}: ${x.nombre}`, x.prioridad, x.riesgo, COMPLEMENTO[x.id][1]]), null, { anchos: [30, 12, 11, 47] }));
 });
 add(H2('2.3 Detallar un caso de uso'));
+add(P('Cada caso de uso se detalla con su diagrama y una ficha: objetivo, resumen, actores, precondición y postcondición, flujo principal paso a paso, flujos secundarios (caminos alternativos dentro del caso) y excepciones (errores que interrumpen el caso). Los nombres de las rutas son los del sistema publicado.'));
 CICLOS.forEach(([c, t]) => {
     add(H4(t));
-    deCiclo(c).forEach(x => add(figura(`Diagrama de casos de uso ${x.id} ${x.nombre}`, DIAG(`cu_${x.id}`), NOTA_FUENTE, { alto: 230 }), ficha(x, ACTORES)));
+    deCiclo(c).forEach(x => add(figura(`Diagrama de casos de uso ${x.id} ${x.nombre}`, DIAG(`cu_${x.id}`), NOTA_FUENTE, { alto: 230 }),
+        ficha(x, ACTORES, { resumen: COMPLEMENTO[x.id][0], excepciones: COMPLEMENTO[x.id][2] })));
 });
 add(H2('2.4 Prototipar interfaz de usuario'));
 add(P('Los prototipos son las pantallas reales del sistema publicado, capturadas en computadora (1366 × 800) y en celular. La interfaz usa la paleta de colores arcilla y crema del taller.'));

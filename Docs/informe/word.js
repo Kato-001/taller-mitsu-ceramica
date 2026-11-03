@@ -124,7 +124,7 @@ function tabla(titulo, encabezados, filas, nota, op = {}) {
 }
 
 /** Ficha de caso de uso (tabla de dos columnas con grilla suave). */
-function ficha(cu, actores) {
+function ficha(cu, actores, extra) {
     nTabla++;
     const b = { top: GRILLA, bottom: GRILLA, left: GRILLA, right: GRILLA };
     let k = 0;
@@ -141,13 +141,15 @@ function ficha(cu, actores) {
         cab,
         fila('Id. caso de uso', `${cu.id}: ${cu.nombre}`),
         fila('Objetivo', cu.proposito),
+        fila('Resumen', extra.resumen),
         fila('Actores', cu.actores.map(a => actores[a]).join(', ')),
         fila('Actor iniciador', actores[cu.actores[0]]),
         fila('Ciclo / paquete', `Ciclo ${cu.ciclo} · ${cu.paquete}`),
         fila('Precondición', cu.pre),
         fila('Postcondición', cu.post),
         fila('Flujo principal', num(cu.flujo)),
-        fila('Flujo alterno / excepción', cu.alternos.join('\n')),
+        fila('Flujo secundario', cu.alternos.join('\n')),
+        fila('Excepción', extra.excepciones.map(t => '• ' + t).join('\n')),
         fila('Ruta en el sistema', cu.ruta),
     ];
     return [
