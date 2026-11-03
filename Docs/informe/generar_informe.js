@@ -30,6 +30,42 @@ const CICLOS = [['I', 'Ciclo I: seguridad y configuración'], ['II', 'Ciclo II: 
 const deCiclo = c => CASOS.filter(x => x.ciclo === c);
 const NOTA_FUENTE = 'Elaboración propia.';
 
+/** Estructura de carpetas del repositorio tal como está en Git (git ls-files). */
+function arbolGit() {
+    const NOTAS = {
+        'Bakend': 'Lógica del sistema y base de datos', 'Bakend/app': 'bootstrap.php: arranque de la aplicación',
+        'Bakend/app/controllers': 'Un controlador por grupo de casos de uso', 'Bakend/app/core': 'Núcleo: Router, Auth, Validator, Mailer',
+        'Bakend/app/models': 'Un modelo por entidad (consultas con parámetros)', 'Bakend/app/services': 'Pasarela de pago',
+        'Bakend/database': 'Scripts SQL 01 a 07 y ejecutar.php', 'Frontend': 'Lo que ve el usuario', 'Frontend/views': 'Pantallas por paquete',
+        'Frontend/public': 'Archivos que descarga el navegador', 'Frontend/public/assets': 'CSS, JavaScript e imágenes', 'Docs': 'Documentación del proyecto',
+        'Docs/diagramas': 'Diagramas UML (Python) en svg y png', 'Docs/informe': 'Este informe y sus generadores', 'Docs/pruebas': 'Pruebas automáticas',
+        'api': 'Vercel exige esta carpeta', 'api/index.php': 'Controlador frontal: entrada de todas las rutas',
+        'router.php': 'Servidor local de PHP', '.htaccess': 'Apache (Laragon o XAMPP)', 'vercel.json': 'Configuración del despliegue',
+    };
+    const archivos = require('child_process').execSync('git ls-files', { cwd: RAIZ, encoding: 'utf8' }).split('\n').filter(Boolean);
+    const hijos = new Map([['', new Set()]]);
+    const agregar = (padre, nombre) => { if (!hijos.has(padre)) hijos.set(padre, new Set()); hijos.get(padre).add(nombre); };
+    archivos.forEach(f => {
+        const partes = f.split('/');
+        const carpetas = partes.slice(0, -1);
+        carpetas.slice(0, 3).forEach((c, i) => agregar(carpetas.slice(0, i).join('/'), c + '/'));
+        if (carpetas.length === 0 || (carpetas.length === 1 && carpetas[0] === 'api')) agregar(carpetas.join('/'), partes[partes.length - 1]);
+    });
+    const lineas = [path.basename(RAIZ) + '/'];
+    const dibujar = (ruta, prefijo) => {
+        const lista = [...(hijos.get(ruta) || [])].sort((x, y) => (y.endsWith('/') - x.endsWith('/')) || x.localeCompare(y));
+        lista.forEach((n, i) => {
+            const ultimo = i === lista.length - 1;
+            const completa = (ruta ? ruta + '/' : '') + n.replace(/\/$/, '');
+            const izquierda = prefijo + (ultimo ? '└── ' : '├── ') + n;
+            lineas.push(NOTAS[completa] ? izquierda.padEnd(38) + NOTAS[completa] : izquierda);
+            if (n.endsWith('/')) dibujar(completa, prefijo + (ultimo ? '    ' : '│   '));
+        });
+    };
+    dibujar('', '');
+    return lineas.join('\n');
+}
+
 // ---------------------------------------------------------------------------
 // Secciones (para alternar páginas verticales y horizontales)
 // ---------------------------------------------------------------------------
@@ -56,7 +92,7 @@ function seccion(apaisada = false, sinNumero = false) {
 const add = (...xs) => xs.flat().forEach(x => actual.children.push(x));
 
 // ===========================================================================
-// CARÁTULA Y QR
+// CARÁTULA
 // ===========================================================================
 seccion(false, true);
 const centro = (t, op = {}) => new d.Paragraph({ alignment: d.AlignmentType.CENTER, spacing: { after: op.despues ?? 160 }, children: [new d.TextRun({ text: t, font: W.FUENTE, bold: op.negrita, size: op.tam || 24, color: op.color })] });
@@ -77,25 +113,6 @@ add(
     new d.Paragraph({ spacing: { before: 600 }, alignment: d.AlignmentType.CENTER, children: [new d.TextRun({ text: 'Santa Cruz de la Sierra – Bolivia', font: W.FUENTE, bold: true })] }),
     centro('Octubre de 2026', { negrita: true }),
 );
-add(salto());
-add(
-    centro('Enlaces del proyecto', { negrita: true, tam: 28, despues: 360 }),
-    new d.Table({
-        width: { size: 100, type: d.WidthType.PERCENTAGE },
-        rows: [new d.TableRow({
-            children: [['qr_sistema.png', 'Sistema en línea', SITIO], ['qr_repositorio.png', 'Repositorio en GitHub', REPO]].map(([img, t, url]) => new d.TableCell({
-                borders: { top: W.SIN, bottom: W.SIN, left: W.SIN, right: W.SIN },
-                children: [
-                    new d.Paragraph({ alignment: d.AlignmentType.CENTER, children: [W.imagen(REC(img), 220, 220)] }),
-                    new d.Paragraph({ alignment: d.AlignmentType.CENTER, spacing: { before: 120 }, children: [new d.TextRun({ text: t, bold: true, font: W.FUENTE })] }),
-                    new d.Paragraph({ alignment: d.AlignmentType.CENTER, children: [new d.ExternalHyperlink({ link: url, children: [new d.TextRun({ text: url, style: 'Hyperlink', size: 20, font: W.FUENTE })] })] }),
-                ],
-            })),
-        })],
-    }),
-    new d.Paragraph({ spacing: { before: 480 }, children: W.runs('**Cuentas de prueba:** se detallan en el Anexo B. Todas las contraseñas son inventadas para la demostración; las claves reales de la base de datos están en variables de entorno y no aparecen en el repositorio.') }),
-);
-
 // ===========================================================================
 // ÍNDICE
 // ===========================================================================
@@ -120,7 +137,7 @@ add(
     P('El taller nació cuando su fundadora volvió de estudiar Artes Plásticas en Argentina y, junto con una amiga, decidió crear un espacio para producir y enseñar cerámica, porque conseguir arcilla y hornear localmente era difícil (Anexo A). Su estética fusiona el diseño contemporáneo con la esencia de los pueblos originarios de Bolivia, de la región andina y de la Amazonía.'),
     P('Según la entrevista, el taller tiene **4 maestras** y personal administrativo; la cafetería tiene personal propio. La organización es la siguiente: gerencia general; área de producción y enseñanza (maestras ceramistas); área de administración y ventas (atención al cliente, caja y finanzas); y área de cafetería. La materia prima (arcilla, cuarzo y otros minerales) se compra a empresas mineras de Cochabamba y La Paz.'),
 );
-add(H3('Análisis FODA'));
+add(H4('Análisis FODA'));
 add(tabla('Análisis FODA del Taller de Cerámica Mitsü', ['Fortalezas', 'Debilidades'], [
     ['Maestras con formación en artes plásticas y experiencia en el oficio.', 'Horarios y reservas organizados a mano en hojas de Excel.'],
     ['Propuesta artística propia: diseño contemporáneo con raíces originarias bolivianas.', 'Sin control sistematizado del inventario de arcilla, esmaltes y minerales.'],
@@ -325,8 +342,9 @@ add(H1('7. Modelo de dominio'));
 add(P('El modelo de dominio muestra los conceptos del negocio y cómo se relacionan, sin detalles técnicos. Un usuario tiene un rol con permisos y puede ser maestra o alumno. Un taller tiene horarios dictados por una maestra; cada horario genera clases y los alumnos reservan lugares en ellas. Las compras a proveedores incluyen materiales. Las ventas en caja y los pedidos en línea incluyen piezas; el pedido se paga con uno o más intentos de pago.'));
 add(figura('Modelo de dominio del Taller Mitsü', DIAG('dominio'), NOTA_FUENTE));
 add(H1('8. Modelo de negocio'));
-add(P('El diagrama de actividad describe cómo trabaja hoy el taller, antes del sistema: el alumno consulta horarios por WhatsApp, recepción revisa el cuaderno y anota la reserva, la maestra dicta la clase y anota la asistencia en papel, las ventas se anotan a mano y la gerencia cuenta el dinero y revisa el stock al cierre para decidir compras.'));
-add(figura('Diagrama de actividad del proceso actual (modelo de negocio)', DIAG('actividad_negocio'), 'Elaboración propia a partir de la entrevista (Anexo A).', { alto: 600 }));
+add(P('El Taller de Cerámica Mitsü genera ingresos con tres líneas de negocio. La principal son las **clases** de modelado a mano y torno para niños y adultos, que dictan cuatro maestras de martes a sábado; según la gerente, es lo más solicitado porque las piezas terminadas cuestan más por el trabajo artesanal. La segunda es la **venta de piezas** de cerámica hechas a mano (vajillas, tazas y platos), de uso utilitario o artístico según el pedido del cliente. La tercera es la **cafetería** para alumnos y visitantes, atendida por personal propio y con ingredientes mayormente de cultivo propio.'));
+add(P('Para producir, el taller compra arcilla y minerales como el cuarzo a empresas mineras de Cochabamba y La Paz, que son sus únicos proveedores. Sus clientes son los alumnos que se inscriben a los talleres, las personas que compran piezas y quienes visitan la cafetería. La propuesta de valor es una cerámica artesanal con materiales del país, que fusiona el diseño contemporáneo con la estética de los pueblos originarios de Bolivia.'));
+add(P('Hoy la gestión es manual: los horarios se llevan en hojas de Excel y las finanzas en un pequeño software aparte, sin conexión entre sí. El flujo de trabajo actual de reservas, clases, ventas y cierre se modela con el diagrama de actividad del capítulo 1 (punto 5.1), donde se analiza junto con el diagrama de Ishikawa.'));
 add(H1('9. Marco teórico'));
 const teoria = [
     ['Sistema de información', 'Conjunto de personas, datos, procesos y tecnología que recoge, guarda, procesa y distribuye información para apoyar las operaciones y la toma de decisiones de una organización (Laudon y Laudon, 2020).'],
@@ -340,7 +358,7 @@ const teoria = [
     ['Computación en la nube', 'Modelo en que la infraestructura se usa como servicio: plataforma como servicio para la aplicación (Vercel) y base de datos como servicio (Supabase), sin administrar servidores propios (Mell y Grance, 2011).'],
     ['Diagrama de Ishikawa', 'Diagrama causa-efecto que organiza las causas de un problema en categorías para analizarlas (Ishikawa, 1985).'],
 ];
-teoria.forEach(([t, x]) => add(H3(t), P(x)));
+teoria.forEach(([t, x]) => add(H4(t), P(x)));
 
 // ===========================================================================
 // CAPÍTULO 1. MÉTODO DE ISHIKAWA
@@ -428,31 +446,35 @@ add(P('La alternativa C, un sistema web a medida, es la única que resuelve los 
 add(H3('1.9 Diseñar el diagrama de Ishikawa'));
 add(P('El efecto (cabeza del pescado) es la gestión manual y desintegrada del taller. Las espinas son las seis categorías de causas, descritas a continuación; el diagrama completo se presenta en la página horizontal siguiente.'));
 add(H2('2. Identificar las principales categorías'));
-add(L(['**Métodos y procesos:** cómo se hacen hoy las reservas, las ventas y el cierre.', '**Personas:** personal reducido y tareas repartidas.', '**Tecnología:** herramientas aisladas y sin control de acceso.', '**Materiales e inventario:** insumos sin registro.', '**Medición y control:** falta de historial e indicadores.', '**Clientes y entorno:** lo que el cliente no puede hacer y la competencia.']));
+add(P('Las causas del problema se agruparon en seis categorías, que forman las espinas principales del diagrama. **Métodos y procesos** reúne la forma en que hoy se hacen las reservas, las ventas y el cierre del día. **Personas** se refiere al personal reducido y a cómo se reparten las tareas. **Tecnología** abarca las herramientas que usa el taller, que están aisladas y no tienen control de acceso. **Materiales e inventario** trata los insumos de producción, que no tienen registro. **Medición y control** agrupa la falta de historial y de indicadores para decidir. Por último, **clientes y entorno** reúne lo que el cliente no puede hacer por sí mismo y la competencia de otros talleres.'));
 add(H2('3. Identificar las causas'));
-add(P('Para cada categoría se identificaron tres causas a partir de la lista final de problemas; se muestran en las espinas secundarias del diagrama.'));
+add(P('Para cada categoría se identificaron tres causas a partir de la lista final de problemas. En **métodos y procesos**, los horarios y las reservas se llevan en hojas de Excel, las ventas se anotan a mano sin nota numerada y no hay cierre de caja ni arqueo diario. En **personas**, el personal es reducido y no se puede contratar más, las maestras se asignan sin un registro central y recepción responde las reservas una por una.'));
+add(P('En **tecnología**, el Excel y el software de finanzas no están integrados, no existe una página para ver las piezas o las clases y no hay respaldos ni control de acceso. En **materiales e inventario**, el stock de arcilla y minerales no tiene registro, se hacen compras urgentes por falta de material y el taller depende de solo dos proveedores, de Cochabamba y La Paz.'));
+add(P('En **medición y control**, no hay historial de asistencia de los alumnos, no existen reportes de ventas ni indicadores y los precios y costos no guardan historial. En **clientes y entorno**, los alumnos no ven los cupos en tiempo real, los clientes no pueden comprar ni pagar en línea y existe competencia de otros talleres de la ciudad. Todas estas causas se ubican como espinas secundarias en el diagrama.'));
 seccion(true);
 add(figura('Diagrama de Ishikawa del Taller Mitsü', DIAG('ishikawa'), 'Elaboración propia a partir de la entrevista (Anexo A) y de la lista final de problemas.', { alto: 470 }));
 seccion();
 add(H2('4. Analizar y discutir el diagrama'));
 add(P('Las categorías con más peso son **métodos y procesos** y **tecnología**: casi todos los problemas nacen de anotar en Excel o en papel lo que debería registrarse una sola vez. Por eso el sistema se centra en que cada dato se ingrese una vez y el resto se calcule solo: el cupo libre sale de las reservas, el stock sale del kardex, el total de caja sale de las ventas. Las causas de **personas** (no se puede contratar más personal) refuerzan la necesidad de automatizar; las de **clientes y entorno** justifican la tienda en línea y el portal del alumno.'));
 add(H2('5. Modelo de negocio'));
+add(P('El modelo de negocio describe cómo trabaja hoy el taller, antes del sistema, para ver en qué actividades aparecen las causas identificadas en el diagrama de Ishikawa.'));
 add(H3('5.1 Diagrama de actividad'));
-add(P('El diagrama de actividad del proceso actual se presentó en la sección 8 (Figura 2). Sus actividades manuales —consultar por WhatsApp, revisar el cuaderno, anotar en papel, contar el dinero— son las que el sistema reemplaza en los ciclos I a III.'));
+add(P('El alumno consulta los horarios por WhatsApp y recepción revisa el cuaderno para ver si hay lugar y anotar la reserva. La maestra dicta la clase y anota la asistencia en papel. Las ventas de piezas se anotan a mano y, al cierre, la gerencia cuenta el dinero y revisa el stock para decidir las compras. Estas actividades manuales son las que el sistema reemplaza en los ciclos I a III.'));
+add(figura('Diagrama de actividad del proceso actual (modelo de negocio)', DIAG('actividad_negocio'), 'Elaboración propia a partir de la entrevista (Anexo A).', { alto: 600 }));
 
 // ===========================================================================
 // CAPÍTULO 2. CAPTURA DE REQUISITOS
 // ===========================================================================
 add(H1('Capítulo 2. Flujo de trabajo: captura de requisitos'));
 add(H2('2.1 Identificar actores y casos de uso'));
-add(H3('Actores'));
+add(H4('Actores'));
 add(tabla('Actores del sistema', ['Actor', 'Descripción'], [
     ['Visitante', 'Persona sin cuenta que ve la tienda y las clases.'], ['Cliente', 'Visitante que creó su cuenta para comprar en línea.'],
     ['Alumno', 'Persona inscrita que reserva clases desde su portal; también puede comprar.'], ['Maestra', 'Dicta talleres y registra la asistencia de sus clases.'],
     ['Administrativo', 'Recepción y ventas: reservas, inventario, compras, ventas, caja y pedidos web.'], ['Administrador', 'Gerencia: además de lo anterior, usuarios, roles, bitácora, configuración, maestras y talleres.'],
 ], null, { anchos: [22, 78] }));
 add(figura('Generalización de actores', DIAG('actores'), NOTA_FUENTE, { ancho: 520 }));
-add(H3('Casos de uso'));
+add(H4('Casos de uso'));
 CICLOS.forEach(([c, t]) => {
     add(H4(t));
     add(tabla(`Casos de uso del ${t.split(':')[0].toLowerCase()}`, ['Código', 'Caso de uso', 'Actores', 'Paquete'],
@@ -460,7 +482,7 @@ CICLOS.forEach(([c, t]) => {
 });
 add(H4('Ciclo IV: cafetería, cobros y reportes (planificado)'));
 add(P('CU23 Gestionar menú de cafetería · CU24 Registrar comandas · CU25 Cobrar mensualidades y controlar morosidad · CU26 Pedidos personalizados · CU27 Notificaciones · CU28 Reportes e indicadores. No forman parte de esta entrega.'));
-add(H2('2.2 Priorizar casos de uso'));
+add(H2('2.2 Priorizar los casos de uso'));
 add(P('La prioridad se asignó según el valor para el taller y el riesgo técnico: los casos de prioridad alta y riesgo alto se construyeron primero dentro de cada ciclo, porque concentran las reglas más delicadas (cupo, stock, dinero).'));
 CICLOS.forEach(([c, t]) => {
     add(H4(t));
@@ -469,7 +491,7 @@ CICLOS.forEach(([c, t]) => {
 });
 add(H2('2.3 Detallar un caso de uso'));
 CICLOS.forEach(([c, t]) => {
-    add(H3(t));
+    add(H4(t));
     deCiclo(c).forEach(x => add(figura(`Diagrama de casos de uso ${x.id} ${x.nombre}`, DIAG(`cu_${x.id}`), NOTA_FUENTE, { alto: 230 }), ficha(x, ACTORES)));
 });
 add(H2('2.4 Prototipar interfaz de usuario'));
@@ -491,13 +513,13 @@ const PROTOS = {
           ['CU20_mis_pedidos', 'CU20 Mis pedidos'], ['CU22_pedidos', 'CU22 Pedidos web (taller)'], ['CU22_pedido', 'CU22 Detalle del pedido y verificación del QR']],
 };
 CICLOS.forEach(([c, t]) => {
-    add(H3(t));
+    add(H4(t));
     PROTOS[c].forEach(([f, tt]) => fs.existsSync(CAP(f)) && add(figura(tt, CAP(f), `Captura del sistema publicado en ${SITIO}.`, f.endsWith('movil') ? { ancho: 250, alto: 540 } : { alto: 315 })));
 });
-add(H2('2.5 Estructurar el modelo de casos de uso'));
+add(H2('2.5 Estructurar modelo de casos de uso'));
 add(figura('Diagrama general: actores y paquetes', DIAG('cu_general'), NOTA_FUENTE));
 CICLOS.forEach(([c, t]) => {
-    add(H3(t));
+    add(H4(t));
     add(figura(`Diagrama de casos de uso del ${t.split(':')[0].toLowerCase()}`, DIAG(`cu_ciclo_${c}`), NOTA_FUENTE, { alto: 600 }));
 });
 
@@ -536,7 +558,7 @@ add(H2('3.2 Analizar un caso de uso'));
 add(P('Para cada caso de uso se elaboró un diagrama de comunicación con las clases de análisis: el actor, la interfaz «frm», el controlador «ctrl» y las entidades «entidad». Los mensajes están numerados en el orden en que ocurren; los que dependen de una condición llevan la guarda entre corchetes y los que se repiten llevan un asterisco. Por su ancho, los diagramas se presentan en páginas horizontales.'));
 seccion(true);
 CICLOS.forEach(([c, t]) => {
-    add(H3(t));
+    add(H4(t));
     deCiclo(c).forEach(x => add(figura(`Diagrama de comunicación ${x.id} ${x.nombre}`, DIAG(`com_${x.id}`), NOTA_FUENTE, { alto: 510 })));
 });
 seccion();
@@ -544,7 +566,7 @@ add(H2('3.3 Análisis de clase'));
 add(P('Para cada caso de uso se elaboró un diagrama de clases de análisis con tres tipos de clase: la interfaz «form» (lo que ve el usuario, con sus campos y acciones), el controlador «control» (coordina el caso de uso) y las entidades «entidad» (datos que persisten, con los atributos reales de su tabla). Las clases «procedimiento» son funciones de PostgreSQL que ejecutan una operación completa en una transacción. Los métodos son los mensajes del diagrama de comunicación del mismo caso de uso.'));
 seccion(true);
 CICLOS.forEach(([c, t]) => {
-    add(H3(t));
+    add(H4(t));
     deCiclo(c).forEach(x => add(figura(`Clases de análisis ${x.id} ${x.nombre}`, DIAG(`clases_${x.id}`), NOTA_FUENTE, { alto: 500 })));
 });
 seccion();
@@ -644,35 +666,51 @@ add(P('Las 30 consultas se ejecutaron contra la base publicada con el usuario de
 });
 add(H3('Procedimientos almacenados'));
 add(P('Las operaciones que tocan varias tablas se programaron como funciones de PostgreSQL que se ejecutan en una sola transacción: si algo falla, no se guarda nada. Cada una se probó en la base publicada y luego se revirtió.'));
-add(tabla('Procedimientos almacenados', ['Código', 'Función', 'Qué hace'], [
+const PAS = [
     ['PA1', 'fn_registrar_venta', 'Registra la venta, su detalle y descuenta el stock'], ['PA2', 'fn_anular_venta', 'Anula con motivo y devuelve el stock'],
     ['PA3', 'fn_registrar_compra', 'Registra la compra y sube stock y costo promedio'], ['PA4', 'fn_anular_compra', 'Anula la compra y revierte el stock'],
     ['PA5', 'fn_reservar_clase', 'Reserva un lugar validando cupo y fecha'], ['PA6', 'fn_generar_sesiones', 'Crea las clases del calendario sin duplicar'],
     ['PA7', 'sp_cerrar_caja', 'Cierra la caja y calcula el arqueo'], ['PA8', 'fn_crear_pedido', 'Crea el pedido en línea y reserva el stock 30 minutos'],
     ['PA9', 'fn_registrar_pago', 'Registra el pago y marca el pedido como pagado'], ['PA10', 'fn_verificar_pago_qr', 'El taller confirma o rechaza un pago por QR'],
     ['PA11', 'fn_cancelar_pedido', 'Cancela y devuelve el stock'], ['PA12', 'fn_vencer_pedidos', 'Cancela los pedidos no pagados a tiempo'],
-], null, { anchos: [10, 30, 60], mono: [1] }));
-BD.procedimientos.forEach(pa => {
-    add(H4(`${pa.id} ${pa.nombre}`), P(`Prueba: ${pa.descripcion}.`, { sinSangria: true }), codigo(pa.sql),
-        pa.ok ? resultado(pa.columnas, pa.filas) : P('Error: ' + pa.error));
+];
+add(tabla('Procedimientos almacenados', ['Código', 'Función', 'Qué hace'], PAS, null, { anchos: [10, 30, 60], mono: [1] }));
+add(P('El código de cada procedimiento se copia tal cual de los archivos del repositorio (Bakend/database). Debajo se muestra la prueba que se ejecutó en la base publicada y su resultado real.'));
+/** Código de una función o procedimiento, copiado del script SQL del repositorio. */
+const definicion = nombre => {
+    for (const f of ['06_procedimientos_triggers.sql', '07_tienda_pasarela.sql']) {
+        const s = SQL(f);
+        const i = s.search(new RegExp(`create or replace (function|procedure) mitsu\\.${nombre}\\(`));
+        if (i >= 0) return [f, s.slice(i, s.indexOf('$$;', i) + 3)];
+    }
+    throw new Error('No se encontró ' + nombre + ' en los scripts SQL');
+};
+PAS.forEach(([id, nombre]) => {
+    const [archivo, sql] = definicion(nombre);
+    add(H4(`${id} ${nombre}`), P(`Código (Bakend/database/${archivo}):`, { sinSangria: true }), codigo(sql));
+    const pa = BD.procedimientos.find(x => x.id === id);
+    if (pa) {
+        add(P(`Prueba: ${pa.descripcion}.`, { sinSangria: true }), codigo(pa.sql), pa.ok ? resultado(pa.columnas, pa.filas) : P('Error: ' + pa.error));
+    } else {
+        add(P(id === 'PA10' ? 'Se prueba en el flujo completo de la tienda (Anexo C): el personal confirma el pago por QR de un pedido en verificación.'
+                            : 'Se prueba en el flujo completo de la tienda (Anexo C): cancela los pedidos que no se pagaron en 30 minutos y devuelve el stock.', { sinSangria: true }));
+    }
 });
-add(P('PA10 y PA12 se prueban en el flujo completo de la tienda (Anexo C): la verificación del QR por el personal y el vencimiento automático de pedidos.'));
 add(H3('Triggers (disparadores)'));
 add(P('Los triggers garantizan las reglas del negocio dentro de la base de datos, aunque alguien intente saltarse la aplicación. Cada prueba intenta violar una regla; el resultado esperado es que la base la rechace con un mensaje claro.'));
 add(tabla('Prueba de triggers y restricciones', ['Regla', 'Intento', 'Respuesta real de la base'],
     BD.triggers.map(t => [t.regla, t.descripcion, t.ok ? 'Aceptado: ' + JSON.stringify(t.filas[0]) : t.error]),
     'Ejecutado contra la base publicada con el usuario de la aplicación; cada prueba se revirtió. En RN08 la venta se acepta pero con el precio real de la pieza (Bs 95), no con el enviado.', { anchos: [26, 30, 44], tam: 18 }));
 const s02 = SQL('02_reglas_negocio.sql');
-const it = s02.indexOf('create or replace function tg_reserva_validar');
-if (it >= 0) {
-    add(P('Ejemplo: trigger que valida una reserva (bloquea la clase y revisa cupo y fecha):', { sinSangria: true }));
-    add(codigo(s02.slice(it, s02.indexOf('$$;', it) + 3)));
-}
+const it = s02.indexOf('create or replace function mitsu.tg_reserva_validar');
+if (it < 0) throw new Error('No se encontró tg_reserva_validar en 02_reglas_negocio.sql');
+add(P('Ejemplo: trigger que valida una reserva (bloquea la clase y revisa cupo y fecha), copiado de Bakend/database/02_reglas_negocio.sql:', { sinSangria: true }));
+add(codigo(s02.slice(it, s02.indexOf('$$;', it) + 3)));
 add(H2('5.3 Diseñar casos de uso (diagrama de secuencia)'));
 add(P('Los diagramas de secuencia muestran, en orden temporal, los mensajes entre el actor, la interfaz, el controlador y las entidades, con los fragmentos alt (alternativa), opt (opcional) y loop (repetición). Los nombres de controladores y métodos son los del código fuente.'));
 seccion(true);
 CICLOS.forEach(([c, t]) => {
-    add(H3(t));
+    add(H4(t));
     deCiclo(c).forEach(x => add(figura(`Diagrama de secuencia ${x.id} ${x.nombre}`, DIAG(`sec_${x.id}`), NOTA_FUENTE, { alto: 510 })));
 });
 seccion();
@@ -691,24 +729,13 @@ add(H2('6.1 Elección de la plataforma de desarrollo del software'));
 add(H2('6.2 Implementación de la arquitectura del sistema'));
 add(H3('Diagrama de componentes principal del sistema'));
 add(figura('Diagrama de componentes principal', DIAG('componentes'), NOTA_FUENTE));
-add(H3('Estructura de carpetas'));
-add(codigo(`Taller-Mitsu_Proyecto Final/
-├── Bakend/                 Lógica del sistema y base de datos
-│   ├── app/core/           Auth, Session, Csrf, Validator, View, Mailer, helpers
-│   ├── app/controllers/    Un controlador por grupo de casos de uso
-│   ├── app/models/         Un modelo por entidad (consultas con parámetros)
-│   ├── app/services/       Pasarela de pago
-│   └── database/           Scripts SQL 01 a 07 y ejecutor
-├── Frontend/               Lo que ve el usuario
-│   ├── views/              Vistas por paquete (P1_Seguridad ... P4_Ventas, Tienda)
-│   └── public/             CSS, JavaScript e imágenes
-├── Docs/                   Informe, diagramas, capturas, pruebas y guion
-├── api/index.php           Entrada de todas las rutas (Vercel exige la carpeta api/)
-└── vercel.json             Configuración del despliegue`));
+add(H4('Estructura de carpetas'));
+add(P('Árbol generado con git ls-files: muestra las carpetas del repositorio hasta tres niveles y los archivos de la raíz y de api/.', { sinSangria: true }));
+add(codigo(arbolGit()));
 add(H2('6.3 Implementación de la arquitectura del subsistema'));
 add(H3('Diagrama de componentes de cada paquete'));
 Object.entries(PAQUETES).forEach(([p, n]) => add(figura(`Componentes de ${n}`, DIAG(`componentes_${p}`), NOTA_FUENTE, { alto: 600 })));
-add(H3('Seguridad implementada'));
+add(H4('Seguridad implementada'));
 add(L([
     'Contraseñas cifradas con bcrypt; bloqueo de 10 minutos tras 5 intentos fallidos desde la misma IP.',
     'Sesiones guardadas en la base de datos, con cookie HttpOnly, Secure y SameSite.',
@@ -790,20 +817,43 @@ add(H2('Anexo C. Pruebas del sistema'));
 add(tabla('Pruebas automáticas', ['Script', 'Qué prueba', 'Resultado'], [
     ['Docs/pruebas/probar_rutas.php', '55 pantallas con cada rol; 20 accesos prohibidos (403); página inexistente (404); formulario sin token (419).', 'Todo correcto'],
     ['Docs/pruebas/probar_flujos.php', '20 operaciones de escritura: usuarios, roles, talleres, reservas, asistencia, compras, ventas, anulaciones y caja.', 'Todo correcto'],
-    ['Docs/pruebas/probar_tienda.php', 'Unas 30 verificaciones de la tienda: carrito sin cuenta, ingreso que vuelve al pago, Luhn, tarjeta vencida, rechazada y aprobada, cobro doble, PayPal, QR verificado por el taller, entrega y cancelación con devolución de stock, y seguridad del cliente.', 'Todo correcto'],
+    ['Docs/pruebas/probar_tienda.php', '34 verificaciones de la tienda: carrito sin cuenta, ingreso que vuelve al pago, Luhn, tarjeta vencida, rechazada y aprobada, cobro doble, PayPal, QR simulado (pago realizado y no realizado), QR verificado por el taller, entrega y cancelación con devolución de stock, seguridad del cliente y recuperación de contraseña con el código en pantalla.', 'Todo correcto'],
     ['Docs/informe/resultados_bd.php', '30 consultas, 10 procedimientos y 11 pruebas de reglas contra la base publicada.', '0 errores'],
 ], 'Los scripts se ejecutaron en local y contra el sistema publicado durante el desarrollo de los ciclos I a III.', { anchos: [30, 52, 18], mono: [0] }));
 add(H2('Anexo D. Manual de uso'));
 [
-    ['Visitante y cliente', ['Entre a la página principal: verá las piezas y las clases.', 'Abra una pieza y presione “Agregar al carrito”.', 'En el carrito presione “Pagar”. Si no tiene cuenta, créela con su correo; el sistema lo devuelve al carrito.', 'Elija retiro en el taller o envío, escriba su teléfono y confirme: las piezas quedan reservadas 30 minutos.', 'Pague con el QR del taller (escriba el número de comprobante), con tarjeta o con PayPal. Verá su comprobante en “Mis pedidos”.']],
+    ['Visitante y cliente', ['Entre a la página principal: verá las piezas y las clases.', 'Abra una pieza y presione “Agregar al carrito”.', 'En el carrito presione “Pagar”. Si no tiene cuenta, créela con su correo; el sistema lo devuelve al carrito.', 'Elija retiro en el taller o envío, escriba su teléfono y confirme: las piezas quedan reservadas 30 minutos.', 'Pague con el QR del taller (en modo demostración, “Pago realizado” simula la respuesta del banco), con tarjeta o con PayPal. Verá su comprobante en “Mis pedidos”.']],
     ['Alumno', ['Cree su cuenta en “Crea tu cuenta de alumno” (si es menor, con datos del tutor).', 'En “Reservar clase” elija una clase con lugares libres y presione “Reservar mi lugar”.', 'Puede cancelar una reserva hasta 12 horas antes desde su inicio.']],
     ['Maestra', ['Ingrese con su correo: verá sus clases de la semana.', 'Abra la clase del día, marque “Presente” o “Falta” en cada alumno y guarde.']],
     ['Administrativo', ['Abra la caja al iniciar el día con el monto inicial.', 'En “Vender” toque las piezas, elija cliente y método de pago, escriba el monto recibido y presione “Cobrar y emitir nota”.', 'Registre compras en “Compras → Nueva compra”; el stock sube solo.', 'Registre consumo o merma desde el kardex de cada material.', 'En “Pedidos web” confirme los pagos por QR y marque los pedidos entregados.', 'Al cerrar, cuente el efectivo y cierre la caja: el sistema muestra la diferencia.']],
     ['Administrador', ['Cree usuarios y asígneles un rol en “Usuarios”.', 'Ajuste qué puede hacer cada rol en “Roles y permisos”.', 'Registre maestras, talleres y horarios; genere el calendario.', 'Revise la bitácora y anule ventas con motivo cuando corresponda.']],
-].forEach(([rol, pasos]) => add(H3(rol), L(pasos, true)));
+].forEach(([rol, pasos]) => add(H4(rol), L(pasos, true)));
 add(H2('Anexo E. Script completo de la base de datos'));
-add(P('Se incluyen los archivos que crean la estructura, las reglas, el usuario de la aplicación, los procedimientos y la tienda. El archivo de datos de demostración (03) y el de consultas (05) están en el repositorio.'));
-['01_esquema.sql', '02_reglas_negocio.sql', '04_usuario_app.sql', '06_procedimientos_triggers.sql', '07_tienda_pasarela.sql'].forEach(f => add(H3(f), codigo(SQL(f), 15)));
+add(P('Se incluyen los siete archivos de la carpeta Bakend/database, copiados tal cual están en el repositorio y en el orden de instalación indicado en el README.'));
+fs.readdirSync(path.join(RAIZ, 'Bakend', 'database')).filter(f => f.endsWith('.sql')).sort().forEach(f => add(H4(f), codigo(SQL(f), 15)));
+add(salto());
+add(H2('Anexo F. Enlaces del proyecto'));
+add(P('Los siguientes códigos QR permiten abrir el sistema publicado y el repositorio desde un celular. Basta con escanearlos con la cámara.'));
+add(new d.Table({
+    width: { size: 100, type: d.WidthType.PERCENTAGE },
+    rows: [new d.TableRow({
+        children: [
+            ['qr_sistema.png', 'Sistema en línea', SITIO, 'Abre la tienda pública del taller. Desde «Ingresar» se accede al panel con las cuentas del Anexo B.'],
+            ['qr_repositorio.png', 'Repositorio en GitHub', REPO, 'Código fuente, scripts SQL, diagramas, pruebas y este informe, con la estructura de carpetas del punto 6.2.'],
+        ].map(([img, t, url, texto]) => new d.TableCell({
+            width: { size: 50, type: d.WidthType.PERCENTAGE },
+            margins: { top: 200, bottom: 200, left: 200, right: 200 },
+            borders: { top: W.SIN, bottom: W.SIN, left: W.SIN, right: W.SIN },
+            children: [
+                new d.Paragraph({ alignment: d.AlignmentType.CENTER, children: [W.imagen(REC(img), 200, 200)] }),
+                new d.Paragraph({ alignment: d.AlignmentType.CENTER, spacing: { before: 160, after: 60 }, children: [new d.TextRun({ text: t, bold: true, font: W.FUENTE })] }),
+                new d.Paragraph({ alignment: d.AlignmentType.CENTER, spacing: { after: 120 }, children: [new d.ExternalHyperlink({ link: url, children: [new d.TextRun({ text: url, style: 'Hyperlink', size: 20, font: W.FUENTE })] })] }),
+                new d.Paragraph({ alignment: d.AlignmentType.CENTER, children: [new d.TextRun({ text: texto, size: 20, font: W.FUENTE })] }),
+            ],
+        })),
+    })],
+}));
+add(P('Todas las contraseñas de las cuentas de prueba son inventadas para la demostración; las claves reales de la base de datos están en variables de entorno y no aparecen en el repositorio.', { sinSangria: true }));
 
 // ===========================================================================
 // DOCUMENTO
