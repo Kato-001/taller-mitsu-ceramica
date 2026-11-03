@@ -84,7 +84,7 @@ Taller-Mitsu_Proyecto Final/
 ├── Frontend/               Lo que ve el usuario
 │   ├── views/              Pantallas por paquete: P1_Seguridad, P2_Clases, P3_Inventario, P4_Ventas, Tienda
 │   └── public/             Archivos que el navegador descarga tal cual: CSS, JavaScript, fotos y favicon
-├── Docs/                   Informe, diagramas, capturas, pruebas, guion y sugerencias
+├── Docs/                   Informe, capturas, diagramas, pruebas, guion y sugerencias (ver «Documentación»)
 ├── api/index.php           Entrada de todas las peticiones (Vercel exige que esté en la carpeta api/)
 └── router.php · .htaccess · vercel.json · .env.example · README.md
 ```
@@ -140,9 +140,9 @@ Abrir http://localhost:8000. Con Laragon o XAMPP también funciona copiando la c
 Con el servidor local levantado:
 
 ```bash
-php Docs/pruebas/probar_rutas.php   # todas las pantallas con cada rol + accesos prohibidos (403)
-php Docs/pruebas/probar_flujos.php  # ventas, anulación, compras, reservas, asistencia y validaciones
-php Docs/pruebas/probar_tienda.php  # tienda pública, carrito, pasarela (QR, QR simulado, tarjeta, PayPal), pedidos web y recuperación con código en pantalla
+php Docs/Pruebas/probar_rutas.php   # todas las pantallas con cada rol + accesos prohibidos (403)
+php Docs/Pruebas/probar_flujos.php  # ventas, anulación, compras, reservas, asistencia y validaciones
+php Docs/Pruebas/probar_tienda.php  # tienda pública, carrito, pasarela (QR, QR simulado, tarjeta, PayPal), pedidos web y recuperación con código en pantalla
 ```
 
 ### Variables de entorno en Vercel
@@ -157,29 +157,32 @@ php Docs/pruebas/probar_tienda.php  # tienda pública, carrito, pasarela (QR, QR
 
 ## Documentación (ciclos I a III)
 
-| Archivo | Contenido |
-|---|---|
-| `Docs/informe/Informe_Taller_Mitsu_Ciclos_I-III.docx` y `.pdf` | Informe final en formato APA 7 con la estructura de la docente: perfil, Ishikawa, requisitos, análisis, diseño, datos (30 consultas, procedimientos y triggers con resultados reales) e implementación |
-| `Docs/Guion_Presentacion.html` | Guion de la defensa: pasos por rol y caso de uso, datos de prueba, preguntas probables y qué hacer si algo falla |
-| `Docs/Sugerencias_por_ciclo.md` | Cambios que se pueden pedir en cada ciclo y dónde se harían |
-| `Docs/diagramas/` | Diagramas UML con la notación de Enterprise Architect (paquetes, casos de uso, comunicación, clases de análisis por caso de uso, secuencia, datos, despliegue y componentes), generados en Python (`svg/` y `png/`), e Ishikawa |
-| `Docs/informe/capturas/` | Pantallas del sistema publicado usadas como prototipos |
-
-Para regenerar todo (requiere Python con Pillow y matplotlib, Node con `puppeteer-core`, `docx` y `qrcode`, y LibreOffice):
-
-```bash
-php Docs/informe/esquema_bd.php          # tablas reales → datos/esquema.json
-php Docs/informe/resultados_bd.php       # consultas, procedimientos y triggers → datos/bd.json
-python Docs/diagramas/generar.py         # diagramas UML (svg) + datos/casos.json
-python Docs/diagramas/ishikawa.py
-node Docs/diagramas/render.js            # svg → png
-node Docs/informe/capturas.js            # capturas del sistema publicado
-node Docs/informe/generar_informe.js     # Word
-"C:\Program Files\LibreOffice\program\python.exe" Docs/informe/actualizar_pdf.py   # índice + PDF
 ```
+Docs/
+├── Informe/                         Informe final en Word y PDF (APA 7) y los códigos QR del sistema y del repositorio
+├── Capturas/
+│   ├── Pagina/                      Vistas generales: tienda (computadora y celular), ingreso, panel y portal del alumno
+│   └── Casos_de_uso/
+│       ├── Ciclo_1_Seguridad/                     CU01 a CU06
+│       ├── Ciclo_2_Clases_y_reservas/             CU07 a CU12
+│       ├── Ciclo_3_Inventario_ventas_y_tienda/    CU13 a CU22
+│       └── Ciclo_4_Cafeteria_cobros_y_reportes/   CU23 a CU28 (próximamente)
+├── Diagramas/
+│   ├── 1_Ishikawa_y_modelo_de_negocio/   Árbol de problemas, Ishikawa paso a paso, diagramas de actividad y modelo de dominio
+│   ├── 2_Casos_de_uso/                   Actores, diagrama general, por ciclo y uno por caso de uso
+│   ├── 3_Analisis/                       Paquetes, comunicación y clases de análisis por caso de uso
+│   ├── 4_Diseno/                         Despliegue, capas y secuencia por caso de uso
+│   ├── 5_Datos/                          Diagrama relacional y de persistencia por paquete
+│   └── 6_Implementacion/                 Componentes del sistema y de cada paquete
+├── Pruebas/                         Pruebas automáticas del sistema (ver «Pruebas automáticas»)
+├── Guion_Presentacion.html          Guion de la defensa: pasos por rol y caso de uso, datos de prueba y preguntas probables
+└── Sugerencias_por_ciclo.md         Cambios que se pueden pedir en cada ciclo y dónde se harían
+```
+
+Las capturas se nombran con el caso de uso al que pertenecen (`CU18_punto_venta.png`) y los diagramas con su tipo y caso de uso (`sec_CU18.png` es la secuencia del CU18).
 
 ### Avisos
 
 - Supabase gratis **pausa el proyecto tras 7 días sin uso**: entrar al panel de Supabase antes de presentar.
-- Cada corrida de `probar_tienda.php` vende 4 piezas de prueba (Vasija Inti, Vaso Mejillas, Vasija Pajarito y Jarra Andina): si alguna queda agotada, reponer el stock en **Piezas → Kardex** con un movimiento de producción.
+- Cada corrida de `Docs/Pruebas/probar_tienda.php` vende 4 piezas de prueba (Vasija Inti, Vaso Mejillas, Vasija Pajarito y Jarra Andina): si alguna queda agotada, reponer el stock en **Piezas → Kardex** con un movimiento de producción.
 - Los datos de demostración (precios, stocks, proveedores, alumnos y ventas) son **estimados o ficticios**. Los horarios de las clases salen de la entrevista a la gerencia.
