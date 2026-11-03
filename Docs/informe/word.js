@@ -8,9 +8,10 @@ const d = require('docx');
 
 const FUENTE = 'Times New Roman';
 const CODIGO = 'Consolas';
-const LINEA_APA = { style: d.BorderStyle.SINGLE, size: 8, color: '000000' };
 const SIN = { style: d.BorderStyle.NONE, size: 0, color: 'FFFFFF' };
-const GRILLA = { style: d.BorderStyle.SINGLE, size: 4, color: '8C8C8C' };
+const GRILLA = { style: d.BorderStyle.SINGLE, size: 4, color: 'C9A88F' };
+// Colores de las tablas: los mismos de la página (arcilla y crema)
+const CAFE = '9C5B3A', CREMA = 'F7EDE2';
 
 let nFigura = 0;
 let nTabla = 0;
@@ -104,13 +105,13 @@ function tabla(titulo, encabezados, filas, nota, op = {}) {
     const tam = op.tam || 20;
     const cab = new d.TableRow({
         tableHeader: true,
-        children: encabezados.map((e, i) => celda(e, { negrita: true, tam, ancho: anchos[i], bordes: { top: LINEA_APA, bottom: LINEA_APA, left: SIN, right: SIN } })),
+        children: encabezados.map((e, i) => celda(e, { negrita: true, tam, ancho: anchos[i], color: 'FFFFFF', fondo: CAFE, bordes: { top: GRILLA, bottom: GRILLA, left: GRILLA, right: GRILLA } })),
     });
     const cuerpo = filas.map((f, k) => new d.TableRow({
         cantSplit: true,
         children: f.map((v, i) => celda(v, {
             tam, ancho: anchos[i], mono: op.mono && op.mono.includes(i), derecha: op.derecha && op.derecha.includes(i),
-            bordes: { top: SIN, left: SIN, right: SIN, bottom: k === filas.length - 1 ? LINEA_APA : SIN },
+            fondo: k % 2 ? CREMA : undefined, bordes: { top: GRILLA, left: GRILLA, right: GRILLA, bottom: GRILLA },
         })),
     }));
     const r = [
@@ -129,12 +130,12 @@ function ficha(cu, actores, extra) {
     const b = { top: GRILLA, bottom: GRILLA, left: GRILLA, right: GRILLA };
     let k = 0;
     const fila = (t, v) => {
-        const fondo = k++ % 2 ? 'DAEEF3' : undefined;
+        const fondo = k++ % 2 ? CREMA : undefined;
         return new d.TableRow({ cantSplit: true, children: [celda(t, { negrita: true, fondo, bordes: b, ancho: 24 }), celda(v, { fondo, bordes: b, ancho: 76 })] });
     };
     const cab = new d.TableRow({
         tableHeader: true,
-        children: ['Elemento', 'Descripción'].map((t, i) => celda(t, { negrita: true, color: 'FFFFFF', fondo: '4BACC6', bordes: b, ancho: i ? 76 : 24 })),
+        children: ['Elemento', 'Descripción'].map((t, i) => celda(t, { negrita: true, color: 'FFFFFF', fondo: CAFE, bordes: b, ancho: i ? 76 : 24 })),
     });
     const num = l => l.map((t, i) => `${i + 1}. ${t}`).join('\n');
     const filas = [
@@ -142,7 +143,7 @@ function ficha(cu, actores, extra) {
         fila('Id. caso de uso', `${cu.id}: ${cu.nombre}`),
         fila('Objetivo', cu.proposito),
         fila('Resumen', extra.resumen),
-        fila('Actores', cu.actores.map(a => actores[a]).join(', ')),
+        fila('Actores', cu.actores.map(a => a === 'usr' ? 'Usuario (Administrador, Administrativo, Maestra, Alumno o Cliente)' : actores[a]).join(', ')),
         fila('Actor iniciador', actores[cu.actores[0]]),
         fila('Ciclo / paquete', `Ciclo ${cu.ciclo} · ${cu.paquete}`),
         fila('Precondición', cu.pre),
@@ -183,7 +184,7 @@ function resultado(columnas_, filas, tam = 16) {
     return [
         new d.Table({
             rows: [
-                new d.TableRow({ tableHeader: true, children: columnas.map(c => celda(c, { negrita: true, tam, fondo: 'F1E4D3', bordes: b, mono: [0] })) }),
+                new d.TableRow({ tableHeader: true, children: columnas.map(c => celda(c, { negrita: true, tam, color: 'FFFFFF', fondo: CAFE, bordes: b, mono: [0] })) }),
                 ...filas.map(f => new d.TableRow({ children: columnas.map(c => celda(recorte(f[c]), { tam, bordes: b })) })),
             ],
             width: { size: twips(), type: d.WidthType.DXA },

@@ -188,7 +188,8 @@ for cu in CASOS:
     acts = [(a, ACTORES[a], 'izq' if k % 2 == 0 else 'der') for k, a in enumerate(cu['actores'])]
     uml.casos_de_uso(f"{cu['id']} {cu['nombre']}", acts,
                      [(cu['id'], f"{cu['id']} {cu['nombre']}")] + [(o, f"{o} {nombres[o]}") for o in otros],
-                     [(a, cu['id']) for a in cu['actores']], ruta(f"cu_{cu['id']}"), extras=socios, ancho_caso=250)
+                     [(a, cu['id']) for a in cu['actores']], ruta(f"cu_{cu['id']}"), extras=socios, ancho_caso=250,
+                     hijos={'usr': [ACTORES[k] for k in ('adm', 'admv', 'mae', 'alu', 'cli')]} if 'usr' in cu['actores'] else None)
 
 # ---------------------------------------------------------------------------
 # 3b. Clases de análisis por caso de uso: «form» → «control» → «entidad»

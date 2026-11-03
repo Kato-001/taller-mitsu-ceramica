@@ -549,7 +549,7 @@ add(H2('2.2 Priorizar los casos de uso'));
 add(P('La prioridad indica qué tan necesario es el caso de uso para que el taller funcione, y el riesgo, qué tan delicada es su construcción. Dentro de cada ciclo se construyeron primero los de prioridad alta y riesgo alto, porque concentran las reglas más delicadas: cupo, stock y dinero.'));
 CICLOS.forEach(([c, t]) => {
     add(H4(t));
-    add(tabla(`Priorización del ${t.split(':')[0].toLowerCase()}`, ['Caso de uso', 'Prioridad', 'Riesgo', 'Justificación'],
+    add(tabla(`Priorización del ciclo ${c}`, ['Caso de uso', 'Prioridad', 'Riesgo', 'Justificación'],
         deCiclo(c).map(x => [`${x.id}: ${x.nombre}`, x.prioridad, x.riesgo, COMPLEMENTO[x.id][1]]), null, { anchos: [30, 12, 11, 47] }));
 });
 add(H2('2.3 Detallar un caso de uso'));
@@ -585,7 +585,7 @@ add(H2('2.5 Estructurar modelo de casos de uso'));
 add(figura('Diagrama general: actores y paquetes', DIAG('cu_general'), NOTA_FUENTE));
 CICLOS.forEach(([c, t]) => {
     add(H4(t));
-    add(figura(`Diagrama de casos de uso del ${t.split(':')[0].toLowerCase()}`, DIAG(`cu_ciclo_${c}`), NOTA_FUENTE, { alto: 600 }));
+    add(figura(`Diagrama de casos de uso del ciclo ${c}`, DIAG(`cu_ciclo_${c}`), NOTA_FUENTE, { alto: 600 }));
 });
 
 // ===========================================================================

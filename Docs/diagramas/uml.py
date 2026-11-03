@@ -430,12 +430,13 @@ def comunicacion(titulo, participantes, pasos, ruta):
 # ---------------------------------------------------------------------------
 # Diagrama de casos de uso
 # ---------------------------------------------------------------------------
-def casos_de_uso(titulo, actores, casos, relaciones, ruta, extras=None, ancho_caso=230, columnas=1):
+def casos_de_uso(titulo, actores, casos, relaciones, ruta, extras=None, ancho_caso=230, columnas=1, hijos=None):
     """
     actores: [(clave, nombre, 'izq'|'der')]
     casos:   [(clave, texto)]
     relaciones: [(actor, caso)]
     extras: [(desde_caso, hacia_caso, '«include»'|'«extend»')]
+    hijos: {actor: [nombre, ...]} actores que heredan de ese actor (generalización, se dibujan debajo)
     """
     c = Lienzo()
     fila = 64
@@ -487,6 +488,19 @@ def casos_de_uso(titulo, actores, casos, relaciones, ruta, extras=None, ancho_ca
         fondo = icono(c, 'actor', x, y - 10)
         for k, p in enumerate(nombre.split('\n')):
             c.texto(x, fondo + 14 + 14 * k, p, 12, 'middle', negrita=True)
+    for padre, lista in (hijos or {}).items():
+        xp, yp = pa[padre]
+        yh = max(yp + 34, alto_sis) + 120              # fila de los actores hijos
+        paso = 120
+        x0 = xp - paso * (len(lista) - 1) / 2 + 60       # centrada bajo el actor, corrida hacia el sistema
+        yb = (yp + 36 + yh - 34) / 2                     # barra que une las generalizaciones (estilo árbol)
+        for k, nombre in enumerate(lista):
+            xh = x0 + k * paso
+            fondo = icono(c, 'actor', xh, yh - 10)
+            c.texto(xh, fondo + 14, nombre, 11.5, 'middle', negrita=True)
+            c.linea([(xh, yh - 34), (xh, yb)])
+        c.linea([(x0, yb), (x0 + paso * (len(lista) - 1), yb)])
+        c.linea([(xp, yb), (xp, yp + 36)], fin='triangulo')
     c.guardar(ruta)
 
 
