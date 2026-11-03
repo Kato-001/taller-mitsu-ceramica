@@ -49,12 +49,12 @@ PROBLEMAS = {
     12: 'Descoordinación entre áreas', 13: 'Retrasos en la atención a clientes', 14: 'Herramientas externas no integradas',
     15: 'Demanda de clases difícil de organizar', 16: 'Sin historial de asistencia', 17: 'Sin control de pagos y morosidad',
     18: 'Información de clientes dispersa', 19: 'Sin registro de pedidos personalizados', 20: 'Duplicidad y errores de registro',
-    21: 'Riesgo de pérdida de datos',
+    21: 'Riesgo de pérdida de datos', 22: 'Sin canal para vender piezas en línea',
 }
 FINAL = [
     ('P1. Horarios y reservas manuales', [1, 2, 3, 15]), ('P2. Sin historial de asistencia', [16]),
     ('P3. Inventario sin registro', [4, 5, 6, 7]), ('P4. Ventas sin registro ni caja', [8, 10, 11]),
-    ('P5. Información dispersa', [12, 13, 14, 18, 20]), ('P6. Sin venta en línea', []), ('P7. Riesgo de pérdida de datos', [21]),
+    ('P5. Información dispersa', [12, 13, 14, 18, 20]), ('P6. Sin venta en línea', [22]), ('P7. Riesgo de pérdida de datos', [21]),
     ('Postergados al ciclo IV', [9, 17, 19]),
 ]
 
@@ -85,9 +85,6 @@ def arbol_problemas():
         caja(x, 7.0, textwrap.fill(titulo, 16), '#eeeeee' if postergado else CREMA, GRIS if postergado else ARCILLA,
              GRIS if postergado else TINTA, 9.5, 'bold')
         ax.plot([x, x], [7.4, 7.75], color=GRIS, lw=1)
-        if not hijos:
-            ax.text(x, 5.9, 'No agrupa problemas de la\nlista inicial: se agregó\nen la lista final (1.3)', ha='center', va='center', fontsize=7.8,
-                    style='italic', color=GRIS)
         for j, n in enumerate(hijos):
             y = 5.85 - j * 1.12
             caja(x, y, textwrap.fill(f'{n}. {PROBLEMAS[n]}', 19), 'white', GRIS, GRIS if postergado else TINTA, 8)

@@ -486,90 +486,196 @@ for p, nombre in PAQUETES.items():
     c.guardar(ruta(f'componentes_{p}'))
 
 # ---------------------------------------------------------------------------
-# 8. Modelo de negocio: diagrama de actividad con carriles (situación actual)
+# 8. Modelo de negocio: diagramas de actividad con carriles
 # ---------------------------------------------------------------------------
-CARRILES = ['Alumno / Cliente', 'Recepción (administrativa)', 'Maestra', 'Gerencia (administradora)']
-NODOS = [  # (clave, carril, fila, tipo, texto)
-    ('i', 0, 0, 'ini', ''),
-    ('a1', 0, 1, 'acc', 'Consulta horarios por WhatsApp o en el local'),
-    ('a2', 1, 1, 'acc', 'Revisa el cuaderno de horarios y cupos'),
-    ('d1', 1, 2, 'dec', ''),
-    ('a3', 1, 3, 'acc', 'Anota la reserva en el cuaderno'),
-    ('a4', 0, 3, 'acc', 'Busca otro horario'),
-    ('a5', 2, 4, 'acc', 'Dicta la clase y anota la asistencia en papel'),
-    ('a6', 2, 5, 'acc', 'Avisa a recepción el material usado'),
-    ('i2', 0, 5, 'ini', ''),
-    ('a7', 0, 6, 'acc', 'Elige una pieza en el local o por redes'),
-    ('a8', 1, 6, 'acc', 'Cobra, anota la venta y entrega la pieza'),
-    ('a9', 3, 7, 'acc', 'Cuenta el dinero y revisa stock al cierre'),
-    ('d2', 3, 8, 'dec', ''),
-    ('a10', 3, 9, 'acc', 'Compra material al proveedor'),
-    ('f', 3, 10, 'fin', ''),
-]
-ARISTAS = [('i', 'a1', ''), ('a1', 'a2', ''), ('a2', 'd1', ''), ('d1', 'a3', '[hay cupo]'), ('d1', 'a4', '[sin cupo]'), ('a4', 'a1', '', 'izq'), ('i2', 'a7', ''),
-           ('a3', 'a5', ''), ('a5', 'a6', ''), ('a6', 'a8', ''), ('a7', 'a8', ''), ('a8', 'a9', ''), ('a9', 'd2', ''),
-           ('d2', 'a10', '[stock bajo]'), ('d2', 'f', '[stock suficiente]', 'der'), ('a10', 'f', '')]
-c = Lienzo()
-ANCHO_C, ALTO_F = 250, 78
-xs = [ANCHO_C * k + ANCHO_C / 2 for k in range(len(CARRILES))]
-alto = (max(n[2] for n in NODOS) + 1) * ALTO_F + 50
-for k, t in enumerate(CARRILES):
-    c.rect(k * ANCHO_C, 0, ANCHO_C, alto, fill='white' if k % 2 else '#fdfaf5')
-    c.rect(k * ANCHO_C, 0, ANCHO_C, 34, fill=RELLENO_2)
-    c.texto(xs[k], 22, t, 12.5, 'middle', negrita=True)
-geo = {}
-for clave, carril, fila, tipo, texto in NODOS:
-    x, y = xs[carril], 70 + fila * ALTO_F
-    if tipo == 'acc':
-        partes = uml._partir(texto, 180, 11.5)
-        h = 18 + 14 * len(partes)
-        geo[clave] = (x - 100, y - h / 2, 200, h)
-    elif tipo == 'dec':
-        geo[clave] = (x - 16, y - 16, 32, 32)
-    else:
-        geo[clave] = (x - 11, y - 11, 22, 22)
-for a, b, g, *forma in ARISTAS:
-    xa, ya, wa, ha = geo[a]
-    xb, yb, wb, hb = geo[b]
-    ca, cb = (xa + wa / 2, ya + ha / 2), (xb + wb / 2, yb + hb / 2)
-    if forma == ['izq']:
-        pts = [(xa, ca[1]), (xa - 22, ca[1]), (xb - 22, cb[1]), (xb, cb[1])]
-    elif forma == ['der']:
-        xr = cb[0] + 112
-        pts = [(xa + wa, ca[1]), (xr, ca[1]), (xr, cb[1]), (xb + wb, cb[1])]
-    elif abs(ca[0] - cb[0]) < 1:
-        if cb[1] > ca[1]:
-            pts = [(ca[0], ya + ha), (cb[0], yb)]
+def actividad(carriles, nodos, aristas, nombre, titulo=None, ancho_c=250):
+    """Diagrama de actividad con carriles.
+    nodos: (clave, carril, fila, tipo, texto); tipo: ini, fin, acc, dec o barra (carril = (desde, hasta)).
+    aristas: (origen, destino, guarda[, 'izq' | 'der'])."""
+    c = Lienzo()
+    alto_f = 78
+    sup = 34 if titulo else 0                       # franja del título
+    xs = [ancho_c * k + ancho_c / 2 for k in range(len(carriles))]
+    alto = (max(n[2] for n in nodos) + 1) * alto_f + 50 + sup
+    if titulo:
+        c.rect(0, 0, ancho_c * len(carriles), sup, fill='white')
+        c.texto(ancho_c * len(carriles) / 2, 22, titulo, 13, 'middle', negrita=True)
+    for k, t in enumerate(carriles):
+        c.rect(k * ancho_c, sup, ancho_c, alto - sup, fill='white' if k % 2 else '#fdfaf5')
+        c.rect(k * ancho_c, sup, ancho_c, 34, fill=RELLENO_2)
+        c.texto(xs[k], sup + 22, t, 12.5, 'middle', negrita=True)
+    geo = {}
+    for clave, carril, fila, tipo, texto in nodos:
+        y = sup + 70 + fila * alto_f
+        if tipo == 'barra':
+            x0, x1 = xs[carril[0]] - 80, xs[carril[1]] + 80
+            geo[clave] = (x0, y - 4, x1 - x0, 8)
+            continue
+        x = xs[carril]
+        if tipo == 'acc':
+            partes = uml._partir(texto, 180, 11.5)
+            h = 18 + 14 * len(partes)
+            geo[clave] = (x - 100, y - h / 2, 200, h)
+        elif tipo == 'dec':
+            geo[clave] = (x - 16, y - 16, 32, 32)
         else:
-            pts = [(xa + wa, ca[1]), (xa + wa + 18, ca[1]), (xa + wa + 18, cb[1]), (xb + wb, cb[1])]
-    elif abs(ca[1] - cb[1]) < 1:
-        pts = [(xa + wa if cb[0] > ca[0] else xa, ca[1]), (xb if cb[0] > ca[0] else xb + wb, cb[1])]
-    else:
-        if cb[1] < ca[1]:
-            pts = [(xa, ca[1]), (cb[0], ca[1]), (cb[0], yb + hb)]
+            geo[clave] = (x - 11, y - 11, 22, 22)
+    tipos = {n[0]: n[3] for n in nodos}
+    for a, b, g, *forma in aristas:
+        xa, ya, wa, ha = geo[a]
+        xb, yb, wb, hb = geo[b]
+        ca, cb = (xa + wa / 2, ya + ha / 2), (xb + wb / 2, yb + hb / 2)
+        if tipos[a] == 'barra':                       # sale de la barra hacia abajo
+            pts = [(cb[0], ya + ha), (cb[0], yb)]
+        elif tipos[b] == 'barra':                     # llega a la barra desde arriba
+            pts = [(ca[0], ya + ha), (ca[0], yb)]
+        elif forma == ['izq']:
+            pts = [(xa, ca[1]), (xa - 22, ca[1]), (xb - 22, cb[1]), (xb, cb[1])]
+        elif forma == ['der']:
+            xr = cb[0] + 112
+            pts = [(xa + wa, ca[1]), (xr, ca[1]), (xr, cb[1]), (xb + wb, cb[1])]
+        elif abs(ca[0] - cb[0]) < 1:
+            if cb[1] > ca[1]:
+                pts = [(ca[0], ya + ha), (cb[0], yb)]
+            else:
+                pts = [(xa + wa, ca[1]), (xa + wa + 18, ca[1]), (xa + wa + 18, cb[1]), (xb + wb, cb[1])]
+        elif abs(ca[1] - cb[1]) < 1:
+            pts = [(xa + wa if cb[0] > ca[0] else xa, ca[1]), (xb if cb[0] > ca[0] else xb + wb, cb[1])]
         else:
-            pts = [(xa + wa if cb[0] > ca[0] else xa, ca[1]), (cb[0], ca[1]), (cb[0], yb)]
-    c.linea(pts, fin='llena')
-    if g and forma == ['der']:
-        c.texto(pts[0][0] + 4, pts[0][1] - 6, g, 10.5, cursiva=True, color=ACENTO, fondo='white')
-    elif g:
-        c.texto((pts[0][0] + pts[1][0]) / 2, pts[0][1] - 6 if abs(pts[0][1] - pts[1][1]) < 1 else (pts[0][1] + pts[1][1]) / 2,
-                g, 10.5, 'middle', cursiva=True, color=ACENTO, fondo='white')
-for clave, carril, fila, tipo, texto in NODOS:
-    x, y, w, h = geo[clave]
-    if tipo == 'acc':
-        c.rect(x, y, w, h, rx=12, fill=RELLENO)
-        partes = uml._partir(texto, 180, 11.5)
-        for j, t in enumerate(partes):
-            c.texto(x + w / 2, y + 22 + 14 * j, t, 11.5, 'middle')
-    elif tipo == 'dec':
-        c.poligono([(x + 16, y), (x + 32, y + 16), (x + 16, y + 32), (x, y + 16)], fill=RELLENO_2)
-    elif tipo == 'ini':
-        c.elipse(x + 11, y + 11, 11, 11, fill=TINTA)
-    else:
-        c.elipse(x + 11, y + 11, 11, 11, fill='white')
-        c.elipse(x + 11, y + 11, 6, 6, fill=TINTA)
-c.guardar(ruta('actividad_negocio'))
+            if cb[1] < ca[1]:
+                pts = [(xa, ca[1]), (cb[0], ca[1]), (cb[0], yb + hb)]
+            else:
+                pts = [(xa + wa if cb[0] > ca[0] else xa, ca[1]), (cb[0], ca[1]), (cb[0], yb)]
+        c.linea(pts, fin='llena')
+        if g and forma == ['der']:
+            c.texto(pts[0][0] + 4, pts[0][1] - 6, g, 10.5, cursiva=True, color=ACENTO, fondo='white')
+        elif g and abs(pts[0][0] - pts[1][0]) < 1:   # tramo vertical: la guarda va al costado
+            c.texto(pts[0][0] + 6, (pts[0][1] + pts[1][1]) / 2 + 4, g, 10.5, cursiva=True, color=ACENTO, fondo='white')
+        elif g:
+            c.texto((pts[0][0] + pts[1][0]) / 2, pts[0][1] - 6 if abs(pts[0][1] - pts[1][1]) < 1 else (pts[0][1] + pts[1][1]) / 2,
+                    g, 10.5, 'middle', cursiva=True, color=ACENTO, fondo='white')
+    for clave, carril, fila, tipo, texto in nodos:
+        x, y, w, h = geo[clave]
+        if tipo == 'barra':
+            c.rect(x, y, w, h, fill=TINTA, stroke=TINTA)
+        elif tipo == 'acc':
+            c.rect(x, y, w, h, rx=12, fill=RELLENO)
+            partes = uml._partir(texto, 180, 11.5)
+            for j, t in enumerate(partes):
+                c.texto(x + w / 2, y + 22 + 14 * j, t, 11.5, 'middle')
+        elif tipo == 'dec':
+            c.poligono([(x + 16, y), (x + 32, y + 16), (x + 16, y + 32), (x, y + 16)], fill=RELLENO_2)
+            if texto:
+                c.texto(x + 30, y - 8, texto, 10.5, cursiva=True, color=GRIS, fondo='white')
+        elif tipo == 'ini':
+            c.elipse(x + 11, y + 11, 11, 11, fill=TINTA)
+        else:
+            c.elipse(x + 11, y + 11, 11, 11, fill='white')
+            c.elipse(x + 11, y + 11, 6, 6, fill=TINTA)
+    c.guardar(ruta(nombre))
+
+
+# Proceso actual del taller (antes del sistema)
+actividad(
+    ['Alumno / Cliente', 'Recepción (administrativa)', 'Maestra', 'Gerencia (administradora)'],
+    [('i', 0, 0, 'ini', ''),
+     ('a1', 0, 1, 'acc', 'Consulta horarios por WhatsApp o en el local'),
+     ('a2', 1, 1, 'acc', 'Revisa el cuaderno de horarios y cupos'),
+     ('d1', 1, 2, 'dec', ''),
+     ('a3', 1, 3, 'acc', 'Anota la reserva en el cuaderno'),
+     ('a4', 0, 3, 'acc', 'Busca otro horario'),
+     ('a5', 2, 4, 'acc', 'Dicta la clase y anota la asistencia en papel'),
+     ('a6', 2, 5, 'acc', 'Avisa a recepción el material usado'),
+     ('i2', 0, 5, 'ini', ''),
+     ('a7', 0, 6, 'acc', 'Elige una pieza en el local o por redes'),
+     ('a8', 1, 6, 'acc', 'Cobra, anota la venta y entrega la pieza'),
+     ('a9', 3, 7, 'acc', 'Cuenta el dinero y revisa stock al cierre'),
+     ('d2', 3, 8, 'dec', ''),
+     ('a10', 3, 9, 'acc', 'Compra material al proveedor'),
+     ('f', 3, 10, 'fin', '')],
+    [('i', 'a1', ''), ('a1', 'a2', ''), ('a2', 'd1', ''), ('d1', 'a3', '[hay cupo]'), ('d1', 'a4', '[sin cupo]'), ('a4', 'a1', '', 'izq'), ('i2', 'a7', ''),
+     ('a3', 'a5', ''), ('a5', 'a6', ''), ('a6', 'a8', ''), ('a7', 'a8', ''), ('a8', 'a9', ''), ('a9', 'd2', ''),
+     ('d2', 'a10', '[stock bajo]'), ('d2', 'f', '[stock suficiente]', 'der'), ('a10', 'f', '')],
+    'actividad_negocio')
+
+# 5.1.1 Reserva de clases y registro de asistencia
+actividad(
+    ['Alumno', 'Sistema Mitsü', 'Maestra'],
+    [('i', 0, 0, 'ini', ''),
+     ('a1', 0, 1, 'acc', 'Ingresa a su portal y abre «Reservar clase»'),
+     ('s1', 1, 2, 'acc', 'Muestra las clases de la semana con sus lugares libres'),
+     ('a2', 0, 3, 'acc', 'Elige una clase y presiona «Reservar mi lugar»'),
+     ('d1', 1, 4, 'dec', '¿Hay cupo?'),
+     ('a3', 0, 4, 'acc', 'Ve el aviso y elige otra clase'),
+     ('s2', 1, 5, 'acc', 'Registra la reserva (fn_reservar_clase) y descuenta un lugar'),
+     ('b1', (0, 2), 6, 'barra', ''),
+     ('a4', 0, 7, 'acc', 'Ve la reserva en «Mis clases» y asiste'),
+     ('m1', 2, 7, 'acc', 'Abre la lista de alumnos de su clase del día'),
+     ('m2', 2, 8, 'acc', 'Marca «Presente» o «Falta» y guarda'),
+     ('s3', 1, 9, 'acc', 'Guarda la asistencia y la registra en la bitácora'),
+     ('b2', (0, 2), 10, 'barra', ''),
+     ('f', 1, 11, 'fin', '')],
+    [('i', 'a1', ''), ('a1', 's1', ''), ('s1', 'a2', ''), ('a2', 'd1', ''), ('d1', 'a3', '[no]'), ('a3', 'a2', '', 'izq'),
+     ('d1', 's2', '[sí]'), ('s2', 'b1', ''), ('b1', 'a4', ''), ('b1', 'm1', ''), ('m1', 'm2', ''), ('m2', 's3', ''),
+     ('a4', 'b2', ''), ('s3', 'b2', ''), ('b2', 'f', '')],
+    'actividad_reservas', 'Diagrama de actividades: reserva de clases y registro de asistencia')
+
+# 5.1.2 Consumo de materiales y compra a proveedores
+actividad(
+    ['Maestra', 'Administrativo', 'Sistema Mitsü', 'Proveedor'],
+    [('i', 0, 0, 'ini', ''),
+     ('m1', 0, 1, 'acc', 'Usa arcilla, esmaltes o minerales en la clase o la producción'),
+     ('r1', 1, 2, 'acc', 'Registra el consumo o la merma en el kardex del material'),
+     ('s1', 2, 3, 'acc', 'Descuenta el stock y guarda el movimiento'),
+     ('d1', 2, 4, 'dec', '¿Stock bajo?'),
+     ('s2', 2, 5, 'acc', 'Muestra la alerta de stock bajo en «Materiales»'),
+     ('r2', 1, 6, 'acc', 'Pide el material al proveedor'),
+     ('p1', 3, 7, 'acc', 'Envía el material con su factura'),
+     ('r3', 1, 8, 'acc', 'Registra la compra con cantidades y costos'),
+     ('s3', 2, 9, 'acc', 'Registra la compra (fn_registrar_compra): sube el stock y el costo promedio'),
+     ('f', 2, 10, 'fin', '')],
+    [('i', 'm1', ''), ('m1', 'r1', ''), ('r1', 's1', ''), ('s1', 'd1', ''), ('d1', 's2', '[sí]'), ('d1', 'f', '[no]', 'der'),
+     ('s2', 'r2', ''), ('r2', 'p1', ''), ('p1', 'r3', ''), ('r3', 's3', ''), ('s3', 'f', '')],
+    'actividad_inventario', 'Diagrama de actividades: consumo de materiales y compra a proveedores')
+
+# 5.1.3 Venta en caja y cierre de caja
+actividad(
+    ['Cliente', 'Administrativo (caja)', 'Sistema Mitsü', 'Gerencia'],
+    [('i', 1, 0, 'ini', ''),
+     ('r1', 1, 1, 'acc', 'Abre la caja con el monto inicial'),
+     ('s1', 2, 2, 'acc', 'Registra la caja abierta'),
+     ('c1', 0, 3, 'acc', 'Elige las piezas que quiere comprar'),
+     ('r2', 1, 4, 'acc', 'Agrega las piezas, el cliente y el método de pago'),
+     ('d1', 2, 5, 'dec', '¿Venta válida?'),
+     ('r3', 1, 5, 'acc', 'Ve el aviso y corrige la venta'),
+     ('s2', 2, 6, 'acc', 'Registra la venta (fn_registrar_venta), descuenta el stock y emite la nota NV'),
+     ('c2', 0, 7, 'acc', 'Paga y recibe su nota de venta'),
+     ('r4', 1, 8, 'acc', 'Al final del día cuenta el efectivo y cierra la caja'),
+     ('s3', 2, 9, 'acc', 'Calcula el efectivo esperado y la diferencia (sp_cerrar_caja)'),
+     ('g1', 3, 10, 'acc', 'Revisa el arqueo, las ventas y la bitácora'),
+     ('f', 3, 11, 'fin', '')],
+    [('i', 'r1', ''), ('r1', 's1', ''), ('s1', 'c1', ''), ('c1', 'r2', ''), ('r2', 'd1', ''), ('d1', 'r3', '[no]'), ('r3', 'r2', '', 'izq'),
+     ('d1', 's2', '[sí]'), ('s2', 'c2', ''), ('c2', 'r4', ''), ('r4', 's3', ''), ('s3', 'g1', ''), ('g1', 'f', '')],
+    'actividad_ventas', 'Diagrama de actividades: venta en caja y cierre de caja')
+
+# 5.1.4 Compra en la tienda en línea y pago
+actividad(
+    ['Cliente', 'Sistema Mitsü', 'Administrativo'],
+    [('i', 0, 0, 'ini', ''),
+     ('c1', 0, 1, 'acc', 'Ve las piezas en la tienda y las agrega al carrito'),
+     ('c2', 0, 2, 'acc', 'Ingresa con su cuenta y confirma el pedido'),
+     ('s1', 1, 3, 'acc', 'Crea el pedido (fn_crear_pedido) y reserva el stock 30 minutos'),
+     ('c3', 0, 4, 'acc', 'Paga con QR, tarjeta o PayPal'),
+     ('d1', 1, 5, 'dec', '¿Resultado del pago?'),
+     ('c4', 0, 5, 'acc', 'Ve el rechazo e intenta de nuevo'),
+     ('a1', 2, 5, 'acc', 'Verifica el depósito del QR y lo confirma'),
+     ('s2', 1, 6, 'acc', 'Marca el pedido como pagado y guarda el comprobante'),
+     ('a2', 2, 7, 'acc', 'Prepara y entrega el pedido'),
+     ('s3', 1, 8, 'acc', 'Marca el pedido como entregado'),
+     ('f', 1, 9, 'fin', '')],
+    [('i', 'c1', ''), ('c1', 'c2', ''), ('c2', 's1', ''), ('s1', 'c3', ''), ('c3', 'd1', ''), ('d1', 'c4', '[rechazado]'), ('c4', 'c3', '', 'izq'),
+     ('d1', 'a1', '[QR: ya pagué]'), ('d1', 's2', '[aprobado]'), ('a1', 's2', ''), ('s2', 'a2', ''), ('a2', 's3', ''), ('s3', 'f', '')],
+    'actividad_tienda', 'Diagrama de actividades: compra en la tienda en línea y pago')
 
 # ---------------------------------------------------------------------------
 # Datos de los casos de uso para el informe

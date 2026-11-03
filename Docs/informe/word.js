@@ -34,7 +34,9 @@ const H1 = t => new d.Paragraph({ heading: d.HeadingLevel.HEADING_1, children: [
 const H1s = t => new d.Paragraph({ heading: d.HeadingLevel.HEADING_1, children: [new d.TextRun(t)] });
 const H2 = t => new d.Paragraph({ heading: d.HeadingLevel.HEADING_2, children: [new d.TextRun(t)] });
 const H3 = t => new d.Paragraph({ heading: d.HeadingLevel.HEADING_3, children: [new d.TextRun(t)] });
-const H4 = t => new d.Paragraph({ heading: d.HeadingLevel.HEADING_4, children: [new d.TextRun(t)] });
+// H4: subtítulo con aspecto de título 4 que no entra al índice · H4i: título 4 que sí entra al índice
+const H4 = t => new d.Paragraph({ style: 'Subtitulo', children: [new d.TextRun(t)] });
+const H4i = (t, paginaNueva = false) => new d.Paragraph({ heading: d.HeadingLevel.HEADING_4, children: [new d.TextRun(t)], pageBreakBefore: paginaNueva });
 
 /** Párrafo APA: doble espacio y sangría de primera línea de 1,27 cm. */
 const P = (t, op = {}) => new d.Paragraph({
@@ -192,4 +194,4 @@ function resultado(columnas_, filas, tam = 16) {
 /** Referencia APA con sangría francesa. */
 const ref = t => new d.Paragraph({ children: runs(t), spacing: { line: 480 }, indent: { left: 720, hanging: 720 } });
 
-module.exports = { d, FUENTE, H1, H1s, H2, H3, H4, P, L, salto, vacio, figura, tabla, ficha, codigo, resultado, ref, imagen, horizontal, runs, celda, SIN };
+module.exports = { d, FUENTE, H1, H1s, H2, H3, H4, H4i, P, L, salto, vacio, figura, tabla, ficha, codigo, resultado, ref, imagen, horizontal, runs, celda, SIN };

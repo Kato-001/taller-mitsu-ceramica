@@ -9,7 +9,7 @@
 const fs = require('fs');
 const path = require('path');
 const W = require('./word');
-const { d, H1, H1s, H2, H3, H4, P, L, salto, vacio, figura, tabla, ficha, codigo, resultado, ref, horizontal } = W;
+const { d, H1, H1s, H2, H3, H4, H4i, P, L, salto, vacio, figura, tabla, ficha, codigo, resultado, ref, horizontal } = W;
 
 const AQUI = __dirname;
 const RAIZ = path.join(AQUI, '..', '..');
@@ -119,7 +119,7 @@ add(
 seccion();
 add(
     new d.Paragraph({ alignment: d.AlignmentType.CENTER, spacing: { after: 240 }, children: [new d.TextRun({ text: 'Índice', bold: true, font: W.FUENTE })] }),
-    new d.TableOfContents('Índice', { hyperlink: true, headingStyleRange: '1-3' }),
+    new d.TableOfContents('Índice', { hyperlink: true, headingStyleRange: '1-4' }),
 );
 
 // ===========================================================================
@@ -388,6 +388,7 @@ const PROBLEMAS = [
     ['No hay registro de pedidos personalizados.', 'Ventas'],
     ['Duplicidad de información y errores de registro.', 'Todos'],
     ['Riesgo de pérdida de datos sin respaldos.', 'Todos'],
+    ['No existe un canal para mostrar y vender las piezas en línea.', 'Ventas'],
 ];
 add(tabla('Lista inicial de problemas', ['N.º', 'Problema', 'Proceso'], PROBLEMAS.map((p, i) => [String(i + 1), ...p]),
     'Tomado del informe de perfil anterior del grupo, construido a partir de la entrevista (Anexo A).', { anchos: [8, 72, 20] }));
@@ -400,6 +401,7 @@ add(tabla('Depuración de problemas', ['Problemas', 'Acción', 'Justificación']
     ['12, 13, 14, 18, 20', 'Unir', 'Información dispersa en herramientas que no se comunican.'],
     ['16', 'Mantener', 'Problema propio del proceso de clases.'],
     ['21', 'Mantener', 'Riesgo técnico que el sistema resuelve con la nube y respaldos.'],
+    ['22', 'Mantener', 'Problema propio de la venta de piezas: los clientes solo pueden comprar en el local.'],
     ['9, 17, 19', 'Postergar al ciclo IV', 'Cafetería, cobro de mensualidades y pedidos personalizados.'],
 ], null, { anchos: [22, 20, 58] }));
 add(H3('1.3 Lista final de problemas'));
@@ -429,7 +431,7 @@ add(tabla('Análisis causa – efecto de cada problema', ['Problema', 'Causa pri
     ['P6', 'No existe tienda en línea.', 'Se pierden ventas fuera del horario del local.'],
     ['P7', 'Archivos en computadoras personales.', 'Riesgo de perder la información.'],
 ], null, { anchos: [12, 40, 48] }));
-add(P('El árbol de problemas muestra cómo los veintiún problemas de la lista inicial se agrupan en los siete problemas de la lista final y todos llevan al problema central: la gestión manual y desintegrada del taller. Los problemas de la cafetería, las mensualidades y los pedidos personalizados quedan aparte, postergados al ciclo IV.'));
+add(P('El árbol de problemas muestra cómo los veintidós problemas de la lista inicial se agrupan en los siete problemas de la lista final y todos llevan al problema central: la gestión manual y desintegrada del taller. Los problemas de la cafetería, las mensualidades y los pedidos personalizados quedan aparte, postergados al ciclo IV.'));
 seccion(true);
 add(figura('Árbol de problemas del Taller Mitsü', DIAG('arbol_problemas'), 'Elaboración propia a partir de la lista inicial de problemas y su depuración.', { alto: 460 }));
 seccion();
@@ -499,11 +501,25 @@ add(P('Las categorías con más peso son **métodos y procesos** y **tecnología
     new d.Paragraph({ keepNext: true, children: W.runs('**Solución propuesta:**') }),
     P(solucion, { sinSangria: true }),
 ));
+add(salto());
 add(H2('5. Modelo de negocio'));
-add(P('El modelo de negocio describe cómo trabaja hoy el taller, antes del sistema, para ver en qué actividades aparecen las causas identificadas en el diagrama de Ishikawa.'));
+add(P('El modelo de negocio describe cómo trabaja el taller y conecta el análisis de Ishikawa con la captura de requisitos. Primero se muestra el proceso actual, donde aparecen las causas identificadas (anotar en papel, revisar el cuaderno, contar el dinero a mano). Luego se detallan los cuatro procesos principales tal como funcionan con el sistema: cada carril es un actor del capítulo 2 y cada actividad del carril «Sistema Mitsü» corresponde a un caso de uso.'));
 add(H3('5.1 Diagrama de actividad'));
 add(P('El alumno consulta los horarios por WhatsApp y recepción revisa el cuaderno para ver si hay lugar y anotar la reserva. La maestra dicta la clase y anota la asistencia en papel. Las ventas de piezas se anotan a mano y, al cierre, la gerencia cuenta el dinero y revisa el stock para decidir las compras. Estas actividades manuales son las que el sistema reemplaza en los ciclos I a III.'));
 add(figura('Diagrama de actividad del proceso actual (modelo de negocio)', DIAG('actividad_negocio'), 'Elaboración propia a partir de la entrevista (Anexo A).', { alto: 600 }));
+[
+    ['5.1.1 Reserva de clases y registro de asistencia', 'actividad_reservas',
+     'El alumno ingresa a su portal y ve las clases de la semana con sus lugares libres. Al pedir un lugar, el sistema verifica que haya cupo y que la clase sea futura; si no se cumple, el alumno ve el aviso y elige otra clase. Si se cumple, el procedimiento fn_reservar_clase registra la reserva. Desde ahí el proceso sigue en paralelo: el alumno asiste a la clase y la maestra abre la lista de su clase del día, marca presente o falta, y el sistema guarda la asistencia en la bitácora. Reemplaza el cuaderno de reservas y la asistencia en papel (causas C1 y C5) y corresponde a los casos de uso CU10, CU11 y CU12.'],
+    ['5.1.2 Consumo de materiales y compra a proveedores', 'actividad_inventario',
+     'Cuando la maestra usa arcilla, esmaltes o minerales, el administrativo registra el consumo o la merma en el kardex del material y el sistema descuenta el stock. Si el stock queda bajo el mínimo, el sistema muestra la alerta en la pantalla de materiales; el administrativo pide el material al proveedor de Cochabamba o La Paz y, al recibirlo con su factura, registra la compra. El procedimiento fn_registrar_compra sube el stock y recalcula el costo promedio. Resuelve el inventario sin registro y las compras urgentes (causa C4) y corresponde a los casos de uso CU13 a CU16.'],
+    ['5.1.3 Venta en caja y cierre de caja', 'actividad_ventas',
+     'Al iniciar el día el administrativo abre la caja con el monto inicial. Cuando un cliente elige piezas en el local, el administrativo las agrega con el cliente y el método de pago; el sistema verifica que la caja esté abierta y que haya stock suficiente. Si la venta es válida, fn_registrar_venta la registra, descuenta el stock y emite la nota de venta numerada (NV). Al cierre, el administrativo cuenta el efectivo y sp_cerrar_caja calcula el efectivo esperado y la diferencia, que la gerencia revisa junto con las ventas y la bitácora. Reemplaza las ventas anotadas a mano y el cierre sin arqueo (causas C1 y C5) y corresponde a los casos de uso CU17, CU18 y CU19.'],
+    ['5.1.4 Compra en la tienda en línea y pago', 'actividad_tienda',
+     'El cliente ve las piezas en la tienda pública, las agrega al carrito y confirma el pedido después de ingresar con su cuenta. El procedimiento fn_crear_pedido crea el pedido y reserva el stock por 30 minutos. El cliente paga con QR, tarjeta o PayPal: si el pago se rechaza puede intentar de nuevo; si se aprueba, el pedido queda pagado con su comprobante; y si avisa que pagó por QR, el administrativo verifica el depósito y lo confirma. Finalmente el administrativo entrega el pedido y el sistema lo marca como entregado. Resuelve la falta de venta en línea (causa C6) y corresponde a los casos de uso CU20, CU21 y CU22.'],
+].forEach(([t, f, texto]) => {
+    add(H4i(t, true), P(texto));
+    add(figura('Diagrama de actividad: ' + t.charAt(6).toLowerCase() + t.slice(7), DIAG(f), 'Elaboración propia a partir del funcionamiento del sistema.', { alto: 430 }));
+});
 
 // ===========================================================================
 // CAPÍTULO 2. CAPTURA DE REQUISITOS
@@ -916,6 +932,7 @@ const doc = new d.Document({
             estiloTitulo('Heading2', 'Heading 2', { nivel: 1 }),
             estiloTitulo('Heading3', 'Heading 3', { cursiva: true, nivel: 2 }),
             estiloTitulo('Heading4', 'Heading 4', { cursiva: true, nivel: 3, antes: 160 }),
+            estiloTitulo('Subtitulo', 'Subtítulo', { cursiva: true, antes: 160 }),
         ],
     },
     sections: secciones,
