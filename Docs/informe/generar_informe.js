@@ -429,6 +429,10 @@ add(tabla('Análisis causa – efecto de cada problema', ['Problema', 'Causa pri
     ['P6', 'No existe tienda en línea.', 'Se pierden ventas fuera del horario del local.'],
     ['P7', 'Archivos en computadoras personales.', 'Riesgo de perder la información.'],
 ], null, { anchos: [12, 40, 48] }));
+add(P('El árbol de problemas muestra cómo los veintiún problemas de la lista inicial se agrupan en los siete problemas de la lista final y todos llevan al problema central: la gestión manual y desintegrada del taller. Los problemas de la cafetería, las mensualidades y los pedidos personalizados quedan aparte, postergados al ciclo IV.'));
+seccion(true);
+add(figura('Árbol de problemas del Taller Mitsü', DIAG('arbol_problemas'), 'Elaboración propia a partir de la lista inicial de problemas y su depuración.', { alto: 460 }));
+seccion();
 add(H3('1.6 Estimación y cuantificación'));
 add(tabla('Estimación del tiempo perdido por semana', ['Problema', 'Actividad', 'Tiempo semanal estimado'], [
     ['P1', 'Responder consultas y anotar reservas', '4 a 6 horas'], ['P2', 'Pasar la asistencia del papel', '1 hora'],
@@ -444,18 +448,57 @@ add(tabla('Comparación de alternativas', ['Criterio', 'A. Mejorar las hojas de 
 add(H3('1.8 Conclusión y recomendación'));
 add(P('La alternativa C, un sistema web a medida, es la única que resuelve los siete problemas en una sola herramienta y se adapta a la forma de trabajo del taller. Se recomienda desarrollarla en ciclos, empezando por la seguridad y las reservas (P1, P2, P5), luego el inventario y las ventas (P3, P4, P6), y publicarla en la nube para eliminar el riesgo de pérdida de datos (P7).'));
 add(H3('1.9 Diseñar el diagrama de Ishikawa'));
-add(P('El efecto (cabeza del pescado) es la gestión manual y desintegrada del taller. Las espinas son las seis categorías de causas, descritas a continuación; el diagrama completo se presenta en la página horizontal siguiente.'));
+add(P('El diagrama se arma sobre un eje horizontal que termina en el efecto, es decir, el problema central que se quiere explicar: la gestión manual y desintegrada de las clases, el inventario y las ventas del Taller Mitsü. Sobre este eje se agregan después las categorías y las causas.'));
+add(figura('Eje y efecto del diagrama de Ishikawa', DIAG('ishikawa_eje'), NOTA_FUENTE, { alto: 230 }));
 add(H2('2. Identificar las principales categorías'));
-add(P('Las causas del problema se agruparon en seis categorías, que forman las espinas principales del diagrama. **Métodos y procesos** reúne la forma en que hoy se hacen las reservas, las ventas y el cierre del día. **Personas** se refiere al personal reducido y a cómo se reparten las tareas. **Tecnología** abarca las herramientas que usa el taller, que están aisladas y no tienen control de acceso. **Materiales e inventario** trata los insumos de producción, que no tienen registro. **Medición y control** agrupa la falta de historial y de indicadores para decidir. Por último, **clientes y entorno** reúne lo que el cliente no puede hacer por sí mismo y la competencia de otros talleres.'));
+add(P('Para el análisis del problema se identificaron seis categorías principales, que representan las áreas críticas del funcionamiento del taller y forman las espinas del diagrama.'));
+seccion(true);
+add(figura('Categorías principales del diagrama de Ishikawa', DIAG('ishikawa_categorias'), NOTA_FUENTE, { alto: 470 }));
+seccion();
+[
+    ['C1. Métodos y procesos', 'Agrupa la forma en que hoy se hacen las tareas del día a día: llevar los horarios y las reservas de las clases, anotar las ventas de piezas y cerrar la caja. Los procesos relacionados son la reserva de clases, la venta en caja y el arqueo diario.'],
+    ['C2. Personas', 'Se refiere al personal del taller y a cómo se reparten las tareas. El taller no puede contratar más personal, así que recepción y las maestras cargan con el trabajo manual. Los procesos relacionados son la asignación de maestras a los horarios y la atención de las reservas.'],
+    ['C3. Tecnología', 'Abarca las herramientas que usa el taller para registrar su información: hojas de Excel y un pequeño software de finanzas, sin conexión entre sí. Los procesos relacionados son el registro de datos, el control de acceso y el respaldo de la información.'],
+    ['C4. Materiales e inventario', 'Se centra en la arcilla, los esmaltes y los minerales que se usan para producir las piezas y dictar las clases. Los procesos relacionados son el control de existencias, las compras a proveedores y el registro del consumo.'],
+    ['C5. Medición y control', 'Reúne la información que la gerencia necesita para controlar el taller y decidir: historial de asistencia, ventas, precios y costos. Los procesos relacionados son el registro de asistencia, el cierre de caja y la consulta de historiales.'],
+    ['C6. Clientes y entorno', 'Trata la relación con los alumnos y los compradores, y la competencia de otros talleres. Los procesos relacionados son la consulta de clases disponibles, la venta de piezas y el pago.'],
+].forEach(([c, t]) => add(new d.Paragraph({ spacing: { line: 480 }, children: W.runs(`**${c}:** ${t}`) })));
 add(H2('3. Identificar las causas'));
-add(P('Para cada categoría se identificaron tres causas a partir de la lista final de problemas. En **métodos y procesos**, los horarios y las reservas se llevan en hojas de Excel, las ventas se anotan a mano sin nota numerada y no hay cierre de caja ni arqueo diario. En **personas**, el personal es reducido y no se puede contratar más, las maestras se asignan sin un registro central y recepción responde las reservas una por una.'));
-add(P('En **tecnología**, el Excel y el software de finanzas no están integrados, no existe una página para ver las piezas o las clases y no hay respaldos ni control de acceso. En **materiales e inventario**, el stock de arcilla y minerales no tiene registro, se hacen compras urgentes por falta de material y el taller depende de solo dos proveedores, de Cochabamba y La Paz.'));
-add(P('En **medición y control**, no hay historial de asistencia de los alumnos, no existen reportes de ventas ni indicadores y los precios y costos no guardan historial. En **clientes y entorno**, los alumnos no ven los cupos en tiempo real, los clientes no pueden comprar ni pagar en línea y existe competencia de otros talleres de la ciudad. Todas estas causas se ubican como espinas secundarias en el diagrama.'));
+add(P('A partir de las categorías definidas y de la lista final de problemas se identificaron tres causas por categoría, que se ubican como espinas secundarias del diagrama.'));
 seccion(true);
 add(figura('Diagrama de Ishikawa del Taller Mitsü', DIAG('ishikawa'), 'Elaboración propia a partir de la entrevista (Anexo A) y de la lista final de problemas.', { alto: 470 }));
 seccion();
+const CAUSAS = [
+    ['C1. Métodos y procesos', 'Los horarios y las reservas se llevan en hojas de Excel, las ventas se anotan a mano sin nota numerada y no hay cierre de caja ni arqueo diario.'],
+    ['C2. Personas', 'El personal es reducido y no se puede contratar más, las maestras se asignan sin un registro central y recepción responde las reservas una por una.'],
+    ['C3. Tecnología', 'El Excel y el software de finanzas no están integrados, no existe una página para ver las piezas o las clases y no hay respaldos ni control de acceso.'],
+    ['C4. Materiales e inventario', 'El stock de arcilla y minerales no tiene registro, se hacen compras urgentes por falta de material y el taller depende de solo dos proveedores, de Cochabamba y La Paz.'],
+    ['C5. Medición y control', 'No hay historial de asistencia de los alumnos, no existen reportes de ventas ni indicadores y los precios y costos no guardan historial.'],
+    ['C6. Clientes y entorno', 'Los alumnos no ven los cupos en tiempo real, los clientes no pueden comprar ni pagar en línea y existe competencia de otros talleres de la ciudad.'],
+];
+CAUSAS.forEach(([c, t]) => add(new d.Paragraph({ keepNext: true, spacing: { before: 120 }, children: W.runs(`**${c}**`) }), P(t, { sinSangria: true })));
 add(H2('4. Analizar y discutir el diagrama'));
-add(P('Las categorías con más peso son **métodos y procesos** y **tecnología**: casi todos los problemas nacen de anotar en Excel o en papel lo que debería registrarse una sola vez. Por eso el sistema se centra en que cada dato se ingrese una vez y el resto se calcule solo: el cupo libre sale de las reservas, el stock sale del kardex, el total de caja sale de las ventas. Las causas de **personas** (no se puede contratar más personal) refuerzan la necesidad de automatizar; las de **clientes y entorno** justifican la tienda en línea y el portal del alumno.'));
+add(P('Las categorías con más peso son **métodos y procesos** y **tecnología**: casi todos los problemas nacen de anotar en Excel o en papel lo que debería registrarse una sola vez. Para cada categoría se resumen los problemas que reúne y la solución que propone el sistema, indicando los casos de uso que la implementan.'));
+[
+    ['C1. Métodos y procesos', ['P1. Horarios y reservas manuales, sin cupos en tiempo real.', 'P4. Ventas sin registro, sin nota numerada y sin cierre de caja.'],
+     'Registrar los horarios y generar el calendario de clases (CU09), reservar con control de cupo (CU10), vender en caja con nota de venta numerada (CU18) y abrir y cerrar la caja con arqueo (CU19). Cada dato se ingresa una sola vez y el resto se calcula.'],
+    ['C2. Personas', ['P1. Maestras asignadas sin registro central y reservas atendidas una por una.'],
+     'Registrar las maestras y asignarlas a los horarios sin cruces (CU07 y CU09) y dar a los alumnos un portal para reservar por su cuenta (CU12), de modo que el personal reducido no tenga que atender cada reserva.'],
+    ['C3. Tecnología', ['P5. Información dispersa en herramientas no integradas y sin control de acceso.', 'P6. Sin página para ver o comprar las piezas.', 'P7. Riesgo de pérdida de datos sin respaldos.'],
+     'Un solo sistema web en la nube con usuarios, roles y permisos (CU01 a CU04), bitácora de operaciones (CU05) y configuración centralizada (CU06), más la tienda en línea para ver y comprar las piezas (CU20). La base de datos en la nube elimina los archivos en computadoras personales.'],
+    ['C4. Materiales e inventario', ['P3. Inventario de materiales sin registro, faltantes y compras urgentes.'],
+     'Registrar los materiales con stock mínimo (CU13), los proveedores (CU14) y las compras (CU15), y el consumo y la merma en el kardex con alertas de stock bajo (CU16). La dependencia de dos proveedores es una condición del entorno que el sistema no cambia, pero el registro de compras permite planificarlas.'],
+    ['C5. Medición y control', ['P2. Sin historial de asistencia de los alumnos.', 'P4. Sin reportes de ventas ni historial de precios.'],
+     'Registrar la asistencia de cada clase (CU11), guardar el historial de precios de las piezas (CU17) y el listado de ventas con su cierre de caja (CU18 y CU19). Los reportes con indicadores se completan en el ciclo IV (CU28).'],
+    ['C6. Clientes y entorno', ['P1. Los alumnos no ven los cupos en tiempo real.', 'P6. Los clientes no pueden comprar ni pagar en línea.'],
+     'Portal del alumno con los cupos libres de cada clase (CU10 y CU12) y tienda en línea con carrito, pago por QR, tarjeta o PayPal y gestión de los pedidos web (CU20 a CU22), que además diferencia al taller de su competencia.'],
+].forEach(([c, problemas, solucion]) => add(
+    new d.Paragraph({ keepNext: true, spacing: { before: 160 }, children: W.runs(`**${c}**`) }),
+    new d.Paragraph({ keepNext: true, children: W.runs('**Problemas identificados:**') }),
+    L(problemas),
+    new d.Paragraph({ keepNext: true, children: W.runs('**Solución propuesta:**') }),
+    P(solucion, { sinSangria: true }),
+));
 add(H2('5. Modelo de negocio'));
 add(P('El modelo de negocio describe cómo trabaja hoy el taller, antes del sistema, para ver en qué actividades aparecen las causas identificadas en el diagrama de Ishikawa.'));
 add(H3('5.1 Diagrama de actividad'));
