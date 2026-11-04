@@ -35,12 +35,8 @@ final class CompraController extends Controlador
     {
         Auth::requerir('compras.gestionar');
         // Versión anterior (sin tipo de compra):
-
-        
         // $d = ['proveedor_id' => entrada('proveedor_id'), 'fecha' => entrada('fecha'), 'observacion' => entrada('observacion')];
-        // Versión anterior (sin detalle):
-        // $d = ['proveedor_id' => entrada('proveedor_id'), 'fecha' => entrada('fecha'), 'tipo' => entrada('tipo'), 'observacion' => entrada('observacion')];
-        $d = ['proveedor_id' => entrada('proveedor_id'), 'fecha' => entrada('fecha'), 'tipo' => entrada('tipo'), 'detalle' => entrada('detalle'), 'observacion' => entrada('observacion')];
+        $d = ['proveedor_id' => entrada('proveedor_id'), 'fecha' => entrada('fecha'), 'tipo' => entrada('tipo'), 'observacion' => entrada('observacion')];
         $items = [];
         foreach ((array) ($_POST['items'] ?? []) as $it) {
             if (!is_array($it) || ($it['material_id'] ?? '') === '') {
@@ -55,7 +51,6 @@ final class CompraController extends Controlador
             ->requerido('proveedor_id', 'El proveedor')->en('proveedor_id', array_map('strval', array_column(Proveedor::todos(true), 'id')), 'Proveedor no válido.')
             ->requerido('fecha', 'La fecha')->fecha('fecha', date('Y-m-d', strtotime('-60 days')), hoy())
             ->requerido('tipo', 'El tipo de compra')->en('tipo', array_keys(Compra::TIPOS), 'Tipo de compra no válido.')
-            ->max('detalle', 300)
             ->max('observacion', 300)
             ->si(!$items, 'items', 'Agregue al menos un material.')
             ->si(count($ids) !== count(array_unique($ids)), 'items', 'Un material está repetido: júntelo en una sola fila.');
@@ -68,9 +63,7 @@ final class CompraController extends Controlador
         if ($this->intentar(function () use ($d, $items, &$id) {
             // Versión anterior (sin tipo de compra):
             // $id = Compra::registrar((int) $d['proveedor_id'], $d['fecha'], $d['observacion'], $items);
-            // Versión anterior (sin detalle):
-            // $id = Compra::registrar((int) $d['proveedor_id'], $d['fecha'], $d['observacion'], $items, $d['tipo']);
-            $id = Compra::registrar((int) $d['proveedor_id'], $d['fecha'], $d['observacion'], $items, $d['tipo'], $d['detalle']);
+            $id = Compra::registrar((int) $d['proveedor_id'], $d['fecha'], $d['observacion'], $items, $d['tipo']);
             $c = Compra::buscar($id);
             Bitacora::registrar('CREAR', 'INVENTARIO', 'compra', $id, "Compra {$c['numero']} a {$c['proveedor']} por " . bs($c['total']));
         }, $d + ['items' => $items])) {

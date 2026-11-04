@@ -41,9 +41,6 @@ $opciones = function ($sel) use ($materiales) {
             <select class="select<?= clase_error('tipo') ?>" name="tipo" required>
                 <?php foreach (Compra::TIPOS as $k => $t): ?><option value="<?= $k ?>" <?= old('tipo', 'CONTADO') === $k ? 'selected' : '' ?>><?= e($t) ?></option><?php endforeach; ?>
             </select><?= error_campo('tipo') ?></label>
-        <!-- Detalle de la compra (agregado) -->
-        <label class="field"><span>Detalle</span>
-            <input class="input<?= clase_error('detalle') ?>" name="detalle" value="<?= e(old('detalle')) ?>" maxlength="300" placeholder="Ej. Compra mensual de arcilla para torno"><?= error_campo('detalle') ?></label>
         <label class="field"><span>Observación</span>
             <input class="input" name="observacion" value="<?= e(old('observacion')) ?>" maxlength="300" placeholder="Ej. Factura 1234"></label>
     </div>

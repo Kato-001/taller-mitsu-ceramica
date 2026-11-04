@@ -131,8 +131,6 @@ php Bakend/database/ejecutar.php 01_esquema.sql 02_reglas_negocio.sql 03_datos_i
 
 # Base ya instalada antes del tipo de compra: solo agregar la columna y la nueva versión de fn_registrar_compra
 php Bakend/database/ejecutar.php 08_tipo_compra.sql
-# Base ya instalada antes del detalle de compra
-php Bakend/database/ejecutar.php 09_detalle_compra.sql
 
 # Levantar el sistema
 php -S localhost:8000 router.php
