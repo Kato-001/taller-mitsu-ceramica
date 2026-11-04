@@ -49,6 +49,8 @@ $titulo = 'Compra ' . $c['numero'];
     <div class="card card-pad">
         <div class="kv-list">
             <div class="kv"><span>Proveedor</span><strong><?= e($c['proveedor']) ?></strong></div>
+            <div class="kv"><span>Tipo de compra</span><strong><?= e(Compra::TIPOS[$c['tipo']] ?? $c['tipo']) ?></strong></div><!-- agregado -->
+
             <div class="kv"><span>NIT</span><strong class="mono"><?= e($c['nit'] ?: '—') ?></strong></div>
             <div class="kv"><span>Ciudad</span><strong><?= e($c['ciudad']) ?></strong></div>
             <div class="kv"><span>Registrada por</span><strong><?= e($c['usuario']) ?></strong></div>

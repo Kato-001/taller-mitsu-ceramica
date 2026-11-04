@@ -285,6 +285,7 @@ create table compra (
     proveedor_id     smallint      not null references proveedor (id),
     usuario_id       integer       not null references usuario (id),
     fecha            date          not null default mitsu.hoy_bo(),
+    tipo             varchar(10)   not null default 'CONTADO' check (tipo in ('CONTADO', 'CREDITO')),  -- Tipo de compra (agregado; en una base ya instalada se crea con 08_tipo_compra.sql)
     observacion      varchar(300),
     total            numeric(12,2) not null default 0 check (total >= 0),
     estado           varchar(10)   not null default 'REGISTRADA' check (estado in ('REGISTRADA', 'ANULADA')),

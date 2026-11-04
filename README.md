@@ -129,6 +129,9 @@ cp .env.example .env            # en Windows: copy .env.example .env
 # Instalar la base de datos (en este orden)
 php Bakend/database/ejecutar.php 01_esquema.sql 02_reglas_negocio.sql 03_datos_iniciales.sql 06_procedimientos_triggers.sql 04_usuario_app.sql 07_tienda_pasarela.sql
 
+# Base ya instalada antes del tipo de compra: solo agregar la columna y la nueva versión de fn_registrar_compra
+php Bakend/database/ejecutar.php 08_tipo_compra.sql
+
 # Levantar el sistema
 php -S localhost:8000 router.php
 ```

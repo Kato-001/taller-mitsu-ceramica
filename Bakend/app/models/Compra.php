@@ -8,6 +8,9 @@ declare(strict_types=1);
 
 final class Compra
 {
+    /** Tipo de compra (agregado): valor en la base => texto en pantalla */
+    public const TIPOS = ['CONTADO' => 'Al contado', 'CREDITO' => 'A crédito'];
+
     public static function listar(array $f, int $limite, int $offset): array
     {
         [$where, $p] = self::filtros($f);
@@ -51,12 +54,23 @@ final class Compra
         );
     }
 
-    /** @param array $items [['material_id'=>, 'cantidad'=>, 'costo'=>], …] */
-    public static function registrar(int $proveedorId, string $fecha, string $observacion, array $items): int
+    /**
+     * @param array $items [['material_id'=>, 'cantidad'=>, 'costo'=>], …]
+     * @param string $tipo tipo de compra: CONTADO o CREDITO (agregado)
+     */
+    // Versión anterior (sin tipo de compra):
+    // public static function registrar(int $proveedorId, string $fecha, string $observacion, array $items): int
+    // {
+    //     return (int) Auth::transaccion(fn() => Database::valor(
+    //         'select mitsu.fn_registrar_compra(:u, :p, cast(:f as date), :o, cast(:i as jsonb))',
+    //         ['u' => Auth::id(), 'p' => $proveedorId, 'f' => $fecha, 'o' => $observacion, 'i' => json_encode(array_values($items))]
+    //     ));
+    // }
+    public static function registrar(int $proveedorId, string $fecha, string $observacion, array $items, string $tipo = 'CONTADO'): int
     {
         return (int) Auth::transaccion(fn() => Database::valor(
-            'select mitsu.fn_registrar_compra(:u, :p, cast(:f as date), :o, cast(:i as jsonb))',
-            ['u' => Auth::id(), 'p' => $proveedorId, 'f' => $fecha, 'o' => $observacion, 'i' => json_encode(array_values($items))]
+            'select mitsu.fn_registrar_compra(:u, :p, cast(:f as date), :o, cast(:i as jsonb), :t)',
+            ['u' => Auth::id(), 'p' => $proveedorId, 'f' => $fecha, 'o' => $observacion, 'i' => json_encode(array_values($items)), 't' => $tipo]
         ));
     }
 

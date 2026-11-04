@@ -111,9 +111,13 @@ end $$;
 -- ---------------------------------------------------------------------
 -- PA3 · Registrar una compra: suma stock y recalcula el costo promedio (CU15)
 -- p_items: [{"material_id": 1, "cantidad": 50, "costo": 6.5}, ...]
+-- p_tipo:  tipo de compra, CONTADO o CREDITO (agregado)
 -- ---------------------------------------------------------------------
+-- Versión anterior (sin tipo de compra):
+-- create or replace function mitsu.fn_registrar_compra(
+--     p_usuario integer, p_proveedor integer, p_fecha date, p_observacion text, p_items jsonb)
 create or replace function mitsu.fn_registrar_compra(
-    p_usuario integer, p_proveedor integer, p_fecha date, p_observacion text, p_items jsonb)
+    p_usuario integer, p_proveedor integer, p_fecha date, p_observacion text, p_items jsonb, p_tipo text default 'CONTADO')
 returns integer
 language plpgsql
 set search_path = mitsu, public
@@ -134,8 +138,16 @@ begin
         raise exception 'La fecha de compra debe estar entre los últimos 60 días y hoy.';
     end if;
 
-    insert into compra (proveedor_id, usuario_id, fecha, observacion)
-    values (p_proveedor, p_usuario, p_fecha, nullif(trim(coalesce(p_observacion, '')), ''))
+    if p_tipo is null or p_tipo not in ('CONTADO', 'CREDITO') then
+        raise exception 'El tipo de compra debe ser CONTADO o CREDITO.';
+    end if;
+
+    -- Versión anterior (sin tipo de compra):
+    -- insert into compra (proveedor_id, usuario_id, fecha, observacion)
+    -- values (p_proveedor, p_usuario, p_fecha, nullif(trim(coalesce(p_observacion, '')), ''))
+    -- returning id, numero into v_compra, v_numero;
+    insert into compra (proveedor_id, usuario_id, fecha, tipo, observacion)
+    values (p_proveedor, p_usuario, p_fecha, p_tipo, nullif(trim(coalesce(p_observacion, '')), ''))
     returning id, numero into v_compra, v_numero;
 
     for v_item in

@@ -30,13 +30,17 @@ $titulo = 'Compras';
     </form>
     <div class="table-wrap">
         <table class="table">
+            <?php /* Versión anterior (sin tipo de compra):
             <thead><tr><th>N.º</th><th>Fecha</th><th>Proveedor</th><th>Ítems</th><th style="text-align:right">Total</th><th>Estado</th><th></th></tr></thead>
+            */ ?>
+            <thead><tr><th>N.º</th><th>Fecha</th><th>Proveedor</th><th>Tipo</th><th>Ítems</th><th style="text-align:right">Total</th><th>Estado</th><th></th></tr></thead>
             <tbody>
             <?php foreach ($compras as $c): ?>
                 <tr>
                     <td class="mono"><a href="<?= e(url('/compras/ver', ['id' => $c['id']])) ?>"><?= e($c['numero']) ?></a></td>
                     <td><?= e(fecha($c['fecha'])) ?></td>
                     <td><?= e($c['proveedor']) ?><div class="faint" style="font-size:12px"><?= e($c['usuario']) ?></div></td>
+                    <td><?= e(Compra::TIPOS[$c['tipo']] ?? $c['tipo']) ?></td><!-- agregado: tipo de compra -->
                     <td><?= (int) $c['items'] ?></td>
                     <td style="text-align:right" class="mono"><strong><?= bs($c['total']) ?></strong></td>
                     <td><?= badge_estado_op($c['estado']) ?></td>

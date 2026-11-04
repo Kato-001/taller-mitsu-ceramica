@@ -36,6 +36,11 @@ $opciones = function ($sel) use ($materiales) {
             </select><?= error_campo('proveedor_id') ?></label>
         <label class="field"><span>Fecha *</span>
             <input class="input<?= clase_error('fecha') ?>" type="date" name="fecha" value="<?= e(old('fecha', hoy())) ?>" required max="<?= hoy() ?>" min="<?= date('Y-m-d', strtotime('-60 days')) ?>"><?= error_campo('fecha') ?></label>
+        <!-- Tipo de compra (agregado) -->
+        <label class="field"><span>Tipo de compra *</span>
+            <select class="select<?= clase_error('tipo') ?>" name="tipo" required>
+                <?php foreach (Compra::TIPOS as $k => $t): ?><option value="<?= $k ?>" <?= old('tipo', 'CONTADO') === $k ? 'selected' : '' ?>><?= e($t) ?></option><?php endforeach; ?>
+            </select><?= error_campo('tipo') ?></label>
         <label class="field"><span>Observación</span>
             <input class="input" name="observacion" value="<?= e(old('observacion')) ?>" maxlength="300" placeholder="Ej. Factura 1234"></label>
     </div>
