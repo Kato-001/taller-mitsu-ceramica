@@ -57,6 +57,7 @@ final class Compra
     /**
      * @param array $items [['material_id'=>, 'cantidad'=>, 'costo'=>], …]
      * @param string $tipo tipo de compra: CONTADO o CREDITO (agregado)
+     * @param string $detalle detalle de la compra, opcional (agregado)
      */
     // Versión anterior (sin tipo de compra):
     // public static function registrar(int $proveedorId, string $fecha, string $observacion, array $items): int
@@ -66,11 +67,19 @@ final class Compra
     //         ['u' => Auth::id(), 'p' => $proveedorId, 'f' => $fecha, 'o' => $observacion, 'i' => json_encode(array_values($items))]
     //     ));
     // }
-    public static function registrar(int $proveedorId, string $fecha, string $observacion, array $items, string $tipo = 'CONTADO'): int
+    // Versión anterior (sin detalle):
+    // public static function registrar(int $proveedorId, string $fecha, string $observacion, array $items, string $tipo = 'CONTADO'): int
+    // {
+    //     return (int) Auth::transaccion(fn() => Database::valor(
+    //         'select mitsu.fn_registrar_compra(:u, :p, cast(:f as date), :o, cast(:i as jsonb), :t)',
+    //         ['u' => Auth::id(), 'p' => $proveedorId, 'f' => $fecha, 'o' => $observacion, 'i' => json_encode(array_values($items)), 't' => $tipo]
+    //     ));
+    // }
+    public static function registrar(int $proveedorId, string $fecha, string $observacion, array $items, string $tipo = 'CONTADO', string $detalle = ''): int
     {
         return (int) Auth::transaccion(fn() => Database::valor(
-            'select mitsu.fn_registrar_compra(:u, :p, cast(:f as date), :o, cast(:i as jsonb), :t)',
-            ['u' => Auth::id(), 'p' => $proveedorId, 'f' => $fecha, 'o' => $observacion, 'i' => json_encode(array_values($items)), 't' => $tipo]
+            'select mitsu.fn_registrar_compra(:u, :p, cast(:f as date), :o, cast(:i as jsonb), :t, :de)',
+            ['u' => Auth::id(), 'p' => $proveedorId, 'f' => $fecha, 'o' => $observacion, 'i' => json_encode(array_values($items)), 't' => $tipo, 'de' => $detalle]
         ));
     }
 

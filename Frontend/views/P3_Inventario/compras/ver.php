@@ -50,6 +50,7 @@ $titulo = 'Compra ' . $c['numero'];
         <div class="kv-list">
             <div class="kv"><span>Proveedor</span><strong><?= e($c['proveedor']) ?></strong></div>
             <div class="kv"><span>Tipo de compra</span><strong><?= e(Compra::TIPOS[$c['tipo']] ?? $c['tipo']) ?></strong></div><!-- agregado -->
+            <div class="kv"><span>Detalle</span><strong><?= e($c['detalle'] ?: '—') ?></strong></div><!-- agregado: detalle de la compra -->
 
             <div class="kv"><span>NIT</span><strong class="mono"><?= e($c['nit'] ?: '—') ?></strong></div>
             <div class="kv"><span>Ciudad</span><strong><?= e($c['ciudad']) ?></strong></div>
