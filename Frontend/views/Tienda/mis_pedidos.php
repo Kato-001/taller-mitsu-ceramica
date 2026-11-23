@@ -1,7 +1,7 @@
 <?php
 /**
  * Mis pedidos (cliente o alumno que compró en la tienda)
- * @var array $pedidos
+ * @var array $pedidos @var array $puntajes
  */
 $titulo = 'Mis pedidos';
 ?>
@@ -21,7 +21,9 @@ $titulo = 'Mis pedidos';
                     <td><?= Pedido::badge($p['estado']) ?></td>
                     <td><?= $p['estado'] === 'PENDIENTE_PAGO'
                         ? '<a class="btn btn-primary btn-sm" href="' . e(url('/pago', ['pedido' => $p['id']])) . '">Pagar</a>'
-                        : '<a class="btn btn-ghost btn-sm" href="' . e(url('/mis-pedidos/ver', ['id' => $p['id']])) . '">' . icono('recibo', 15) . ' Comprobante</a>' ?></td>
+                        : '<a class="btn btn-ghost btn-sm" href="' . e(url('/mis-pedidos/ver', ['id' => $p['id']])) . '">' . icono('recibo', 15) . ' Comprobante</a>' ?>
+                        <?php if (isset($puntajes[$p['id']])): ?><?= Calificacion::estrellas((int) $puntajes[$p['id']]) ?>
+                        <?php elseif ($p['estado'] === 'ENTREGADO'): ?><a class="btn btn-outline btn-sm" href="<?= e(url('/calificar', ['tipo' => 'PEDIDO', 'id' => $p['id']])) ?>"><?= icono('estrella', 15) ?> Calificar</a><?php endif; ?></td>
                 </tr>
             <?php endforeach; ?>
             </tbody>

@@ -15,6 +15,7 @@ final class PortalController extends Controlador
             'alumno'   => $a,
             'proximas' => Sesion::reservasDeAlumno((int) $a['id'], true),
             'historial' => array_slice(Sesion::reservasDeAlumno((int) $a['id'], false), 0, 6),
+            'puntajes' => Calificacion::puntajes('CLASE', (int) $u['id']),   // CU26
         ]);
     }
 

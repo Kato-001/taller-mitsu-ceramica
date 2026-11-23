@@ -179,7 +179,10 @@ final class TiendaController extends Controlador
     public function misPedidos(): void
     {
         $u = Auth::requerir('tienda.comprar');
-        $this->vista('Tienda/mis_pedidos', ['pedidos' => Pedido::delUsuario((int) $u['id'])], 'tienda');
+        $this->vista('Tienda/mis_pedidos', [
+            'pedidos'  => Pedido::delUsuario((int) $u['id']),
+            'puntajes' => Calificacion::puntajes('PEDIDO', (int) $u['id']),   // CU26
+        ], 'tienda');
     }
 
     public function verPedido(): void

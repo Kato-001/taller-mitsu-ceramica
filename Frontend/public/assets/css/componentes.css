@@ -377,3 +377,26 @@ h1, .page-head h1, .auth-box h1, .auth-hero h2, .brand strong, .kpi .valor, .not
 .split > *, .roles-layout > *, .grid-2 > *, .grid-3 > *, .stats > *, .stack > * { min-width: 0; }
 .stat { overflow: hidden; }
 .card-head { flex-wrap: wrap; gap: 6px 12px; }
+
+/* --------------------------------------------------------- Ciclo IV: reportes y calificaciones */
+.filtro-fila { display: grid; grid-template-columns: minmax(140px, 1fr) minmax(150px, 1fr) minmax(180px, 2fr) auto; gap: 8px; align-items: center; }
+.filtro-valores { display: flex; gap: 8px; align-items: center; }
+.filtro-valores > .input, .filtro-valores > .select { flex: 1; min-width: 0; }
+.rep-opciones summary { cursor: pointer; font-weight: 600; color: var(--primary); }
+.rep-columna { display: inline-flex; gap: 6px; align-items: center; padding: 6px 10px; border: 1px solid var(--border); border-radius: var(--radius-sm); font-size: 13px; }
+.voz-caja { display: flex; flex-wrap: wrap; gap: 12px; align-items: flex-end; }
+.voz-ayuda { flex-basis: 100%; }
+.voz-boton { width: 46px; height: 46px; padding: 0; justify-content: center; border-radius: 50%; }
+.voz-boton.escuchando { background: var(--danger); animation: voz-pulso 1.2s infinite; }
+@keyframes voz-pulso { 0% { box-shadow: 0 0 0 0 rgba(192, 57, 43, .45); } 100% { box-shadow: 0 0 0 16px rgba(192, 57, 43, 0); } }
+.estrellas { color: #d08a1d; letter-spacing: 1px; white-space: nowrap; }
+.estrellas i { color: var(--border-strong); font-style: normal; }
+.elige-estrellas { display: flex; flex-direction: row-reverse; justify-content: flex-end; gap: 4px; }
+.elige-estrellas input { position: absolute; opacity: 0; width: 1px; height: 1px; }
+.elige-estrellas label { font-size: 42px; line-height: 1; color: var(--border-strong); cursor: pointer; transition: color .15s; }
+.elige-estrellas input:checked ~ label, .elige-estrellas label:hover, .elige-estrellas label:hover ~ label { color: #d08a1d; }
+.elige-estrellas input:focus-visible + label { outline: 2px solid var(--primary); border-radius: 6px; }
+.calificacion { border-bottom: 1px solid var(--border); padding-bottom: 14px; }
+.calificacion:last-of-type { border-bottom: 0; }
+.calificacion p { margin: 6px 0; }
+@media (max-width: 720px) { .filtro-fila { grid-template-columns: 1fr auto; } .filtro-fila > .select, .filtro-valores { grid-column: 1 / -1; } .filtro-fila > button { grid-column: 2; } }

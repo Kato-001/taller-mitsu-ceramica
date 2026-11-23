@@ -45,6 +45,8 @@ final class Iconos
         'izquierda'    => '<path d="m15 18-6-6 6-6"/>',
         'derecha'      => '<path d="m9 18 6-6-6-6"/>',
         'flecha'       => '<path d="M5 12h14"/><path d="m12 5 7 7-7 7"/>',
+        'microfono' => '<rect x="9" y="2" width="6" height="12" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v4"/>',
+        'estrella' => '<path d="m12 3 2.8 5.7 6.2.9-4.5 4.4 1.1 6.200L12 17.300l-5.600 2.900 1.100-6.200L3 9.600l6.200-.9z"/>',
         'reporte'      => '<path d="M3 3v16a2 2 0 0 0 2 2h16"/><path d="M18 17V9"/><path d="M13 17V5"/><path d="M8 17v-3"/>',
         'descargar'    => '<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/>',
         'imprimir'     => '<path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><path d="M6 9V3a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v6"/><rect x="6" y="14" width="12" height="8" rx="1"/>',

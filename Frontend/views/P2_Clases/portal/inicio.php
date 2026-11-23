@@ -1,7 +1,7 @@
 <?php
 /**
  * Portal del alumno · inicio: próximas clases e historial
- * @var array $alumno @var array $proximas @var array $historial
+ * @var array $alumno @var array $proximas @var array $historial @var array $puntajes
  */
 $titulo = 'Mi espacio';
 $tot = (int) $alumno['asistencias'] + (int) $alumno['faltas'];
@@ -43,7 +43,7 @@ $horas = (int) config('HORAS_CANCELACION', '12');
     <div class="card-head"><h2>Mi historial reciente</h2></div>
     <div class="table-wrap">
         <table class="table">
-            <thead><tr><th>Fecha</th><th>Taller</th><th>Maestra</th><th>Resultado</th></tr></thead>
+            <thead><tr><th>Fecha</th><th>Taller</th><th>Maestra</th><th>Resultado</th><th>Calificación</th></tr></thead>
             <tbody>
             <?php foreach ($historial as $r): ?>
                 <tr>
@@ -51,6 +51,8 @@ $horas = (int) config('HORAS_CANCELACION', '12');
                     <td><?= e($r['taller']) ?></td>
                     <td><?= e($r['maestra']) ?></td>
                     <td><?= badge_estado_op($r['estado']) ?></td>
+                    <td><?php if (isset($puntajes[$r['id']])): ?><?= Calificacion::estrellas((int) $puntajes[$r['id']]) ?>
+                        <?php elseif ($r['estado'] === 'ASISTIO'): ?><a class="btn btn-outline btn-sm" href="<?= e(url('/calificar', ['tipo' => 'CLASE', 'id' => $r['id']])) ?>"><?= icono('estrella', 15) ?> Calificar</a><?php endif; ?></td>
                 </tr>
             <?php endforeach; ?>
             </tbody>

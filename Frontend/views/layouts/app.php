@@ -40,6 +40,10 @@ $menu = [
         ['/compras', 'Compras', 'camion', 'compras.gestionar'],
         ['/proveedores', 'Proveedores', 'tienda', 'proveedores.gestionar'],
     ],
+    'Reportes' => [
+        ['/reportes', 'Reportes', 'reporte', 'reportes.ver'],
+        ['/calificaciones', 'Calificaciones', 'estrella', 'calificaciones.gestionar'],
+    ],
     'Administración' => [
         ['/usuarios', 'Usuarios', 'usuarios', 'usuarios.gestionar'],
         ['/roles', 'Roles y permisos', 'escudo', 'roles.gestionar'],

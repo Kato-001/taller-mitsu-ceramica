@@ -135,6 +135,17 @@ $r->get('/tienda', [TiendaController::class, 'catalogo'])                     //
   ->post('/pedidos/entregar', [PedidoController::class, 'entregar'])
   ->post('/pedidos/cancelar', [PedidoController::class, 'cancelar']);
 
+// --- Ciclo IV · P5 Reportes y calidad del servicio --------------------
+$r->get('/reportes', [ReporteController::class, 'index'])                     // CU23
+  ->post('/reportes/guardar', [ReporteController::class, 'guardar'])
+  ->post('/reportes/eliminar', [ReporteController::class, 'eliminar'])
+  ->get('/reportes/exportar', [ReporteController::class, 'exportar'])          // CU24
+  ->get('/reportes/voz', [ReporteController::class, 'voz'])                    // CU25
+  ->get('/calificar', [CalificacionController::class, 'formulario'])           // CU26
+  ->post('/calificar', [CalificacionController::class, 'guardar'])
+  ->get('/calificaciones', [CalificacionController::class, 'index'])
+  ->post('/calificaciones/responder', [CalificacionController::class, 'responder']);
+
 // Cabeceras de seguridad básicas
 header('X-Content-Type-Options: nosniff');
 header('X-Frame-Options: DENY');
