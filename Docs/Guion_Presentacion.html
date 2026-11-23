@@ -85,7 +85,7 @@
 <div class="barra"><div class="in">
   <strong style="font-family:Fraunces,serif">Mitsü</strong>
   <nav>
-    <a href="#antes">Antes</a><a href="#orden">Orden</a><a href="#c1">Ciclo I</a><a href="#c2">Ciclo II</a><a href="#c3">Ciclo III</a>
+    <a href="#antes">Antes</a><a href="#orden">Orden</a><a href="#c1">Ciclo I</a><a href="#c2">Ciclo II</a><a href="#c3">Ciclo III</a><a href="#c4">Ciclo IV</a>
     <a href="#datos">Datos de prueba</a><a href="#preguntas">Preguntas</a><a href="#fallas">Si algo falla</a>
   </nav>
   <span class="reloj" id="reloj" title="Cronómetro de la presentación">00:00</span>
@@ -103,7 +103,7 @@
       <div class="rejilla">
         <div><div class="quien">Sistema en línea</div><a href="https://taller-mitsu-ceramica.vercel.app" target="_blank" rel="noopener">taller-mitsu-ceramica.vercel.app</a></div>
         <div><div class="quien">Repositorio</div><a href="https://github.com/Kato-001/taller-mitsu-ceramica" target="_blank" rel="noopener">github.com/Kato-001/taller-mitsu-ceramica</a></div>
-        <div><div class="quien">Duración sugerida</div>20 minutos + 5 de preguntas</div>
+        <div><div class="quien">Duración sugerida</div>24 minutos + 5 de preguntas</div>
       </div>
       <div style="margin-top:12px"><div class="quien">Grupo 4 · Integrantes</div>Baqueros Hurtado Marco Antonio Junior · Estaca Paco Sergio · Miranda Soria Mauricio · Santeyana Durán Sarah Nicol</div>
       <div class="progreso" aria-label="Avance"><div id="barra"></div></div>
@@ -137,7 +137,8 @@
           <tr><td>5 min</td><td>Ciclo I</td><td>CU01 a CU06: ingreso, recuperación con código, roles y permisos, bitácora.</td><td>Estaca Paco Sergio</td></tr>
           <tr><td>5 min</td><td>Ciclo II</td><td>CU07 a CU12: talleres, horarios, calendario, reserva y asistencia.</td><td>Miranda Soria Mauricio</td></tr>
           <tr><td>6 min</td><td>Ciclo III</td><td>CU13 a CU22: compras y kardex, venta en caja, tienda en línea y pago.</td><td>Santeyana Durán Sarah Nicol</td></tr>
-          <tr><td>2 min</td><td>Base de datos y cierre</td><td>Triggers que bloquean errores, consultas, conclusiones y ciclo IV.</td><td>Baqueros Hurtado Marco Antonio Junior</td></tr>
+          <tr><td>4 min</td><td>Ciclo IV</td><td>CU23 a CU26: filtros, exportación, comando de voz y calificación.</td><td>Estaca Paco Sergio</td></tr>
+          <tr><td>2 min</td><td>Base de datos y cierre</td><td>Triggers que bloquean errores, consultas, pruebas y conclusión.</td><td>Baqueros Hurtado Marco Antonio Junior</td></tr>
         </tbody>
       </table>
     </div>
@@ -281,15 +282,46 @@
         <div class="decir"><b>Qué decir</b>La pasarela está en modo demostración: no cobra dinero real. Los botones “Pago realizado” y “Pago no realizado” simulan la respuesta del banco al pagar con QR. El número de tarjeta se valida con el algoritmo de Luhn y solo se guardan la marca y los 4 últimos dígitos, como exige PCI DSS. El stock se descuenta al crear el pedido, queda descontado si el pago se aprueba y vuelve a la tienda si el pedido se cancela o no se paga en 30 minutos. El comprobante queda en “Mis pedidos” y se enviará por correo cuando se configure el SMTP de Gmail.</div>
       </div>
     </details>
+  </section>
 
-    <details class="caso tarjeta"><summary><h3>Cierre: la base de datos protege las reglas</h3><span class="quien">Informe, capítulo 5</span></summary>
+  <section id="c4">
+    <span class="eti">Ciclo IV</span>
+    <h2>Reportes y calidad del servicio</h2>
+    <p class="lead">Mensaje clave: los datos de todo el taller se consultan con los filtros que uno quiera, sin inteligencia artificial.</p>
+
+    <details class="caso tarjeta" open><summary><h3>CU23 Consultar con filtros · CU24 Exportar · CU25 Comando de voz</h3><span class="quien">Administrador: admin@mitsu.test · /reportes</span></summary>
+      <div class="cuerpo">
+        <ol class="pasos" data-grupo="cu23">
+          <li><input type="checkbox"><span>Reportes → “Ventas en caja” → filtro Total mayor que 100 → agregar Método de pago es Efectivo → Generar.</span></li>
+          <li><input type="checkbox"><span>Cambiar “Deben cumplirse todos (Y)” por “Basta uno (O)”: cambia la cantidad de registros.</span></li>
+          <li><input type="checkbox"><span>“Productos vendidos” agrupado por Categoría: muestra totales por grupo.</span></li>
+          <li><input type="checkbox"><span>Descargar en <strong>PDF, Excel y CSV</strong> y abrir los tres archivos.</span></li>
+          <li><input type="checkbox"><span>Guardar la consulta con un nombre y volver a abrirla.</span></li>
+          <li><input type="checkbox"><span>Micrófono (Chrome o Edge): “materiales con stock bajo”. Si no hay micrófono, escribir la frase.</span></li>
+        </ol>
+        <div class="decir"><b>Qué decir</b>Hay 14 reportes. Cada campo tiene sus condiciones según su tipo: texto, número, fecha u opción. El SQL se arma solo con campos de una lista fija y los valores van como parámetros, así que no se puede inyectar. El navegador convierte la voz en texto y nuestro código lo interpreta con reglas: palabras clave, períodos, comparaciones y números.</div>
+      </div>
+    </details>
+
+    <details class="caso tarjeta"><summary><h3>CU26 Calificar el servicio</h3><span class="quien">cliente@mitsu.test → admin@mitsu.test · /mis-pedidos · /calificaciones</span></summary>
+      <div class="cuerpo">
+        <ol class="pasos" data-grupo="cu26">
+          <li><input type="checkbox"><span>Como cliente, Mis pedidos → “Calificar” en un pedido entregado → estrellas y comentario.</span></li>
+          <li><input type="checkbox"><span>Volver a Mis pedidos: ya muestra las estrellas y no se puede repetir.</span></li>
+          <li><input type="checkbox"><span>Como administrador, Calificaciones → ver el promedio y responder.</span></li>
+        </ol>
+        <div class="decir"><b>Qué decir</b>Solo se califica lo que uno recibió: un trigger verifica que el pedido sea suyo y esté entregado, o que el alumno haya asistido a la clase.</div>
+      </div>
+    </details>
+
+    <details class="caso tarjeta"><summary><h3>Cierre: la base de datos protege las reglas</h3><span class="quien">Informe, punto 4.2.2</span></summary>
       <div class="cuerpo">
         <ol class="pasos" data-grupo="cierre">
           <li><input type="checkbox"><span>Mostrar en el informe la tabla de prueba de triggers: cada intento indebido y la respuesta real de la base.</span></li>
-          <li><input type="checkbox"><span>Mencionar: 33 tablas, 30 consultas con resultados reales, 12 procedimientos almacenados.</span></li>
-          <li><input type="checkbox"><span>Cerrar con el ciclo IV: cafetería, mensualidades y reportes.</span></li>
+          <li><input type="checkbox"><span>Mencionar: 35 tablas, 30 consultas con resultados reales, 12 procedimientos almacenados.</span></li>
+          <li><input type="checkbox"><span>Mostrar el capítulo 6: un caso de prueba de caja negra por cada caso de uso.</span></li>
         </ol>
-        <div class="decir"><b>Para cerrar</b>“Los siete problemas del Ishikawa que corresponden a clases, inventario y ventas quedaron resueltos en los tres primeros ciclos, con el sistema publicado y probado. El ciclo IV agrega la cafetería, el cobro de mensualidades y los reportes.”</div>
+        <div class="decir"><b>Para cerrar</b>“Los siete problemas del Ishikawa quedaron resueltos en los cuatro ciclos, con el sistema publicado y probado. La cafetería, las mensualidades y los pedidos personalizados son nuestra recomendación para seguir.”</div>
       </div>
     </details>
   </section>
@@ -340,7 +372,7 @@
       <details><summary>¿Por qué la tienda se ve primero y el login después?</summary><p>Porque así compra la gente: primero mira. Solo al pagar se pide ingresar, para asociar el pedido a un correo y enviar el comprobante. El carrito se conserva al ingresar.</p></details>
       <details><summary>¿Por qué el código de recuperación sale en la pantalla?</summary><p>Porque todavía no hay un servidor de correo configurado. Es solo para la demostración: en producción se configuran las variables SMTP y el código se envía al correo; mostrarlo en la pantalla permitiría a cualquiera que conozca un correo cambiar esa contraseña.</p></details>
       <details><summary>¿Cuándo se descuenta el stock en la tienda?</summary><p>Al crear el pedido: las piezas se reservan con un movimiento “Venta en línea” en el kardex. Si el pago se aprueba se quedan descontadas; si el pedido se cancela o pasan 30 minutos sin pagar, el procedimiento fn_vencer_pedidos las devuelve con un movimiento “Pedido web cancelado”.</p></details>
-      <details><summary>¿Qué incluye el ciclo IV?</summary><p>Cafetería (menú y comandas), cobro de mensualidades con control de morosidad, pedidos personalizados, notificaciones y reportes con indicadores. Está planificado en el alcance y en el diagrama general de paquetes.</p></details>
+      <details><summary>¿Qué incluye el ciclo IV?</summary><p>Consultas con filtros combinables, exportación a PDF, Excel y CSV, consulta por comando de voz con reglas fijas y calificación del servicio. La cafetería y las mensualidades quedaron como recomendación.</p></details>
     </div>
   </section>
 

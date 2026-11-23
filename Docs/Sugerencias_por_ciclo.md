@@ -36,16 +36,17 @@ Ideas de cambios o preguntas que la docente podría pedir en la defensa, con dó
 | Pago real con QR del banco | Contrato con el banco y webhook de confirmación (reemplaza la verificación manual) | Alta |
 | Factura en lugar de nota de venta | Integración con Impuestos Nacionales (SIAT) | Alta |
 
-## Ciclo IV · Cafetería, cobros y reportes (planificado)
+## Ciclo IV · Reportes y calidad del servicio
 
-| Caso de uso | Contenido sugerido |
-|---|---|
-| CU23 Gestionar menú | Productos de cafetería con categoría, precio, disponibilidad e ingredientes de cultivo propio |
-| CU24 Registrar comandas | Pedido por mesa con estados (pendiente, preparando, entregado) y cobro en la misma caja |
-| CU25 Mensualidades y morosidad | Plan mensual por taller, cuotas generadas cada mes, pagos y lista de alumnos en mora |
-| CU26 Pedidos personalizados | Encargo de piezas a pedido con anticipo, fecha de entrega y estado de producción |
-| CU27 Notificaciones | Avisos por correo: reserva confirmada, clase cancelada, stock bajo, cuota vencida |
-| CU28 Reportes | Ventas por período, asistencia, inventario valorizado, talleres más solicitados; exportar a PDF y Excel |
+| Cambio posible | Dónde se haría | Dificultad |
+|---|---|---|
+| Agregar un campo o un reporte nuevo | `Bakend/app/services/CatalogoReportes.php` | Baja |
+| Agregar una condición de filtro | `Reporte::OPERADORES` y `Reporte::condiciones()` | Media |
+| Otro formato de exportación | `Bakend/app/services/Exportador.php` | Media |
+| Reconocer más frases por voz | Listas de `Bakend/app/services/ComandoVoz.php` | Baja |
+| Cambiar la escala de calificación | Restricción `check` de `calificacion` y `calificar.php` | Baja |
+
+Trabajo futuro: cafetería, mensualidades, pedidos personalizados y notificaciones.
 
 ## Preguntas de modelado que suelen hacer
 

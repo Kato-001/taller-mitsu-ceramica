@@ -29,7 +29,7 @@ Contraseñas **inventadas solo para la demostración** (no son de personas reale
 
 La página principal (`/`) es la **tienda pública**: cualquier visitante ve las piezas y las clases sin iniciar sesión. Para pagar se ingresa con correo y contraseña (o con Google) y el comprobante queda en **Mis pedidos** (y llega al correo cuando el SMTP está configurado). Las cuentas de alumno se crean en **/registro** y las de cliente en **/tienda/registro**.
 
-**Pasarela de pago (modo demostración, sin cobro real):** QR bancario del taller (botones **Pago realizado** / **Pago no realizado** que simulan la respuesta del banco, o **Ya pagué** para que el taller confirme el depósito), tarjeta (`4242 4242 4242 4242` aprobada · `4000 0000 0000 0002` rechazada, cualquier fecha futura y CVV) y PayPal (sandbox simulado). De la tarjeta solo se guardan la marca y los 4 últimos dígitos.
+**Pasarela de pago, exportador y comando de voz (modo demostración, sin cobro real):** QR bancario del taller (botones **Pago realizado** / **Pago no realizado** que simulan la respuesta del banco, o **Ya pagué** para que el taller confirme el depósito), tarjeta (`4242 4242 4242 4242` aprobada · `4000 0000 0000 0002` rechazada, cualquier fecha futura y CVV) y PayPal (sandbox simulado). De la tarjeta solo se guardan la marca y los 4 últimos dígitos.
 
 **Stock:** al crear el pedido las piezas se descuentan y quedan reservadas 30 minutos; si el pago se aprueba se quedan descontadas y si el pedido se cancela o vence, vuelven a la tienda.
 
@@ -44,11 +44,11 @@ La página principal (`/`) es la **tienda pública**: cualquier visitante ve las
 | **I** | P1 Seguridad y configuración | CU01 Iniciar/cerrar sesión · CU02 Recuperar contraseña · CU03 Gestionar usuarios · CU04 Roles y permisos · CU05 Bitácora · CU06 Configuración y catálogos | ✅ |
 | **II** | P2 Clases y reservas | CU07 Maestras · CU08 Talleres · CU09 Horarios y calendario · CU10 Reservar clase · CU11 Asistencia · CU12 Alumnos y portal | ✅ |
 | **III** | P3 Inventario y compras · P4 Ventas, caja y tienda | CU13 Materiales · CU14 Proveedores · CU15 Compras · CU16 Consumo, merma y alertas · CU17 Piezas · CU18 Venta en caja · CU19 Caja y arqueo · CU20 Comprar en la tienda en línea · CU21 Pagar en línea (QR, tarjeta, PayPal) · CU22 Gestionar pedidos web | ✅ |
-| **IV** | P5 Cafetería · P6 Cobros · P7 Reportes | CU23 Menú · CU24 Comandas · CU25 Mensualidades y morosidad · CU26 Pedidos personalizados · CU27 Notificaciones · CU28 Reportes | Pendiente |
+| **IV** | P5 Reportes y calidad del servicio | CU23 Consultar información con filtros · CU24 Generar y exportar reportes (PDF, Excel, CSV) · CU25 Consultar por comando de voz · CU26 Calificar el servicio | ✅ |
 
 ```mermaid
 flowchart LR
-    I["Ciclo I<br/>Seguridad"] --> II["Ciclo II<br/>Clases y reservas"] --> III["Ciclo III<br/>Inventario y ventas"] --> IV["Ciclo IV<br/>Cafetería, cobros y reportes"]
+    I["Ciclo I<br/>Seguridad"] --> II["Ciclo II<br/>Clases y reservas"] --> III["Ciclo III<br/>Inventario y ventas"] --> IV["Ciclo IV<br/>Reportes y calidad"]
 ```
 
 ```mermaid
@@ -79,10 +79,10 @@ Taller-Mitsu_Proyecto Final/
 │   │   ├── core/           Router, Auth, Session (en BD), Csrf, Validator, View, Database, Mailer, helpers
 │   │   ├── controllers/    Un controlador por grupo de casos de uso
 │   │   ├── models/         Consultas SQL parametrizadas (un modelo por entidad)
-│   │   └── services/       Pasarela de pago
+│   │   └── services/       Pasarela de pago, exportador y comando de voz
 │   └── database/           Scripts SQL de PostgreSQL (01 a 07) y ejecutar.php para instalarlos
 ├── Frontend/               Lo que ve el usuario
-│   ├── views/              Pantallas por paquete: P1_Seguridad, P2_Clases, P3_Inventario, P4_Ventas, Tienda
+│   ├── views/              Pantallas por paquete: P1_Seguridad, P2_Clases, P3_Inventario, P4_Ventas, P5_Reportes, Tienda
 │   └── public/             Archivos que el navegador descarga tal cual: CSS, JavaScript, fotos y favicon
 ├── Docs/                   Informe, capturas, diagramas, pruebas, guion y sugerencias (ver «Documentación»)
 ├── api/index.php           Entrada de todas las peticiones (Vercel exige que esté en la carpeta api/)
@@ -132,6 +132,9 @@ php Bakend/database/ejecutar.php 01_esquema.sql 02_reglas_negocio.sql 03_datos_i
 # Base ya instalada antes del tipo de compra: solo agregar la columna y la nueva versión de fn_registrar_compra
 php Bakend/database/ejecutar.php 08_tipo_compra.sql
 
+# Ciclo IV (reportes guardados, calificaciones y permisos): ejecutar siempre, al final
+php Bakend/database/ejecutar.php 09_reportes_calificaciones.sql
+
 # Levantar el sistema
 php -S localhost:8000 router.php
 ```
@@ -145,6 +148,7 @@ Con el servidor local levantado:
 ```bash
 php Docs/Pruebas/probar_rutas.php   # todas las pantallas con cada rol + accesos prohibidos (403)
 php Docs/Pruebas/probar_flujos.php  # ventas, anulación, compras, reservas, asistencia y validaciones
+python Docs/Pruebas/probar_reportes.py   # ciclo IV: filtros, exportación, comando de voz y permisos
 php Docs/Pruebas/probar_tienda.php  # tienda pública, carrito, pasarela (QR, QR simulado, tarjeta, PayPal), pedidos web y recuperación con código en pantalla
 ```
 
@@ -158,7 +162,7 @@ php Docs/Pruebas/probar_tienda.php  # tienda pública, carrito, pasarela (QR, QR
 
 > Las claves reales **nunca** se suben a GitHub: van en `.env` (ignorado por Git) y en el panel de Vercel.
 
-## Documentación (ciclos I a III)
+## Documentación (ciclos I a IV)
 
 ```
 Docs/
@@ -169,7 +173,7 @@ Docs/
 │       ├── Ciclo_1_Seguridad/                     CU01 a CU06
 │       ├── Ciclo_2_Clases_y_reservas/             CU07 a CU12
 │       ├── Ciclo_3_Inventario_ventas_y_tienda/    CU13 a CU22
-│       └── Ciclo_4_Cafeteria_cobros_y_reportes/   CU23 a CU28 (próximamente)
+│       └── Ciclo_4_Reportes_y_calidad/            CU23 a CU26
 ├── Diagramas/
 │   ├── 1_Ishikawa_y_modelo_de_negocio/   Árbol de problemas, Ishikawa paso a paso, diagramas de actividad y modelo de dominio
 │   ├── 2_Casos_de_uso/                   Actores, diagrama general, por ciclo y uno por caso de uso
