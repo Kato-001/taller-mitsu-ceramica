@@ -303,6 +303,36 @@
       </div>
     </details>
 
+    <details class="caso tarjeta" open><summary><h3>Comandos de voz para la defensa</h3><span class="quien">/reportes · micrófono</span></summary>
+      <div class="cuerpo">
+        <ol class="pasos" data-grupo="voz">
+          <li><input type="checkbox"><span>Pulsar el micrófono, elegir <strong>Permitir</strong> y hablar cuando diga “Escuchando…”.</span></li>
+          <li><input type="checkbox"><span>En <strong>Edge o Chrome</strong> responde al instante. En <strong>Brave o Firefox</strong> la primera vez descarga 40 MB: hacerlo <strong>antes de la defensa</strong> en la misma computadora y navegador, y esperar unos segundos cada vez que carga.</span></li>
+          <li><input type="checkbox"><span>Si algo falla, <strong>escribir la misma frase</strong> en el cuadro y pulsar “Consultar”: hace lo mismo.</span></li>
+        </ol>
+        <div class="tabla"><table>
+          <thead><tr><th>Decir</th><th>Qué muestra (registros al 23/11)</th></tr></thead>
+          <tbody>
+            <tr><td><strong>“materiales con stock bajo”</strong></td><td>Materiales por reponer (3)</td></tr>
+            <tr><td><strong>“ventas en efectivo mayores a cien”</strong></td><td>Dos filtros juntos: total y método de pago (8)</td></tr>
+            <tr><td><strong>“pedidos entre cincuenta y doscientos”</strong></td><td>Un rango de montos (20)</td></tr>
+            <tr><td><strong>“productos con precio mayor a cien”</strong></td><td>Comparación con un número (5)</td></tr>
+            <tr><td><strong>“ventas del mes pasado”</strong></td><td>Filtro por período (33 en noviembre)</td></tr>
+            <tr><td><strong>“compras a crédito”</strong></td><td>Filtro por tipo de compra (1)</td></tr>
+            <tr><td><strong>“pedidos entregados”</strong></td><td>Filtro por estado (5)</td></tr>
+            <tr><td><strong>“clases agrupadas por taller”</strong></td><td>Totales por grupo</td></tr>
+            <tr><td><strong>“ventas agrupadas por método de pago”</strong></td><td>Totales por grupo</td></tr>
+            <tr><td><strong>“materiales con stock bajo en PDF”</strong></td><td>Descarga el PDF directamente</td></tr>
+            <tr><td><strong>“materiales con stock bajo en Excel”</strong></td><td>Descarga el Excel directamente</td></tr>
+            <tr><td><strong>“clientes en CSV”</strong></td><td>Descarga el CSV directamente</td></tr>
+            <tr><td><strong>“hola”</strong></td><td>No lo reconoce: muestra ejemplos (camino alternativo)</td></tr>
+          </tbody>
+        </table></div>
+        <div class="decir"><b>Cómo armar otros</b>Qué quiero (productos, ventas, pedidos, compras, materiales, reservas, clases, alumnos, clientes, cajas, calificaciones) + condición (mayor a, menor a, igual a, entre … y …) o período (hoy, ayer, este mes, mes pasado, este año) + formato opcional (en PDF, en Excel, en CSV).</div>
+        <div class="decir"><b>Si preguntan por la IA</b>El navegador convierte la voz en texto; en Brave y Firefox lo hace Vosk, un reconocedor de voz libre con un modelo ya entrenado. El reporte lo arma nuestro código con reglas fijas (ComandoVoz.php): ninguna IA consulta la base ni redacta el resultado.</div>
+      </div>
+    </details>
+
     <details class="caso tarjeta"><summary><h3>CU26 Calificar el servicio</h3><span class="quien">cliente@mitsu.test → admin@mitsu.test · /mis-pedidos · /calificaciones</span></summary>
       <div class="cuerpo">
         <ol class="pasos" data-grupo="cu26">
