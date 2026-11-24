@@ -11,7 +11,8 @@ $meta = [];
 foreach ($campos as $k => $c) {
     $meta[$k] = ['tipo' => Reporte::familia($c[2]), 'opciones' => array_map(fn($v) => [$v, Reporte::etiqueta($v)], $opciones[$k] ?? [])];
 }
-$filtros = $q['f'] ?: [['c' => array_key_first($campos), 'o' => '', 'v' => '', 'w' => '']];
+// Tras un comando de voz sin condiciones no se muestra un filtro vacío
+$filtros = $q['f'] ?: ($frase !== '' || $q['agrupar'] !== '' ? [] : [['c' => array_key_first($campos), 'o' => '', 'v' => '', 'w' => '']]);
 $filaFiltro = function ($i, array $f) use ($campos): void { ?>
     <div class="filtro-fila" data-filtro>
         <select class="select" name="f[<?= $i ?>][c]" data-campo aria-label="Campo">
@@ -94,10 +95,12 @@ $filaFiltro = function ($i, array $f) use ($campos): void { ?>
 
 <?php if ($error): ?><div class="alert alert-error anim mt"><?= icono('alerta') ?><div><?= e($error) ?></div></div><?php endif; ?>
 <?php if ($r): ?>
-<div class="card anim mt">
+<div class="card anim mt" id="resultado"<?= $frase !== '' ? ' data-ir' : '' ?>>
     <div class="card-head" style="flex-wrap:wrap;gap:10px">
         <div><h2><?= e($r['titulo']) ?></h2>
-            <small class="soft"><?= e(implode(' · ', $r['descripcion'])) ?> · <strong><?= cantidad($r['total']) ?></strong> registro<?= $r['total'] === 1 ? '' : 's' ?></small></div>
+            <div class="rep-aplicados"><span class="faint">Filtros aplicados:</span>
+                <?php foreach ($r['descripcion'] as $d): foreach (explode($q['con'] === 'o' ? ' O ' : ' Y ', $d) as $i => $x): ?><?= $i ? '<b>' . ($q['con'] === 'o' ? 'O' : 'Y') . '</b>' : '' ?><span class="rep-chip"><?= e($x) ?></span><?php endforeach; endforeach; ?>
+                <strong><?= cantidad($r['total']) ?> <?= $q['agrupar'] !== '' ? 'grupo' : 'registro' ?><?= $r['total'] === 1 ? '' : 's' ?></strong></div></div>
         <div class="row no-print">
             <?php foreach (['pdf' => 'documento', 'xlsx' => 'reporte', 'csv' => 'descargar'] as $fm => $ico): ?>
                 <a class="btn btn-outline btn-sm" href="<?= e(url('/reportes/exportar', $q + ['formato' => $fm])) ?>"><?= icono($ico, 16) ?> <?= e(Exportador::FORMATOS[$fm][0]) ?></a>
@@ -107,7 +110,7 @@ $filaFiltro = function ($i, array $f) use ($campos): void { ?>
     </div>
     <?php if ($r['total'] > count($r['filas'])): ?><div class="alert alert-info" style="margin:12px"><?= icono('info') ?><div>Se muestran los primeros <?= count($r['filas']) ?> registros. Agregue filtros para reducir el resultado.</div></div><?php endif; ?>
     <div class="table-wrap">
-        <table class="table">
+        <table class="table rep-tabla">
             <thead><tr><?php foreach ($r['columnas'] as [$lbl, $tp]): ?><th<?= in_array($tp, ['numero', 'dinero'], true) ? ' style="text-align:right"' : '' ?>><?= e($lbl) ?></th><?php endforeach; ?></tr></thead>
             <tbody>
             <?php foreach (array_slice($r['filas'], $pag->offset, $pag->porPagina) as $f): ?>

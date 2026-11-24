@@ -86,6 +86,10 @@
     document.getElementById('rep-tipo').addEventListener('change', (e) => { location.href = '/reportes?tipo=' + encodeURIComponent(e.target.value); });
   }
 
+  // Después de un comando de voz se baja al resultado
+  const resultado = document.querySelector('#resultado[data-ir]');
+  if (resultado) setTimeout(() => document.getElementById('form-reporte').scrollIntoView({ behavior: 'smooth', block: 'start' }), 300);
+
   /* ------------------------------------------------ Comando de voz */
   const boton = document.getElementById('voz-boton');
   if (!boton) return;
