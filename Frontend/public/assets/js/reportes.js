@@ -120,6 +120,17 @@
   }
 
   /* Dictado con Vosk */
+  // Solo se reconocen las palabras de los comandos: así se equivoca mucho menos.
+  // "stock" no está en el diccionario español de Vosk; se oye "esto" y el servidor lo corrige.
+  const VOCABULARIO = ('reporte reportes productos producto piezas vendidos vendidas ventas venta pedidos pedido tienda compras compra materiales material inventario '
+    + 'movimientos consumo merma reservas reserva asistencia asistió faltó clases clase alumnos clientes cajas caja calificaciones bitácora '
+    + 'esto bajo agotado suficiente precio total puntaje cantidad unidades mínimo con en de del el la los las a al y por que este esta '
+    + 'mayor mayores menor menores igual entre más menos bolivianos hoy ayer mes pasado año semana última últimos días '
+    + 'efectivo tarjeta crédito contado transferencia entregados entregado pagado pagados cancelado cancelados pendiente válida anulada activo inactivo '
+    + 'agrupadas agrupados agrupado agrupada taller maestra categoría proveedor estado cliente método pago vendedor nivel ciudad tipo '
+    + 'cero uno dos tres cuatro cinco seis siete ocho nueve diez quince veinte treinta cuarenta cincuenta sesenta setenta ochenta noventa cien doscientos quinientos mil '
+    + 'pe efe excel ese uve hola').split(' ').concat('[unk]');
+
   let modelo = null;
   let cortar = null;
 
@@ -229,7 +240,7 @@
     if (!escuchando) { cerrarAudio(); return; }
     const ctx = new AudioContext();
     await ctx.resume();
-    const kaldi = new m.KaldiRecognizer(ctx.sampleRate);
+    const kaldi = new m.KaldiRecognizer(ctx.sampleRate, JSON.stringify(VOCABULARIO));
     const fuente = ctx.createMediaStreamSource(audio);
     const nodo = ctx.createScriptProcessor(4096, 1, 1);
     let parcial = '';
@@ -249,8 +260,8 @@
     };
     const limite = setTimeout(() => terminar(parcial), 12000);
     cortar = () => terminar(parcial);
-    kaldi.on('partialresult', (x) => { if (x.result.partial) { parcial = x.result.partial; frase.value = parcial; } });
-    kaldi.on('result', (x) => { if (x.result.text) terminar(x.result.text); });
+    kaldi.on('partialresult', (x) => { if (x.result.partial) { parcial = x.result.partial.replace(/\[unk\]/g, '').trim(); frase.value = parcial; } });
+    kaldi.on('result', (x) => { const dicho = x.result.text.replace(/\[unk\]/g, '').trim(); if (dicho) terminar(dicho); });
     nodo.onaudioprocess = (e) => { if (!listo) kaldi.acceptWaveform(e.inputBuffer); };
     fuente.connect(nodo);
     nodo.connect(ctx.destination);
