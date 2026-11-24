@@ -95,7 +95,6 @@
   // Brave trae el micrófono pero bloquea su servicio de dictado, y Firefox no lo tiene:
   // ahí se usa Vosk, un reconocedor libre que corre dentro de la página (assets/voz).
   const soloVosk = !Reconocedor || !!navigator.brave;
-  if (soloVosk) estado.textContent += ' La primera vez se descargan 40 MB para dictar en este navegador.';
 
   // Se prueba cada opción en orden: si el servicio de dictado falla con un idioma,
   // se intenta con el siguiente y al final con el dictado local del navegador (sin internet).
@@ -124,27 +123,97 @@
   let modelo = null;
   let cortar = null;
 
-  function cargarModelo() {
-    if (modelo) return modelo;
-    modelo = new Promise((ok, mal) => {
+  const MODELO = new URL('/assets/voz/modelo-es.tar.gz', location.href).href;
+  const avisar = (t) => { estado.textContent = t; };
+
+  /* Descarga por partes: muestra el avance, reintenta y continúa donde se cortó. */
+  async function descargar() {
+    const cabeza = await fetch(MODELO, { method: 'HEAD' });
+    const total = Number(cabeza.headers.get('content-length')) || 39748104;
+    const cache = await caches.open('mitsu-voz');
+    const tramo = 2 * 1024 * 1024;
+    const partes = [];
+    let bajado = 0;
+    for (let ini = 0; ini < total; ini += tramo) {
+      const clave = '/voz-parte/' + total + '/' + ini;
+      let blob = null;
+      const guardada = await cache.match(clave);
+      if (guardada) blob = await guardada.blob();
+      for (let intento = 1; !blob; intento += 1) {
+        try {
+          const fin = Math.min(ini + tramo, total) - 1;
+          const r = await fetch(MODELO, { headers: { Range: 'bytes=' + ini + '-' + fin }, signal: AbortSignal.timeout(120000) });
+          if (r.status === 200) return r.blob();   // el servidor no admite partes: llega completo
+          if (r.status !== 206) throw new Error('HTTP ' + r.status);
+          blob = await r.blob();
+          if (blob.size !== fin - ini + 1) { blob = null; throw new Error('parte incompleta'); }
+          await cache.put(clave, new Response(blob)).catch(() => {});
+        } catch (e) {
+          if (intento >= 5) throw e;
+          avisar('La conexión se cortó; reintentando…');
+          await new Promise((t) => setTimeout(t, 1500 * intento));
+        }
+      }
+      partes.push(blob);
+      bajado += blob.size;
+      avisar('Descargando el dictado: ' + Math.round(100 * bajado / total) + ' % (solo la primera vez). Mientras tanto puede escribir el comando.');
+    }
+    return new Blob(partes, { type: 'application/gzip' });
+  }
+
+  function ponerScript() {
+    return new Promise((ok, mal) => {
+      if (window.Vosk) { ok(); return; }
       const s = document.createElement('script');
       s.src = '/assets/voz/vosk.js';
-      s.onload = () => window.Vosk.createModel(new URL('/assets/voz/modelo-es.tar.gz', location.href).href).then(ok, mal);
-      s.onerror = () => mal(new Error('vosk'));
+      s.onload = () => ok();
+      s.onerror = () => mal(new Error('vosk.js'));
       document.head.append(s);
     });
-    modelo.catch(() => { modelo = null; });
+  }
+
+  /* Las partes quedan guardadas en el navegador (Cache API): las siguientes veces no se descarga.
+     Vosk guarda además su copia en IndexedDB; se borra antes para no acumular ni usar una dañada. */
+  const limpiar = () => new Promise((ok) => {
+    const p = indexedDB.deleteDatabase('/vosk');
+    p.onsuccess = ok; p.onerror = ok; p.onblocked = ok;
+  });
+
+  function crear(url) {
+    return new Promise((ok, mal) => {
+      const m = new window.Vosk.Model(url);
+      const limite = setTimeout(() => { m.worker.terminate(); mal(new Error('tardó demasiado')); }, 90000);
+      m.on('load', (x) => { clearTimeout(limite); if (x.result) ok(m); else mal(new Error('modelo')); });
+      m.on('error', (x) => { clearTimeout(limite); m.worker.terminate(); mal(new Error(x.error || 'modelo')); });
+    });
+  }
+
+  function cargarModelo() {
+    if (modelo) return modelo;
+    modelo = (async () => {
+      avisar('Preparando el dictado…');
+      await ponerScript();
+      const url = URL.createObjectURL(await descargar());
+      avisar('Preparando el dictado… espere unos segundos.');
+      await limpiar();
+      try {
+        return await crear(url);
+      } catch (e) {
+        await limpiar();
+        return await crear(url);
+      }
+    })();
+    modelo.then(() => { if (!escuchando) avisar('Dictado listo: pulse el micrófono y hable.'); },
+      (e) => { modelo = null; avisar('No se pudo preparar el dictado (' + e.message + '). Pulse el micrófono para reintentar o escriba el comando.'); });
     return modelo;
   }
 
   async function escucharVosk() {
     let m;
     try {
-      estado.textContent = 'Preparando el dictado (la primera vez descarga 40 MB)… todavía no hable.';
       m = await cargarModelo();
     } catch (e) {
       parar();
-      estado.textContent = 'No se pudo cargar el dictado. Revise su conexión o escriba el comando.';
       return;
     }
     if (!escuchando) return;
@@ -187,6 +256,8 @@
     nodo.connect(ctx.destination);
     estado.textContent = 'Escuchando… diga su comando.';
   }
+
+  if (soloVosk) cargarModelo().catch(() => {});   // se prepara al abrir la página
 
   async function prepararLocal() {
     const datos = { langs: ['es-ES'], processLocally: true };
