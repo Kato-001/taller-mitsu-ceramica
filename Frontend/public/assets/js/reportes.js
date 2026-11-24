@@ -97,32 +97,77 @@
     estado.textContent = 'Este navegador no permite dictar (use Chrome o Edge). Puede escribir el comando.';
     return;
   }
-  const rec = new Reconocedor();
-  rec.lang = 'es-BO';
-  rec.interimResults = true;
+  // Se prueba cada opción en orden: si el servicio de dictado falla con un idioma,
+  // se intenta con el siguiente y al final con el dictado local del navegador (sin internet).
+  const opciones = [{ lang: 'es-ES' }, { lang: 'es-MX' }, { lang: 'es-US' }];
+  if (typeof Reconocedor.available === 'function') opciones.push({ lang: 'es-ES', local: true });
+  let actual = 0;
+  let rec = null;
   let escuchando = false;
-  let final = false;
-  boton.addEventListener('click', () => {
-    if (escuchando) { rec.stop(); return; }
-    final = false;
-    try { rec.start(); } catch (e) { /* ya estaba escuchando */ }
-  });
-  rec.onstart = () => { escuchando = true; boton.classList.add('escuchando'); estado.textContent = 'Escuchando… diga su comando.'; };
-  rec.onresult = (e) => {
-    const r = e.results[e.results.length - 1];
-    frase.value = r[0].transcript;
-    final = r.isFinal;
+
+  const avisos = {
+    'not-allowed': 'El micrófono está bloqueado: pulse el candado junto a la dirección, permita el micrófono y recargue.',
+    'service-not-allowed': 'Este navegador bloquea el dictado. Abra la página en Google Chrome.',
+    'no-speech': 'No se escuchó nada. Acérquese al micrófono e intente otra vez.',
+    'audio-capture': 'No se encontró un micrófono. Revise que esté conectado.',
+    network: 'El navegador no pudo conectarse a su servicio de dictado. Use Google Chrome (no Brave, Opera ni el navegador de VS Code), sin VPN ni bloqueadores, o escriba el comando.',
   };
-  rec.onerror = (e) => {
-    const errores = { 'not-allowed': 'Permita el uso del micrófono en el navegador.', 'no-speech': 'No se escuchó nada. Intente otra vez.', 'network': 'El dictado necesita conexión a internet.', 'audio-capture': 'No se encontró un micrófono.' };
-    estado.textContent = errores[e.error] || 'No se pudo usar el dictado. Puede escribir el comando.';
-  };
-  rec.onend = () => {
-    escuchando = false;
-    boton.classList.remove('escuchando');
-    if (final && frase.value.trim()) {
-      estado.textContent = 'Consultando: ' + frase.value;
-      document.getElementById('form-voz').submit();
+
+  function parar() { escuchando = false; boton.classList.remove('escuchando'); }
+
+  async function prepararLocal() {
+    const datos = { langs: ['es-ES'], processLocally: true };
+    const hay = await Reconocedor.available(datos);
+    if (hay === 'available') return true;
+    if (hay === 'unavailable') return false;
+    estado.textContent = 'Descargando el dictado en español (solo la primera vez)…';
+    return Reconocedor.install(datos);
+  }
+
+  async function escuchar() {
+    const op = opciones[actual];
+    if (op.local) {
+      try {
+        if (!(await prepararLocal())) throw new Error('sin dictado local');
+      } catch (e) { parar(); actual = 0; estado.textContent = avisos.network; return; }
     }
-  };
+    rec = new Reconocedor();
+    rec.lang = op.lang;
+    rec.interimResults = true;
+    if (op.local) rec.processLocally = true;
+    let dicho = '';
+    let error = '';
+    rec.onstart = () => { estado.textContent = 'Escuchando… diga su comando.'; };
+    rec.onresult = (e) => {
+      dicho = Array.from(e.results).map((r) => r[0].transcript).join(' ').trim();
+      frase.value = dicho;
+    };
+    rec.onerror = (e) => { error = e.error; };
+    rec.onend = () => {
+      if (!dicho && (error === 'network' || error === 'language-not-supported') && actual < opciones.length - 1) {
+        actual += 1;
+        escuchar();
+        return;
+      }
+      parar();
+      if (dicho) {
+        estado.textContent = 'Consultando: ' + dicho;
+        document.getElementById('form-voz').submit();
+      } else if (error && error !== 'aborted') {
+        if (error === 'network') actual = 0;
+        estado.textContent = avisos[error] || 'No se pudo usar el dictado. Puede escribir el comando.';
+      } else {
+        estado.textContent = 'No se escuchó nada. Intente otra vez.';
+      }
+    };
+    rec.start();
+  }
+
+  boton.addEventListener('click', () => {
+    if (escuchando) { if (rec) rec.stop(); return; }
+    escuchando = true;
+    boton.classList.add('escuchando');
+    estado.textContent = 'Preparando el micrófono…';
+    escuchar().catch(() => { parar(); estado.textContent = 'No se pudo usar el dictado. Puede escribir el comando.'; });
+  });
 })();

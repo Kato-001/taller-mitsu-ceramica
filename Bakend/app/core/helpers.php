@@ -22,7 +22,8 @@ function url(string $ruta = '/', array $params = []): string
 function asset(string $ruta): string
 {
     $archivo = PUBLIC_PATH . '/' . $ruta;
-    $version = is_file($archivo) ? substr((string) filemtime($archivo), -6) : '1';
+    // En Vercel todos los archivos tienen la misma fecha: la versión sale del contenido
+    $version = is_file($archivo) ? hash_file('crc32b', $archivo) : '1';
     return '/' . $ruta . '?v=' . $version;
 }
 
