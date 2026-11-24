@@ -1,7 +1,7 @@
 /* =====================================================================
    Taller Mitsü · Reportes (CU23) y comando de voz (CU25)
    Arma los filtros según el tipo de campo y dicta comandos con el
-   reconocimiento de voz del navegador. La frase la interpreta el servidor
+   reconocimiento de voz del navegador o, si no lo permite, con Vosk. La frase la interpreta el servidor
    con reglas fijas (ComandoVoz.php).
    ===================================================================== */
 (function () {
@@ -92,20 +92,15 @@
   const frase = document.getElementById('voz-frase');
   const estado = document.getElementById('voz-estado');
   const Reconocedor = window.SpeechRecognition || window.webkitSpeechRecognition;
-  if (!Reconocedor) {
-    boton.disabled = true;
-    estado.textContent = 'Este navegador no permite dictar (use Chrome o Edge). Puede escribir el comando.';
-    return;
-  }
-  // Brave incluye el micrófono pero bloquea el servicio de dictado: se avisa sin hacer esperar
-  if (navigator.brave) {
-    boton.addEventListener('click', () => { estado.textContent = 'Brave bloquea el dictado por voz. Abra esta página en Microsoft Edge o Google Chrome, o escriba el comando.'; });
-    return;
-  }
+  // Brave trae el micrófono pero bloquea su servicio de dictado, y Firefox no lo tiene:
+  // ahí se usa Vosk, un reconocedor libre que corre dentro de la página (assets/voz).
+  const soloVosk = !Reconocedor || !!navigator.brave;
+  if (soloVosk) estado.textContent += ' La primera vez se descargan 40 MB para dictar en este navegador.';
+
   // Se prueba cada opción en orden: si el servicio de dictado falla con un idioma,
   // se intenta con el siguiente y al final con el dictado local del navegador (sin internet).
   const opciones = [{ lang: 'es-ES' }, { lang: 'es-MX' }, { lang: 'es-US' }];
-  if (typeof Reconocedor.available === 'function') opciones.push({ lang: 'es-ES', local: true });
+  if (Reconocedor && typeof Reconocedor.available === 'function') opciones.push({ lang: 'es-ES', local: true });
   let actual = 0;
   let rec = null;
   let escuchando = false;
@@ -115,10 +110,83 @@
     'service-not-allowed': 'Este navegador bloquea el dictado. Abra la página en Microsoft Edge o Google Chrome.',
     'no-speech': 'No se escuchó nada. Acérquese al micrófono e intente otra vez.',
     'audio-capture': 'No se encontró un micrófono. Revise que esté conectado.',
-    network: 'El navegador no pudo conectarse a su servicio de dictado. Use Microsoft Edge o Google Chrome (no Brave, Opera ni el navegador de VS Code), sin VPN ni bloqueadores, o escriba el comando.',
   };
 
   function parar() { escuchando = false; boton.classList.remove('escuchando'); }
+
+  function consultar(dicho) {
+    frase.value = dicho;
+    estado.textContent = 'Consultando: ' + dicho;
+    document.getElementById('form-voz').submit();
+  }
+
+  /* Dictado con Vosk */
+  let modelo = null;
+  let cortar = null;
+
+  function cargarModelo() {
+    if (modelo) return modelo;
+    modelo = new Promise((ok, mal) => {
+      const s = document.createElement('script');
+      s.src = '/assets/voz/vosk.js';
+      s.onload = () => window.Vosk.createModel(new URL('/assets/voz/modelo-es.tar.gz', location.href).href).then(ok, mal);
+      s.onerror = () => mal(new Error('vosk'));
+      document.head.append(s);
+    });
+    modelo.catch(() => { modelo = null; });
+    return modelo;
+  }
+
+  async function escucharVosk() {
+    let m;
+    try {
+      estado.textContent = 'Preparando el dictado (la primera vez descarga 40 MB)… todavía no hable.';
+      m = await cargarModelo();
+    } catch (e) {
+      parar();
+      estado.textContent = 'No se pudo cargar el dictado. Revise su conexión o escriba el comando.';
+      return;
+    }
+    if (!escuchando) return;
+    let audio;
+    try {
+      audio = await navigator.mediaDevices.getUserMedia({ audio: { echoCancellation: true, noiseSuppression: true, channelCount: 1 } });
+    } catch (e) {
+      parar();
+      estado.textContent = avisos[e.name === 'NotFoundError' ? 'audio-capture' : 'not-allowed'];
+      return;
+    }
+    const cerrarAudio = () => audio.getTracks().forEach((t) => t.stop());
+    if (!escuchando) { cerrarAudio(); return; }
+    const ctx = new AudioContext();
+    await ctx.resume();
+    const kaldi = new m.KaldiRecognizer(ctx.sampleRate);
+    const fuente = ctx.createMediaStreamSource(audio);
+    const nodo = ctx.createScriptProcessor(4096, 1, 1);
+    let parcial = '';
+    let listo = false;
+    const terminar = (dicho) => {
+      if (listo) return;
+      listo = true;
+      clearTimeout(limite);
+      nodo.disconnect();
+      fuente.disconnect();
+      cerrarAudio();
+      ctx.close();
+      kaldi.remove();
+      cortar = null;
+      parar();
+      if (dicho) consultar(dicho); else estado.textContent = avisos['no-speech'];
+    };
+    const limite = setTimeout(() => terminar(parcial), 12000);
+    cortar = () => terminar(parcial);
+    kaldi.on('partialresult', (x) => { if (x.result.partial) { parcial = x.result.partial; frase.value = parcial; } });
+    kaldi.on('result', (x) => { if (x.result.text) terminar(x.result.text); });
+    nodo.onaudioprocess = (e) => { if (!listo) kaldi.acceptWaveform(e.inputBuffer); };
+    fuente.connect(nodo);
+    nodo.connect(ctx.destination);
+    estado.textContent = 'Escuchando… diga su comando.';
+  }
 
   async function prepararLocal() {
     const datos = { langs: ['es-ES'], processLocally: true };
@@ -134,7 +202,7 @@
     if (op.local) {
       try {
         if (!(await prepararLocal())) throw new Error('sin dictado local');
-      } catch (e) { parar(); actual = 0; estado.textContent = avisos.network; return; }
+      } catch (e) { actual = 0; await escucharVosk(); return; }
     }
     rec = new Reconocedor();
     rec.lang = op.lang;
@@ -154,12 +222,11 @@
         escuchar();
         return;
       }
+      if (!dicho && error === 'network') { actual = 0; escucharVosk(); return; }   // último recurso
       parar();
       if (dicho) {
-        estado.textContent = 'Consultando: ' + dicho;
-        document.getElementById('form-voz').submit();
+        consultar(dicho);
       } else if (error && error !== 'aborted') {
-        if (error === 'network') actual = 0;
         estado.textContent = avisos[error] || 'No se pudo usar el dictado. Puede escribir el comando.';
       } else {
         estado.textContent = 'No se escuchó nada. Intente otra vez.';
@@ -169,10 +236,10 @@
   }
 
   boton.addEventListener('click', () => {
-    if (escuchando) { if (rec) rec.stop(); return; }
+    if (escuchando) { if (cortar) cortar(); else if (rec) rec.stop(); else parar(); return; }
     escuchando = true;
     boton.classList.add('escuchando');
     estado.textContent = 'Preparando el micrófono…';
-    escuchar().catch(() => { parar(); estado.textContent = 'No se pudo usar el dictado. Puede escribir el comando.'; });
+    (soloVosk ? escucharVosk() : escuchar()).catch(() => { parar(); estado.textContent = 'No se pudo usar el dictado. Puede escribir el comando.'; });
   });
 })();

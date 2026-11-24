@@ -46,6 +46,9 @@ final class ComandoVoz
         $s = strtr(mb_strtolower($s), ['á' => 'a', 'é' => 'e', 'í' => 'i', 'ó' => 'o', 'ú' => 'u', 'ü' => 'u', 'ñ' => 'n', '>' => ' mayor ', '<' => ' menor ']);
         $s = (string) preg_replace('/(\d)[.](?=\d{3}\b)/', '$1', $s);
         $s = (string) preg_replace('/[^a-z0-9.,_ -]+/', ' ', $s);
+        // El dictado suele oír mal estas palabras: "esto bajo" es "stock bajo" y "pe de efe" es "pdf"
+        $s = (string) preg_replace('/(?:esto|estoc|estok|estock|stoc|stop|es toc)(?= (?:bajo|mayor|menor|entre|igual|minimo|agotado))/', 'stock', $s);
+        $s = (string) preg_replace(['/pe de efe/', '/(?:exel|ecxel|exce)/', '/ce ese (?:uve|ve)/'], ['pdf', 'excel', 'csv'], $s);
         foreach (self::NUMEROS as $palabra => $n) {
             $s = (string) preg_replace("/\\b$palabra\\b/", (string) $n, $s);
         }

@@ -9,7 +9,7 @@ $publico = realpath(__DIR__ . '/Frontend/public');
 $archivo = realpath($publico . $ruta);
 
 if ($ruta !== '/' && $archivo && is_file($archivo) && str_starts_with($archivo, $publico)) {
-    $tipos = ['css' => 'text/css', 'js' => 'application/javascript', 'svg' => 'image/svg+xml', 'png' => 'image/png', 'ico' => 'image/x-icon', 'jpg' => 'image/jpeg', 'jpeg' => 'image/jpeg', 'webp' => 'image/webp', 'woff2' => 'font/woff2'];
+    $tipos = ['css' => 'text/css', 'js' => 'application/javascript', 'svg' => 'image/svg+xml', 'png' => 'image/png', 'gz' => 'application/gzip', 'ico' => 'image/x-icon', 'jpg' => 'image/jpeg', 'jpeg' => 'image/jpeg', 'webp' => 'image/webp', 'woff2' => 'font/woff2'];
     header('Content-Type: ' . ($tipos[pathinfo($archivo, PATHINFO_EXTENSION)] ?? 'application/octet-stream'));
     readfile($archivo);
     return true;

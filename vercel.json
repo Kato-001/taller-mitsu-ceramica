@@ -6,7 +6,7 @@
   "functions": {
     "api/index.php": {
       "runtime": "vercel-php@0.7.4",
-      "excludeFiles": "{Docs/**,Bakend/database/**,node_modules/**,.git/**}"
+      "excludeFiles": "{Docs/**,Bakend/database/**,Frontend/public/assets/voz/**,node_modules/**,.git/**}"
     }
   },
   "routes": [
