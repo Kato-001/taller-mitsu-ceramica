@@ -97,6 +97,11 @@
     estado.textContent = 'Este navegador no permite dictar (use Chrome o Edge). Puede escribir el comando.';
     return;
   }
+  // Brave incluye el micrófono pero bloquea el servicio de dictado: se avisa sin hacer esperar
+  if (navigator.brave) {
+    boton.addEventListener('click', () => { estado.textContent = 'Brave bloquea el dictado por voz. Abra esta página en Microsoft Edge o Google Chrome, o escriba el comando.'; });
+    return;
+  }
   // Se prueba cada opción en orden: si el servicio de dictado falla con un idioma,
   // se intenta con el siguiente y al final con el dictado local del navegador (sin internet).
   const opciones = [{ lang: 'es-ES' }, { lang: 'es-MX' }, { lang: 'es-US' }];
@@ -107,10 +112,10 @@
 
   const avisos = {
     'not-allowed': 'El micrófono está bloqueado: pulse el candado junto a la dirección, permita el micrófono y recargue.',
-    'service-not-allowed': 'Este navegador bloquea el dictado. Abra la página en Google Chrome.',
+    'service-not-allowed': 'Este navegador bloquea el dictado. Abra la página en Microsoft Edge o Google Chrome.',
     'no-speech': 'No se escuchó nada. Acérquese al micrófono e intente otra vez.',
     'audio-capture': 'No se encontró un micrófono. Revise que esté conectado.',
-    network: 'El navegador no pudo conectarse a su servicio de dictado. Use Google Chrome (no Brave, Opera ni el navegador de VS Code), sin VPN ni bloqueadores, o escriba el comando.',
+    network: 'El navegador no pudo conectarse a su servicio de dictado. Use Microsoft Edge o Google Chrome (no Brave, Opera ni el navegador de VS Code), sin VPN ni bloqueadores, o escriba el comando.',
   };
 
   function parar() { escuchando = false; boton.classList.remove('escuchando'); }
