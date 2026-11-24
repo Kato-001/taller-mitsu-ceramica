@@ -94,6 +94,7 @@
   const Reconocedor = window.SpeechRecognition || window.webkitSpeechRecognition;
   // Brave trae el micrófono pero bloquea su servicio de dictado, y Firefox no lo tiene:
   // ahí se usa Vosk, un reconocedor libre que corre dentro de la página (assets/voz).
+  try { indexedDB.deleteDatabase('/vosk'); } catch (e) { /* restos de la versión anterior */ }
   const soloVosk = !Reconocedor || !!navigator.brave;
 
   // Se prueba cada opción en orden: si el servicio de dictado falla con un idioma,
@@ -176,7 +177,7 @@
     return new Promise((ok, mal) => {
       if (window.Vosk) { ok(); return; }
       const s = document.createElement('script');
-      s.src = '/assets/voz/vosk.js';
+      s.src = '/assets/voz/vosk.js?v=2';
       s.onload = () => ok();
       s.onerror = () => mal(new Error('vosk.js'));
       document.head.append(s);
@@ -184,12 +185,7 @@
   }
 
   /* Las partes quedan guardadas en el navegador (Cache API): las siguientes veces no se descarga.
-     Vosk guarda además su copia en IndexedDB; se borra antes para no acumular ni usar una dañada. */
-  const limpiar = () => new Promise((ok) => {
-    const p = indexedDB.deleteDatabase('/vosk');
-    p.onsuccess = ok; p.onerror = ok; p.onblocked = ok;
-  });
-
+     El modelo se prepara en memoria: cada pestaña usa el suyo. */
   function crear(url) {
     return new Promise((ok, mal) => {
       const m = new window.Vosk.Model(url);
@@ -206,12 +202,10 @@
       await ponerScript();
       const url = URL.createObjectURL(await descargar());
       avisar('Preparando el dictado… espere unos segundos.');
-      await limpiar();
       try {
         return await crear(url);
       } catch (e) {
-        await limpiar();
-        return await crear(url);
+        return await crear(url);   // segundo intento
       }
     })();
     modelo.then(() => { if (!escuchando) avisar('Dictado listo: pulse el micrófono y hable.'); },
